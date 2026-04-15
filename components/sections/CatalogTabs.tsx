@@ -18,23 +18,26 @@ export default function CatalogTabs() {
   const products = getProductsByCategory(active).slice(0, 4)
 
   return (
-    <section className="py-24 bg-[var(--black)]" id="catalog">
+    <section className="py-24 bg-[var(--bg)]" id="catalog">
       <div className="container-wide">
         <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
           <div>
             <span className="section-label">Каталог 2026</span>
-            <h2 className="section-heading text-white">Обери свій <span className="text-[var(--brand)]">Ride</span></h2>
+            <h2 className="section-heading">Обери свій <span className="text-[var(--brand-dk)]">Ride</span></h2>
           </div>
-          <Link href="/catalog" className="btn-ghost flex items-center gap-1.5 text-[var(--brand)]">
+          <Link href="/catalog" className="btn-ghost flex items-center gap-1.5 text-[var(--brand-dk)] font-semibold">
             Весь каталог <ArrowRight size={15}/>
           </Link>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 bg-[var(--mid)] border border-[var(--border)] rounded-xl p-1 mb-8 w-fit">
+        <div className="flex gap-1 bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-1 mb-8 w-fit">
           {TABS.map(t => (
             <button key={t.id} onClick={() => setActive(t.id)}
-              className={`px-5 py-2.5 text-[12px] font-bold uppercase tracking-wide rounded-lg transition-all ${active===t.id ? 'bg-[var(--surface)] text-white' : 'text-[var(--muted)] hover:text-white'}`}>
+              className={`px-5 py-2.5 text-[12px] font-bold uppercase tracking-wide rounded-lg transition-all ${
+                active === t.id
+                  ? 'bg-[var(--bg)] text-[var(--text)] shadow-sm border border-[var(--border)]'
+                  : 'text-[var(--text-3)] hover:text-[var(--text)]'
+              }`}>
               {t.label}
             </button>
           ))}
