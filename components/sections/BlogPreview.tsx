@@ -1,52 +1,64 @@
 import Link from 'next/link'
-import { ArrowRight, BookOpen } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 const POSTS = [
-  { slug:'best-scooters-heavy-adults-2026', cat:'Огляди',    date:'30 берез. 2026', read:6,
-    title:'Найкращі електросамокати для важких дорослих у 2026',
-    excerpt:'Шукаєш самокат з великим навантаженням? Гід по топ-моделях з подвійним мотором.' },
-  { slug:'10-features-buying-scooter', cat:'Гід покупця', date:'30 берез. 2026', read:8,
-    title:'10 ключових характеристик при виборі електросамоката',
-    excerpt:'Від потужності мотора до системи безпеки — все що потрібно знати перед покупкою.' },
-  { slug:'best-adult-scooter-2026-guide', cat:'Порівняння', date:'30 берез. 2026', read:10,
-    title:'Найкращий електросамокат для дорослих 2026: повний гід',
-    excerpt:'Порівнюємо потужність, запас ходу та портативність. Чому Ausom — вибір №1.' },
+  { slug:'best-scooters-heavy-adults-2026', cat:'Огляди',     date:'30 берез.', read:6,
+    title:'Найкращі самокати для важких дорослих у 2026',
+    excerpt:'Гід по топ-моделях з подвійним мотором та посиленою рамою.' },
+  { slug:'10-features-buying-scooter',      cat:'Гід покупця', date:'30 берез.', read:8,
+    title:'10 характеристик при виборі електросамоката',
+    excerpt:'Від потужності мотора до системи безпеки — все перед покупкою.' },
+  { slug:'best-adult-scooter-2026-guide',   cat:'Порівняння', date:'30 берез.', read:10,
+    title:'Найкращий самокат для дорослих 2026: повний гід',
+    excerpt:'Порівнюємо потужність, запас ходу та портативність.' },
 ]
 
 export default function BlogPreview() {
   return (
-    <section className="py-24 bg-[var(--bg-mid)] border-y border-[var(--border)]">
-      <div className="container-wide">
-        <div className="flex items-end justify-between flex-wrap gap-4 mb-10">
+    <section style={{ padding:'88px 0', background:'var(--bg-soft)', borderTop:'1px solid var(--border)' }}>
+      <div className="w-container">
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:40 }}>
           <div>
-            <span className="section-label"><BookOpen size={12}/> Блог</span>
-            <h2 className="section-heading">Поради та <span className="text-[var(--brand-dk)]">Огляди</span></h2>
+            <div className="s-label">Блог</div>
+            <h2 style={{ fontSize:'clamp(28px,3vw,42px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>
+              Поради та <span style={{ color:'var(--yellow-dark)' }}>огляди</span>
+            </h2>
           </div>
-          <Link href="/blog" className="btn-ghost flex items-center gap-1.5 text-[var(--brand-dk)] font-semibold">
+          <Link href="/blog" style={{ display:'flex', alignItems:'center', gap:6, fontSize:14, fontWeight:600, color:'var(--text-2)', textDecoration:'none' }}>
             Всі статті <ArrowRight size={15}/>
           </Link>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
           {POSTS.map(post => (
-            <Link key={post.slug} href={`/blog/${post.slug}`}
-              className="group bg-[var(--bg)] border border-[var(--border)] rounded-xl overflow-hidden hover:border-[var(--brand)] hover:-translate-y-1 transition-all duration-300 flex flex-col">
-              <div className="bg-[var(--bg-surface)] h-44 flex items-center justify-center relative">
-                <svg viewBox="0 0 80 60" fill="none" width="56" height="42" className="opacity-20 group-hover:opacity-40 transition-opacity duration-500">
-                  <circle cx="12" cy="48" r="10" stroke="var(--brand)"   strokeWidth="3"/>
-                  <circle cx="68" cy="48" r="10" stroke="var(--brand)"   strokeWidth="3"/>
-                  <path d="M12 48L22 18L52 12L68 48" stroke="var(--text)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
-                  <path d="M22 18L30 6" stroke="var(--brand)" strokeWidth="3" strokeLinecap="round"/>
-                  <rect x="24" y="2" width="14" height="8" rx="2" fill="var(--brand)"/>
-                </svg>
-                <span className="absolute bottom-3 right-3 bg-[var(--brand)] text-[#111] text-[9px] font-black px-2 py-0.5 rounded">{post.read} хв</span>
-              </div>
-              <div className="p-5 flex flex-col gap-3 flex-1">
-                <span className="text-[var(--brand-dk)] text-[10px] font-black uppercase tracking-wider">{post.cat}</span>
-                <h3 className="text-[14px] font-semibold text-[var(--text)] leading-snug group-hover:text-[var(--brand-dk)] transition-colors">{post.title}</h3>
-                <p className="text-[12px] text-[var(--text-3)] leading-relaxed flex-1 line-clamp-2">{post.excerpt}</p>
-                <div className="flex items-center justify-between pt-3 border-t border-[var(--border)] text-[11px] text-[var(--text-3)]">
-                  <span>{post.date}</span>
-                  <span className="text-[var(--brand-dk)] group-hover:translate-x-1 transition-transform">→</span>
+            <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration:'none' }}>
+              <div style={{
+                background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:12,
+                overflow:'hidden', transition:'transform .2s, box-shadow .2s',
+              }}
+              onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='translateY(-4px)';(e.currentTarget as HTMLElement).style.boxShadow='var(--shadow-lg)'}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='none';(e.currentTarget as HTMLElement).style.boxShadow='none'}}>
+                <div style={{ height:160, background:'var(--bg-subtle)', display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
+                  <svg viewBox="0 0 120 90" fill="none" width="70" height="52" style={{ opacity:.2 }}>
+                    <circle cx="22" cy="72" r="16" stroke="#F5C200" strokeWidth="4"/>
+                    <circle cx="98" cy="72" r="16" stroke="#F5C200" strokeWidth="4"/>
+                    <path d="M22 72L38 28L76 20L98 72" stroke="#111" strokeWidth="5" strokeLinecap="round"/>
+                    <path d="M38 28L48 8" stroke="#F5C200" strokeWidth="4" strokeLinecap="round"/>
+                    <rect x="42" y="2" width="20" height="10" rx="2.5" fill="#F5C200"/>
+                  </svg>
+                  <span style={{
+                    position:'absolute', bottom:10, right:10,
+                    background:'#F5C200', color:'#111', fontSize:9, fontWeight:800,
+                    padding:'3px 7px', borderRadius:3,
+                  }}>{post.read} хв</span>
+                </div>
+                <div style={{ padding:'18px' }}>
+                  <div style={{ fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'var(--yellow-dark)', marginBottom:8 }}>{post.cat}</div>
+                  <h3 style={{ fontSize:15, fontWeight:700, color:'var(--text)', lineHeight:1.35, marginBottom:8, letterSpacing:'-.01em' }}>{post.title}</h3>
+                  <p style={{ fontSize:13, color:'var(--text-3)', lineHeight:1.6, marginBottom:14 }}>{post.excerpt}</p>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:12, borderTop:'1px solid var(--border)', fontSize:11, color:'var(--text-4)' }}>
+                    <span>{post.date}</span>
+                    <span style={{ color:'var(--yellow-dark)', fontWeight:600 }}>→</span>
+                  </div>
                 </div>
               </div>
             </Link>

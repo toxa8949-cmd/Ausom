@@ -3,14 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { ShoppingBag, Menu, X, ChevronDown, Zap, GitCompare, Sun, Moon } from 'lucide-react'
+import { ShoppingBag, Menu, X, Sun, Moon, ChevronDown } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 import { useTheme } from '@/lib/theme'
 
 const NAV = [
   {
     label: 'Самокати', href: '/catalog',
-    children: [
+    sub: [
       { label: 'Всі моделі',   href: '/catalog' },
       { label: 'Позашляхові', href: '/catalog?category=offroad' },
       { label: 'Міські',      href: '/catalog?category=commuter' },
@@ -26,12 +26,12 @@ export default function Header() {
   const pathname = usePathname()
   const { count } = useCart()
   const { theme, toggle } = useTheme()
-  const [open,     setOpen]     = useState(false)
-  const [drop,     setDrop]     = useState<string | null>(null)
-  const [scrolled, setScrolled] = useState(false)
+  const [open,  setOpen]  = useState(false)
+  const [drop,  setDrop]  = useState<string|null>(null)
+  const [stuck, setStuck] = useState(false)
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20)
+    const h = () => setStuck(window.scrollY > 10)
     window.addEventListener('scroll', h, { passive: true })
     return () => window.removeEventListener('scroll', h)
   }, [])
@@ -41,49 +41,64 @@ export default function Header() {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/')
-
-  const headerBg = scrolled
-    ? 'bg-[var(--bg)]/95 backdrop-blur-xl border-b border-[var(--border)] shadow-sm'
-    : 'bg-[var(--bg)]/80 backdrop-blur-md border-b border-transparent'
+  const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
     <>
-      <header className={`sticky top-0 z-50 h-[68px] transition-all duration-300 ${headerBg}`}>
-        <div className="container-wide h-full flex items-center gap-8">
+      <header style={{
+        position: 'sticky', top: 0, zIndex: 50,
+        background: 'var(--bg)',
+        borderBottom: `1px solid ${stuck ? 'var(--border)' : 'var(--border)'}`,
+        boxShadow: stuck ? 'var(--shadow-sm)' : 'none',
+        transition: 'box-shadow .2s',
+      }}>
+        <div className="w-container" style={{ height: 64, display: 'flex', alignItems: 'center', gap: 0 }}>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1.5 font-display text-[22px] tracking-[.08em] text-[var(--text)] hover:text-[var(--brand-dk)] transition-colors shrink-0" onClick={() => setOpen(false)}>
-            <Zap size={17} strokeWidth={2.5} className="text-[var(--brand)]" />
-            AUSOM
-            <sup className="font-sans text-[10px] font-bold text-[var(--brand-dk)] tracking-normal -mt-2">UA</sup>
+          <Link href="/" style={{ display:'flex', alignItems:'center', gap:8, textDecoration:'none', flexShrink:0, marginRight:48 }}
+            onClick={() => setOpen(false)}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="#F5C200" stroke="#F5C200" strokeWidth=".5"/>
+            </svg>
+            <span style={{ fontFamily:'Inter,sans-serif', fontWeight:800, fontSize:18, letterSpacing:'-.02em', color:'var(--text)' }}>
+              AUSOM
+            </span>
+            <sup style={{ fontFamily:'Inter,sans-serif', fontWeight:700, fontSize:9, color:'var(--yellow-dark)', marginTop:-8, letterSpacing:'.04em' }}>UA</sup>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden lg:flex items-center gap-0.5 flex-1">
+          <nav style={{ display:'flex', alignItems:'center', gap:4, flex:1 }} className="hidden lg:flex">
             {NAV.map(item => (
-              <div key={item.label} className="relative"
-                onMouseEnter={() => item.children && setDrop(item.label)}
+              <div key={item.label} style={{ position:'relative' }}
+                onMouseEnter={() => item.sub && setDrop(item.label)}
                 onMouseLeave={() => setDrop(null)}>
-                <Link href={item.href}
-                  className={`flex items-center gap-1 px-3.5 py-2 text-[13px] font-medium rounded-md transition-all relative ${
-                    isActive(item.href)
-                      ? 'text-[var(--text)] bg-[var(--bg-surface)]'
-                      : 'text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--bg-surface)]'
-                  }`}>
+                <Link href={item.href} style={{
+                  display:'flex', alignItems:'center', gap:4,
+                  padding:'8px 14px', borderRadius:6, textDecoration:'none',
+                  fontSize:14, fontWeight:500, letterSpacing:'-.01em',
+                  color: active(item.href) ? 'var(--text)' : 'var(--text-3)',
+                  background: active(item.href) ? 'var(--bg-subtle)' : 'transparent',
+                  transition:'color .15s, background .15s',
+                }}>
                   {item.label}
-                  {item.children && (
-                    <ChevronDown size={12} className={`transition-transform duration-200 ${drop === item.label ? 'rotate-180' : ''} opacity-60`} />
-                  )}
+                  {item.sub && <ChevronDown size={12} style={{ opacity:.5, transform: drop===item.label ? 'rotate(180deg)' : 'none', transition:'transform .2s' }} />}
                 </Link>
-                {isActive(item.href) && (
-                  <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-[var(--brand)] rounded-full" />
-                )}
-                {item.children && drop === item.label && (
-                  <div className="absolute top-full left-0 mt-2 bg-[var(--bg)] border border-[var(--border)] rounded-xl shadow-lg p-1.5 min-w-[190px] z-50">
-                    {item.children.map(c => (
-                      <Link key={c.href} href={c.href} onClick={() => setDrop(null)}
-                        className="block px-4 py-2.5 text-[13px] text-[var(--text-2)] hover:text-[var(--text)] hover:bg-[var(--bg-surface)] rounded-lg transition-colors">
+                {item.sub && drop===item.label && (
+                  <div style={{
+                    position:'absolute', top:'calc(100% + 8px)', left:0,
+                    background:'var(--bg)', border:'1.5px solid var(--border)',
+                    borderRadius:10, padding:6, minWidth:180,
+                    boxShadow:'var(--shadow-md)', zIndex:100,
+                    animation:'fadeUp .15s ease both',
+                  }}>
+                    {item.sub.map(c => (
+                      <Link key={c.href} href={c.href} onClick={() => setDrop(null)} style={{
+                        display:'block', padding:'10px 14px', borderRadius:6,
+                        fontSize:13, fontWeight:500, color:'var(--text-2)',
+                        textDecoration:'none', transition:'background .1s, color .1s',
+                      }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='var(--bg-subtle)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color='var(--text-2)' }}>
                         {c.label}
                       </Link>
                     ))}
@@ -91,80 +106,93 @@ export default function Header() {
                 )}
               </div>
             ))}
-            <Link href="/sale" className="px-3.5 py-2 text-[13px] font-semibold text-[var(--brand-dk)] hover:bg-[var(--brand)]/10 rounded-md transition-all">
+            <Link href="/sale" style={{ padding:'8px 14px', borderRadius:6, fontSize:14, fontWeight:600, color:'var(--yellow-dark)', textDecoration:'none' }}>
               🔥 Розпродаж
             </Link>
           </nav>
 
-          {/* Actions */}
-          <div className="flex items-center gap-1 ml-auto">
-            <Link href="/compare" className="hidden sm:flex w-9 h-9 items-center justify-center text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--bg-surface)] rounded-lg transition-all">
-              <GitCompare size={17} />
-            </Link>
-
+          {/* Right actions */}
+          <div style={{ display:'flex', alignItems:'center', gap:4, marginLeft:'auto' }}>
             {/* Theme toggle */}
-            <button onClick={toggle}
-              className="w-9 h-9 flex items-center justify-center text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--bg-surface)] rounded-lg transition-all"
-              aria-label="Змінити тему">
-              {theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}
+            <button onClick={toggle} aria-label="Тема" style={{
+              width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
+              background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
+              color:'var(--text-3)', cursor:'pointer', transition:'all .15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-dark)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-3)' }}>
+              {theme==='light' ? <Moon size={15}/> : <Sun size={15}/>}
             </button>
 
-            <Link href="/cart" className="relative flex w-9 h-9 items-center justify-center text-[var(--text-3)] hover:text-[var(--text)] hover:bg-[var(--bg-surface)] rounded-lg transition-all">
-              <ShoppingBag size={17} />
+            {/* Cart */}
+            <Link href="/cart" style={{
+              position:'relative', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
+              background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
+              color:'var(--text-3)', textDecoration:'none', transition:'all .15s',
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-dark)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-3)' }}>
+              <ShoppingBag size={16}/>
               {count > 0 && (
-                <span className="absolute top-1 right-1 min-w-[17px] h-[17px] bg-[var(--brand)] text-[#111] text-[9px] font-black rounded-full flex items-center justify-center px-1 animate-[popIn_.2s_cubic-bezier(.34,1.56,.64,1)_both]">
+                <span style={{
+                  position:'absolute', top:-4, right:-4,
+                  minWidth:18, height:18, background:'#F5C200', color:'#111',
+                  fontSize:10, fontWeight:800, borderRadius:9,
+                  display:'flex', alignItems:'center', justifyContent:'center', padding:'0 4px',
+                }}>
                   {count}
                 </span>
               )}
             </Link>
 
-            <button className="lg:hidden flex w-9 h-9 items-center justify-center text-[var(--text-3)] hover:text-[var(--text)] rounded-lg transition-all"
-              onClick={() => setOpen(!open)}>
-              {open ? <X size={20} /> : <Menu size={20} />}
+            {/* Burger */}
+            <button className="lg:hidden" onClick={() => setOpen(!open)} style={{
+              width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
+              background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
+              color:'var(--text-2)', cursor:'pointer',
+            }}>
+              {open ? <X size={16}/> : <Menu size={16}/>}
             </button>
           </div>
         </div>
       </header>
 
       {/* Mobile drawer */}
-      <div className={`lg:hidden fixed inset-x-0 top-[104px] bottom-0 z-40 bg-[var(--bg)] border-r border-[var(--border)] transition-transform duration-300 overflow-y-auto ${open ? 'translate-x-0' : 'translate-x-full'}`}>
-        <nav className="p-5 flex flex-col gap-1">
-          {NAV.map(item => (
-            <div key={item.label}>
-              {item.children && (
-                <p className="text-[10px] font-bold tracking-[.1em] uppercase text-[var(--text-3)] px-2 pt-4 pb-1">{item.label}</p>
-              )}
-              {item.children
-                ? item.children.map(c => (
-                    <Link key={c.href} href={c.href} onClick={() => setOpen(false)}
-                      className="block px-3 py-3 text-[15px] text-[var(--text-2)] hover:text-[var(--text)] border-b border-[var(--border)] transition-colors last:border-0">
-                      {c.label}
-                    </Link>
-                  ))
-                : (
-                  <Link href={item.href} onClick={() => setOpen(false)}
-                    className={`block px-3 py-3 text-[15px] border-b border-[var(--border)] transition-colors ${isActive(item.href) ? 'text-[var(--text)] font-medium' : 'text-[var(--text-2)] hover:text-[var(--text)]'}`}>
-                    {item.label}
-                  </Link>
-                )
-              }
-            </div>
-          ))}
-          <Link href="/sale" onClick={() => setOpen(false)}
-            className="block px-3 py-3 text-[15px] font-semibold text-[var(--brand-dk)] border-b border-[var(--border)]">
-            🔥 Розпродаж
+      {open && (
+        <div style={{
+          position:'fixed', inset:0, zIndex:45,
+          background:'rgba(0,0,0,.4)',
+          backdropFilter:'blur(4px)',
+        }} onClick={() => setOpen(false)} />
+      )}
+      <div style={{
+        position:'fixed', top:0, right:0, bottom:0, width:300, zIndex:46,
+        background:'var(--bg)', borderLeft:'1.5px solid var(--border)',
+        padding:'24px 20px', display:'flex', flexDirection:'column', gap:4,
+        transform: open ? 'translateX(0)' : 'translateX(100%)',
+        transition:'transform .3s ease',
+        overflowY:'auto',
+      }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24 }}>
+          <span style={{ fontWeight:700, fontSize:15, color:'var(--text)' }}>Меню</span>
+          <button onClick={() => setOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><X size={18}/></button>
+        </div>
+        {NAV.map(item => (
+          <Link key={item.href} href={item.href} onClick={() => setOpen(false)} style={{
+            display:'block', padding:'14px 0',
+            fontSize:16, fontWeight:500, color: active(item.href) ? 'var(--text)' : 'var(--text-2)',
+            textDecoration:'none', borderBottom:'1px solid var(--border)',
+          }}>{item.label}</Link>
+        ))}
+        <Link href="/sale" onClick={() => setOpen(false)} style={{ display:'block', padding:'14px 0', fontSize:16, fontWeight:600, color:'var(--yellow-dark)', textDecoration:'none', borderBottom:'1px solid var(--border)' }}>
+          🔥 Розпродаж
+        </Link>
+        <div style={{ marginTop:24 }}>
+          <Link href="/cart" className="btn btn-black btn-full" onClick={() => setOpen(false)}>
+            <ShoppingBag size={15}/> Кошик {count > 0 && `(${count})`}
           </Link>
-          <div className="flex gap-3 pt-5">
-            <Link href="/cart" className="btn-primary flex-1 justify-center" onClick={() => setOpen(false)}>
-              <ShoppingBag size={15} /> Кошик {count > 0 && `(${count})`}
-            </Link>
-            <button onClick={toggle} className="w-12 flex items-center justify-center bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg text-[var(--text-2)] transition-colors">
-              {theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}
-            </button>
-          </div>
-        </nav>
+        </div>
       </div>
-      {open && <div className="lg:hidden fixed inset-0 z-30 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />}
     </>
   )
 }

@@ -2,89 +2,131 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ShoppingBag, Heart, Zap, Check } from 'lucide-react'
+import { ShoppingBag, Check, Battery, Gauge, Zap } from 'lucide-react'
 import { Product } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
-export default function ProductCard({ product }: { product: Product }) {
+const ScooterThumb = ({ color='#F5C200' }: { color?: string }) => (
+  <svg viewBox="0 0 160 130" fill="none" style={{ width:'72%', height:'72%' }}>
+    <circle cx="34" cy="100" r="24" stroke={color} strokeWidth="5"/>
+    <circle cx="126" cy="100" r="24" stroke={color} strokeWidth="5"/>
+    <path d="M34 100 L54 44 L102 35 L126 100" stroke="var(--text)" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
+    <path d="M54 44 L68 14" stroke={color} strokeWidth="5" strokeLinecap="round"/>
+    <rect x="60" y="6" width="24" height="13" rx="3.5" fill={color}/>
+    <path d="M102 35 L122 54" stroke="var(--text-3)" strokeWidth="4" strokeLinecap="round"/>
+  </svg>
+)
+
+export default function ProductCard({ product: p, featured }: { product: Product; featured?: boolean }) {
   const { addItem } = useCart()
   const [added, setAdded] = useState(false)
   const [wish,  setWish]  = useState(false)
-  const saving  = product.old_price ? product.old_price - product.price : 0
-  const discPct = product.old_price ? Math.round(saving / product.old_price * 100) : 0
+  const disc = p.old_price ? Math.round((p.old_price-p.price)/p.old_price*100) : 0
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault()
-    addItem(product)
+    addItem(p)
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
 
   return (
-    <article className="group product-card-bg rounded-2xl overflow-hidden flex flex-col">
-      <Link href={`/product/${product.slug}`} className="flex flex-col flex-1">
+    <article style={{
+      background:'var(--bg)',
+      border: featured ? '2px solid #F5C200' : '1.5px solid var(--border)',
+      borderRadius:16,
+      overflow:'hidden',
+      display:'flex', flexDirection:'column',
+      boxShadow: featured ? '0 8px 32px rgba(245,194,0,.12)' : 'var(--shadow-sm)',
+      transition:'border-color .2s, box-shadow .2s, transform .2s',
+      position:'relative',
+    }}
+    onMouseEnter={e => {
+      const el = e.currentTarget as HTMLElement
+      el.style.transform = 'translateY(-4px)'
+      el.style.boxShadow = featured ? '0 16px 48px rgba(245,194,0,.18)' : 'var(--shadow-xl)'
+      if (!featured) el.style.borderColor = 'var(--border-md)'
+    }}
+    onMouseLeave={e => {
+      const el = e.currentTarget as HTMLElement
+      el.style.transform = 'translateY(0)'
+      el.style.boxShadow = featured ? '0 8px 32px rgba(245,194,0,.12)' : 'var(--shadow-sm)'
+      if (!featured) el.style.borderColor = 'var(--border)'
+    }}>
 
-        {/* Image area */}
-        <div className="relative bg-[var(--bg-mid)] aspect-square flex items-center justify-center overflow-hidden">
-          <svg viewBox="0 0 200 180" fill="none" className="w-3/4 h-3/4 transition-transform duration-500 group-hover:scale-105 group-hover:-translate-y-1">
-            <circle cx="40"  cy="148" r="28" stroke="var(--brand)"    strokeWidth="5" />
-            <circle cx="160" cy="148" r="28" stroke="var(--brand)"    strokeWidth="5" />
-            <path d="M40 148 L64 64 L128 52 L160 148" stroke="var(--text)"  strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
-            <path d="M64 64 L88 24"  stroke="var(--brand)"    strokeWidth="5" strokeLinecap="round"/>
-            <rect x="78" y="14" width="32" height="18" rx="5" fill="var(--brand)"/>
-            <path d="M128 52 L158 78" stroke="var(--text-3)" strokeWidth="4" strokeLinecap="round"/>
-          </svg>
+      {/* Featured label */}
+      {featured && (
+        <div style={{ position:'absolute', top:14, right:14, zIndex:2,
+          background:'#F5C200', color:'#111', fontSize:10, fontWeight:800,
+          letterSpacing:'.08em', textTransform:'uppercase', padding:'4px 10px', borderRadius:4 }}>
+          Best Choice
+        </div>
+      )}
 
+      <Link href={`/product/${p.slug}`} style={{ textDecoration:'none', display:'flex', flexDirection:'column', flex:1 }}>
+        {/* Image */}
+        <div style={{ background:'var(--bg-soft)', aspectRatio:'1', display:'flex', alignItems:'center', justifyContent:'center', position:'relative' }}>
+          <ScooterThumb color="#F5C200"/>
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {discPct > 0 && (
-              <span className="bg-[var(--brand)] text-[#111] text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded">−{discPct}%</span>
+          <div style={{ position:'absolute', top:12, left:12, display:'flex', flexDirection:'column', gap:6 }}>
+            {disc > 0 && (
+              <span style={{ background:'#F5C200', color:'#111', fontSize:10, fontWeight:800, letterSpacing:'.06em', padding:'3px 8px', borderRadius:3 }}>
+                −{disc}%
+              </span>
             )}
-            {product.is_new && (
-              <span className="bg-blue-100 text-blue-700 border border-blue-200 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">Новинка</span>
-            )}
-            {product.tag && !product.is_new && (
-              <span className="bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded">{product.tag}</span>
+            {p.is_new && (
+              <span style={{ background:'#111', color:'#fff', fontSize:10, fontWeight:700, letterSpacing:'.06em', padding:'3px 8px', borderRadius:3 }}>
+                Новинка
+              </span>
             )}
           </div>
-
           {/* Wishlist */}
-          <button
-            className={`absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg border transition-all opacity-0 group-hover:opacity-100 bg-[var(--bg)] ${wish ? 'border-[var(--brand)] text-[var(--brand-dk)]' : 'border-[var(--border)] text-[var(--text-3)] hover:text-[var(--text)]'}`}
-            onClick={e => { e.preventDefault(); setWish(!wish) }}>
-            <Heart size={13} fill={wish ? 'currentColor' : 'none'} />
+          <button onClick={e => { e.preventDefault(); setWish(!wish) }}
+            style={{
+              position:'absolute', top:12, right:12,
+              width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center',
+              background:'var(--bg)', border:'1px solid var(--border)', borderRadius:6,
+              cursor:'pointer', fontSize:15, opacity: wish ? 1 : 0,
+              transition:'opacity .15s',
+              color: wish ? '#EF4444' : 'var(--text-3)',
+            }}
+            className="group-hover:opacity-100">
+            {wish ? '♥' : '♡'}
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-4 flex flex-col gap-3 flex-1">
-          {/* Spec pills */}
-          <div className="flex flex-wrap gap-1.5">
-            <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-[var(--text-3)] bg-[var(--bg-surface)] border border-[var(--border)] px-2 py-1 rounded">
-              <Zap size={9} className="text-[var(--brand-dk)]" />{product.voltage.toUpperCase()}
-            </span>
-            <span className="text-[10px] font-bold uppercase text-[var(--text-3)] bg-[var(--bg-surface)] border border-[var(--border)] px-2 py-1 rounded">
-              {product.range_km} км
-            </span>
-            <span className="text-[10px] font-bold uppercase text-[var(--text-3)] bg-[var(--bg-surface)] border border-[var(--border)] px-2 py-1 rounded">
-              {product.max_speed} км/г
-            </span>
-            {product.motor === 'dual' && (
-              <span className="text-[10px] font-bold uppercase text-[var(--brand-dk)] bg-[var(--brand)]/10 border border-[var(--brand)]/30 px-2 py-1 rounded">
-                2× Мотор
+        <div style={{ padding:'18px 18px 14px' }}>
+          {/* Specs pills */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:12 }}>
+            {[
+              { Icon: Zap,     v: p.voltage.toUpperCase() },
+              { Icon: Gauge,   v: `${p.range_km} км` },
+              { Icon: Battery, v: `${p.battery_wh} Wh` },
+              ...(p.motor==='dual' ? [{ Icon: Zap, v:'Dual Motor' }] : []),
+            ].map(({ Icon, v }, i) => (
+              <span key={i} style={{
+                display:'inline-flex', alignItems:'center', gap:4,
+                fontSize:10, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase',
+                color:'var(--text-3)', background:'var(--bg-subtle)',
+                border:'1px solid var(--border)', padding:'3px 8px', borderRadius:4,
+              }}>
+                <Icon size={9} style={{ color: v==='Dual Motor' ? 'var(--yellow-dark)' : undefined }}/>
+                <span style={{ color: v==='Dual Motor' ? 'var(--yellow-dark)' : undefined }}>{v}</span>
               </span>
-            )}
+            ))}
           </div>
-
-          <h3 className="text-[15px] font-semibold text-[var(--text)] leading-snug">{product.name}</h3>
-
-          <div className="flex items-baseline gap-2 mt-auto pt-1">
-            <span className="font-display text-[22px] tracking-wide text-[var(--text)]">
-              ₴{product.price.toLocaleString('uk-UA')}
+          <h3 style={{ fontSize:15, fontWeight:700, color:'var(--text)', lineHeight:1.3, letterSpacing:'-.01em', marginBottom:12 }}>
+            {p.name}
+          </h3>
+          {/* Price */}
+          <div style={{ display:'flex', alignItems:'baseline', gap:8 }}>
+            <span style={{ fontSize:22, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em', lineHeight:1 }}>
+              ₴{p.price.toLocaleString('uk-UA')}
             </span>
-            {product.old_price && (
-              <span className="text-[12px] text-[var(--text-3)] line-through">
-                ₴{product.old_price.toLocaleString('uk-UA')}
+            {p.old_price && (
+              <span style={{ fontSize:13, color:'var(--text-4)', textDecoration:'line-through' }}>
+                ₴{p.old_price.toLocaleString('uk-UA')}
               </span>
             )}
           </div>
@@ -92,13 +134,16 @@ export default function ProductCard({ product }: { product: Product }) {
       </Link>
 
       {/* Add to cart */}
-      <button onClick={handleAdd}
-        className={`flex items-center justify-center gap-2 w-full py-3.5 text-[11px] font-bold uppercase tracking-[.07em] border-t border-[var(--border)] transition-all duration-200 ${
-          added
-            ? 'bg-green-50 text-green-600 hover:bg-green-500 hover:text-white'
-            : 'bg-[var(--bg-mid)] text-[var(--text-2)] hover:bg-[var(--brand)] hover:text-[#111] hover:border-[var(--brand)]'
-        }`}>
-        {added ? <><Check size={13} /> Додано!</> : <><ShoppingBag size={13} /> До кошика</>}
+      <button onClick={handleAdd} style={{
+        display:'flex', alignItems:'center', justifyContent:'center', gap:7,
+        width:'100%', padding:'13px',
+        background: added ? '#22C55E' : 'var(--text)',
+        color: added ? '#fff' : 'var(--bg)',
+        fontSize:12, fontWeight:700, letterSpacing:'.06em', textTransform:'uppercase',
+        border:'none', cursor:'pointer',
+        transition:'background .15s',
+      }}>
+        {added ? <><Check size={13}/> Додано</> : <><ShoppingBag size={13}/> До кошика</>}
       </button>
     </article>
   )

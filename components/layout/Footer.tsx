@@ -1,16 +1,21 @@
 'use client'
-
 import Link from 'next/link'
-import { Zap } from 'lucide-react'
 
 const COLS = {
-  'Самокати': [
+  'Продукти': [
     { href:'/product/l1',          label:'Ausom L1' },
     { href:'/product/l2-dual',     label:'Ausom L2 Dual' },
-    { href:'/product/l2-max-dual', label:'L2 Max Dual' },
+    { href:'/product/l2-max-dual', label:'L2 Max Dual Motor' },
     { href:'/product/dt2-pro',     label:'DT2 Pro' },
     { href:'/compare',             label:'Порівняти моделі' },
     { href:'/sale',                label:'🔥 Розпродаж' },
+  ],
+  'Сервіс': [
+    { href:'/track',    label:'Відстежити замовлення' },
+    { href:'/shipping', label:'Доставка та оплата' },
+    { href:'/returns',  label:'Повернення та обмін' },
+    { href:'/warranty', label:'Гарантія' },
+    { href:'/faq',      label:'FAQ' },
   ],
   'Компанія': [
     { href:'/about',     label:'Про нас' },
@@ -18,51 +23,56 @@ const COLS = {
     { href:'/affiliate', label:'Партнерство' },
     { href:'/loyalty',   label:'Програма лояльності' },
     { href:'/contact',   label:'Контакти' },
-  ],
-  'Підтримка': [
-    { href:'/track',    label:'Відстежити замовлення' },
-    { href:'/shipping', label:'Доставка та оплата' },
-    { href:'/returns',  label:'Повернення та обмін' },
-    { href:'/warranty', label:'Гарантія' },
-    { href:'/faq',      label:'FAQ' },
-    { href:'/privacy',  label:'Конфіденційність' },
+    { href:'/privacy',   label:'Конфіденційність' },
   ],
 }
 
-const SOCIALS = ['X','FB','IG','TK','YT']
-
 export default function Footer() {
   return (
-    <footer className="bg-[var(--bg-mid)] border-t border-[var(--border)] mt-0">
-      <div className="container-wide pt-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[var(--border)]">
+    <footer style={{ background:'#F9F9F9', borderTop:'1px solid var(--border)' }}>
+      <div className="w-container" style={{ padding:'64px 40px 40px' }}>
+
+        {/* Top: brand + nav columns */}
+        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr 1fr 1fr', gap:48, paddingBottom:48, borderBottom:'1px solid var(--border)' }}>
 
           {/* Brand */}
           <div>
-            <Link href="/" className="inline-flex items-center gap-1.5 font-display text-[22px] tracking-[.08em] text-[var(--text)] hover:text-[var(--brand-dk)] transition-colors mb-4">
-              <Zap size={16} strokeWidth={2.5} className="text-[var(--brand)]"/>
-              AUSOM<sup className="font-sans text-[10px] font-bold text-[var(--brand-dk)] tracking-normal -mt-2">UA</sup>
+            <Link href="/" style={{ display:'inline-flex', alignItems:'center', gap:8, textDecoration:'none', marginBottom:16 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="#F5C200"/>
+              </svg>
+              <span style={{ fontFamily:'Inter,sans-serif', fontWeight:800, fontSize:16, letterSpacing:'-.02em', color:'#111' }}>AUSOM</span>
+              <sup style={{ fontFamily:'Inter,sans-serif', fontWeight:700, fontSize:8, color:'#D4A800', marginTop:-6 }}>UA</sup>
             </Link>
-            <p className="text-[13px] text-[var(--text-3)] leading-relaxed mb-6 max-w-[260px]">
+            <p style={{ fontSize:13, color:'#888', lineHeight:1.7, maxWidth:240, marginBottom:24 }}>
               Офіційний дистриб'ютор Ausom в Україні. Найкращі електросамокати для міста та бездоріжжя.
             </p>
-            <div className="flex gap-2">
-              {SOCIALS.map(s => (
-                <a key={s} href="#" className="w-9 h-9 flex items-center justify-center text-[11px] font-bold text-[var(--text-3)] bg-[var(--bg)] border border-[var(--border)] rounded-md hover:text-[var(--brand-dk)] hover:border-[var(--brand)]/40 transition-all">
+            <div style={{ display:'flex', gap:8 }}>
+              {['X','FB','IG','TK','YT'].map(s => (
+                <a key={s} href="#" style={{
+                  width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center',
+                  fontSize:10, fontWeight:700, color:'#888',
+                  background:'#fff', border:'1px solid #E8E8E8', borderRadius:6,
+                  textDecoration:'none', transition:'all .15s',
+                }}
+                onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.borderColor='#D4A800';(e.currentTarget as HTMLElement).style.color='#D4A800'}}
+                onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.borderColor='#E8E8E8';(e.currentTarget as HTMLElement).style.color='#888'}}>
                   {s}
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Nav cols */}
+          {/* Nav columns */}
           {Object.entries(COLS).map(([title, links]) => (
             <div key={title}>
-              <p className="text-[11px] font-bold tracking-[.1em] uppercase text-[var(--text)] mb-5">{title}</p>
-              <ul className="space-y-3">
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'#111', marginBottom:20 }}>{title}</p>
+              <ul style={{ listStyle:'none', display:'flex', flexDirection:'column', gap:12 }}>
                 {links.map(l => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-[13px] text-[var(--text-3)] hover:text-[var(--text)] transition-colors">
+                    <Link href={l.href} style={{ fontSize:13, color:'#888', textDecoration:'none', transition:'color .15s' }}
+                    onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+                    onMouseLeave={e=>(e.currentTarget.style.color='#888')}>
                       {l.label}
                     </Link>
                   </li>
@@ -73,29 +83,39 @@ export default function Footer() {
         </div>
 
         {/* Newsletter */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 py-8 border-b border-[var(--border)]">
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:32, padding:'36px 0', borderBottom:'1px solid var(--border)', flexWrap:'wrap' }}>
           <div>
-            <p className="font-display text-[28px] tracking-wide text-[var(--text)] mb-1">Будь у курсі</p>
-            <p className="text-[13px] text-[var(--text-3)]">Ексклюзивні знижки та огляди нових моделей — першим.</p>
+            <p style={{ fontSize:18, fontWeight:800, letterSpacing:'-.015em', color:'#111', marginBottom:4 }}>Розсилка</p>
+            <p style={{ fontSize:13, color:'#888' }}>Ексклюзивні знижки та нові моделі — першим.</p>
           </div>
-          <form className="flex gap-3 w-full md:w-auto" onSubmit={e => e.preventDefault()}>
-            <input type="email" placeholder="твій@email.com" required
-              className="flex-1 md:w-64 bg-[var(--bg)] border border-[var(--border)] rounded-md px-4 py-3 text-[14px] text-[var(--text)] placeholder:text-[var(--text-3)] outline-none focus:border-[var(--brand)] transition-colors"/>
-            <button type="submit" className="btn-primary shrink-0">Підписатися</button>
+          <form style={{ display:'flex', gap:8 }} onSubmit={e=>e.preventDefault()}>
+            <input type="email" required placeholder="твій@email.com" style={{
+              width:240, padding:'11px 16px',
+              background:'#fff', border:'1.5px solid #E8E8E8', borderRadius:6,
+              fontSize:13, color:'#111', outline:'none', fontFamily:'Inter,sans-serif',
+              transition:'border-color .15s',
+            }}
+            onFocus={e=>(e.target.style.borderColor='#F5C200')}
+            onBlur={e=>(e.target.style.borderColor='#E8E8E8')}/>
+            <button type="submit" className="btn btn-yellow btn-sm">Підписатись</button>
           </form>
         </div>
 
-        {/* Bottom */}
-        <div className="flex flex-wrap items-center justify-between gap-4 py-6">
-          <p className="text-[12px] text-[var(--text-3)]">© 2026 Ausom Ukraine. Всі права захищені.</p>
-          <div className="flex gap-2 flex-wrap">
+        {/* Bottom bar */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, paddingTop:28 }}>
+          <p style={{ fontSize:12, color:'#BBBBBB' }}>© 2026 Ausom Ukraine. Всі права захищені.</p>
+          <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
             {['VISA','Mastercard','Privat24','Monobank','PayPal'].map(p => (
-              <span key={p} className="text-[10px] font-bold text-[var(--text-3)] bg-[var(--bg)] border border-[var(--border)] px-2.5 py-1 rounded">{p}</span>
+              <span key={p} style={{ fontSize:10, fontWeight:600, color:'#BBBBBB', background:'#fff', border:'1px solid #E8E8E8', padding:'4px 10px', borderRadius:4 }}>{p}</span>
             ))}
           </div>
-          <div className="flex gap-4">
-            <Link href="/privacy" className="text-[12px] text-[var(--text-3)] hover:text-[var(--text)] transition-colors">Конфіденційність</Link>
-            <Link href="/terms"   className="text-[12px] text-[var(--text-3)] hover:text-[var(--text)] transition-colors">Умови</Link>
+          <div style={{ display:'flex', gap:20 }}>
+            <Link href="/privacy" style={{ fontSize:12, color:'#BBBBBB', textDecoration:'none' }}
+            onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+            onMouseLeave={e=>(e.currentTarget.style.color='#BBBBBB')}>Конфіденційність</Link>
+            <Link href="/terms" style={{ fontSize:12, color:'#BBBBBB', textDecoration:'none' }}
+            onMouseEnter={e=>(e.currentTarget.style.color='#111')}
+            onMouseLeave={e=>(e.currentTarget.style.color='#BBBBBB')}>Умови</Link>
           </div>
         </div>
       </div>
