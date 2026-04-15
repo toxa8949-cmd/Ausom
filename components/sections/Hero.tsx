@@ -3,172 +3,201 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ChevronLeft, ChevronRight, Gauge, Zap, Battery, Weight } from 'lucide-react'
-import { PRODUCTS, BANNERS } from '@/lib/data'
+import { ArrowRight, ChevronLeft, ChevronRight, Zap, Gauge, Battery, Weight } from 'lucide-react'
+import { PRODUCTS } from '@/lib/data'
 
+const CDN = 'https://pl.ausomstore.com/cdn/shop/files'
+
+// Hero banner slides — full-width lifestyle photos from official site
 const SLIDES = [
   {
-    product: PRODUCTS[3], // DT2 Pro
-    banner: BANNERS.hero3,
-    dark: true,
-    tagline: 'Флагман 2026',
+    slug:     'dt2-pro',
+    eyebrow:  'Флагман 2026',
+    headline: 'Ausom DT2 Pro',
+    sub:      'Для міста та бездоріжжя. Подвійний мотор 2×800W, 70 км, 65 км/год.',
+    banner:   `${CDN}/DT2_Pro.jpg?v=1767606498`,
+    cta:      '/product/dt2-pro',
   },
   {
-    product: PRODUCTS[2], // L2 Max
-    banner: BANNERS.lifestyle1,
-    dark: true,
-    tagline: 'Хіт продажів',
+    slug:     'l2-max-dual',
+    eyebrow:  'Хіт продажів',
+    headline: 'Ausom L2 Max',
+    sub:      '85 км на одному заряді — найдальший у класі. Dual Motor.',
+    banner:   `${CDN}/l2-max-dual-detail-page-mobile.jpg?v=1765511614`,
+    cta:      '/product/l2-max-dual',
   },
   {
-    product: PRODUCTS[1], // L2 Dual
-    banner: BANNERS.lifestyle2,
-    dark: false,
-    tagline: 'Оптимальний вибір',
+    slug:     'l2-dual',
+    eyebrow:  'Популярний вибір',
+    headline: 'Ausom L2 Dual',
+    sub:      'Баланс потужності та автономності для щоденних поїздок.',
+    banner:   `${CDN}/800_1200-wuzi.jpg?v=1772768149`,
+    cta:      '/product/l2-dual',
   },
 ]
 
 export default function Hero() {
-  const [idx,  setIdx]  = useState(0)
+  const [cur,  setCur]  = useState(0)
   const [anim, setAnim] = useState(false)
 
   const go = useCallback((n: number) => {
     if (anim) return
     setAnim(true)
-    setTimeout(() => { setIdx((n + SLIDES.length) % SLIDES.length); setAnim(false) }, 220)
+    setTimeout(() => { setCur((n + SLIDES.length) % SLIDES.length); setAnim(false) }, 250)
   }, [anim])
 
   useEffect(() => {
-    const t = setInterval(() => go(idx + 1), 6500)
+    const t = setInterval(() => go(cur + 1), 6000)
     return () => clearInterval(t)
-  }, [idx, go])
+  }, [cur, go])
 
-  const slide = SLIDES[idx]
-  const p     = slide.product
-  const disc  = p.old_price ? Math.round((p.old_price - p.price) / p.old_price * 100) : 0
-
-  const specs = [
-    { Icon: Gauge,   val: `${p.max_speed} км/г`, label: 'Швидкість' },
-    { Icon: Zap,     val: `${p.range_km} км`,    label: 'Запас ходу' },
-    { Icon: Battery, val: `${p.battery_wh} Wh`,  label: 'Батарея' },
-    { Icon: Weight,  val: `${p.weight_kg} кг`,   label: 'Вага' },
-  ]
+  const slide   = SLIDES[cur]
+  const product = PRODUCTS.find(p => p.slug === slide.slug)!
+  const disc    = product.old_price ? Math.round((product.old_price - product.price) / product.old_price * 100) : 0
 
   return (
-    <section style={{ position:'relative', overflow:'hidden', background:'#111' }}>
+    <section style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
 
-      {/* Background banner image */}
-      <div style={{ position:'absolute', inset:0, opacity: anim ? 0 : 1, transition:'opacity .3s' }}>
-        {slide.banner && (
-          <Image
-            src={slide.banner}
-            alt="Ausom banner"
-            fill
-            priority
-            sizes="100vw"
-            style={{ objectFit:'cover', objectPosition:'center' }}
-          />
-        )}
-        {/* Gradient overlay */}
-        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, rgba(0,0,0,.85) 40%, rgba(0,0,0,.3) 100%)' }}/>
+      {/* ── Full-width banner ── */}
+      <div style={{ position:'relative', width:'100%', aspectRatio:'16/6', overflow:'hidden', minHeight:320 }}>
+        {SLIDES.map((s, i) => (
+          <div key={i} style={{
+            position:'absolute', inset:0,
+            opacity: i === cur ? 1 : 0,
+            transition: 'opacity .6s ease',
+            pointerEvents: i === cur ? 'auto' : 'none',
+          }}>
+            <Image
+              src={s.banner}
+              alt={s.headline}
+              fill
+              priority={i === 0}
+              sizes="100vw"
+              style={{ objectFit:'cover', objectPosition:'center' }}
+            />
+            {/* Gradient overlay */}
+            <div style={{
+              position:'absolute', inset:0,
+              background:'linear-gradient(to right, rgba(0,0,0,.65) 0%, rgba(0,0,0,.25) 55%, transparent 100%)',
+            }}/>
+            {/* Text overlay */}
+            <div style={{
+              position:'absolute', inset:0, display:'flex', flexDirection:'column',
+              justifyContent:'center', padding:'0 6%',
+              opacity: i === cur && !anim ? 1 : 0,
+              transform: i === cur && !anim ? 'translateX(0)' : 'translateX(-20px)',
+              transition: 'opacity .5s .15s ease, transform .5s .15s ease',
+            }}>
+              <span style={{ fontSize:12, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase' as const, color:'#F5C200', marginBottom:12, display:'block' }}>
+                {s.eyebrow}
+              </span>
+              <h2 style={{ fontSize:'clamp(36px,5vw,72px)', fontWeight:800, color:'#fff', letterSpacing:'-.03em', lineHeight:1.0, marginBottom:12 }}>
+                {s.headline}
+              </h2>
+              <p style={{ fontSize:'clamp(14px,1.5vw,17px)', color:'rgba(255,255,255,.8)', maxWidth:440, lineHeight:1.6, marginBottom:24 }}>
+                {s.sub}
+              </p>
+              <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+                <Link href={s.cta} style={{
+                  display:'inline-flex', alignItems:'center', gap:8,
+                  background:'#F5C200', color:'#111',
+                  fontSize:13, fontWeight:800, letterSpacing:'.05em', textTransform:'uppercase' as const,
+                  padding:'13px 28px', borderRadius:6, textDecoration:'none',
+                  transition:'background .15s',
+                }}>
+                  Купити зараз <ArrowRight size={15}/>
+                </Link>
+                <Link href="/catalog" style={{
+                  display:'inline-flex', alignItems:'center', gap:8,
+                  background:'rgba(255,255,255,.15)', color:'#fff',
+                  fontSize:13, fontWeight:600, letterSpacing:'.04em', textTransform:'uppercase' as const,
+                  padding:'13px 28px', borderRadius:6, textDecoration:'none',
+                  border:'1.5px solid rgba(255,255,255,.4)',
+                  backdropFilter:'blur(4px)',
+                }}>
+                  Всі моделі
+                </Link>
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* Slider controls overlay */}
+        <div style={{ position:'absolute', bottom:16, left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', gap:10, zIndex:10 }}>
+          <button onClick={() => go(cur-1)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.4)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:6, cursor:'pointer', color:'#fff' }}>
+            <ChevronLeft size={14}/>
+          </button>
+          {SLIDES.map((_,i) => (
+            <button key={i} onClick={() => go(i)} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===cur ? 28 : 8, background: i===cur ? '#F5C200' : 'rgba(255,255,255,.5)' }}/>
+          ))}
+          <button onClick={() => go(cur+1)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.4)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:6, cursor:'pointer', color:'#fff' }}>
+            <ChevronRight size={14}/>
+          </button>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="w-container" style={{ position:'relative', zIndex:2 }}>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', minHeight:'calc(100vh - 100px)', alignItems:'center', gap:40, padding:'60px 0 40px' }}>
+      {/* ── Product detail strip below banner ── */}
+      <div className="w-container" style={{ padding:'40px 40px 48px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:40, alignItems:'center' }}>
 
-          {/* LEFT */}
-          <div style={{ opacity: anim ? 0 : 1, transform: anim ? 'translateX(-12px)' : 'translateX(0)', transition:'opacity .22s, transform .22s' }}>
-            <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#F5C200', color:'#111', fontSize:11, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase' as const, padding:'5px 14px', borderRadius:4, marginBottom:20 }}>
-              ⚡ {slide.tagline}
+          {/* Product thumbnail */}
+          <div style={{ width:120, height:120, background:'#F8F8F8', borderRadius:14, border:'1.5px solid var(--border)', position:'relative', overflow:'hidden', flexShrink:0 }}>
+            {product.images?.[0] && (
+              <Image src={product.images[0]} alt={product.name} fill sizes="120px" style={{ objectFit:'contain', padding:8 }}/>
+            )}
+          </div>
+
+          {/* Specs */}
+          <div>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8, flexWrap:'wrap' }}>
+              <span style={{ fontSize:18, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>{product.name}</span>
+              {product.tag && <span style={{ fontSize:10, fontWeight:800, background:'#F5C200', color:'#111', padding:'3px 8px', borderRadius:4, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>{product.tag}</span>}
             </div>
-            <h1 style={{ fontSize:'clamp(48px,6vw,80px)', fontWeight:800, lineHeight:1.0, letterSpacing:'-.03em', color:'#fff', marginBottom:16 }}>
-              {p.name}
-            </h1>
-            <p style={{ fontSize:16, color:'rgba(255,255,255,.7)', lineHeight:1.7, maxWidth:440, marginBottom:28 }}>
-              {p.description.slice(0, 110)}...
-            </p>
-
-            {/* Spec pills */}
-            <div style={{ display:'flex', gap:0, marginBottom:28, border:'1px solid rgba(255,255,255,.15)', borderRadius:10, overflow:'hidden', width:'fit-content' }}>
-              {specs.map(({ Icon, val, label }, i) => (
-                <div key={label} style={{
-                  padding:'14px 18px', textAlign:'center' as const,
-                  borderRight: i < 3 ? '1px solid rgba(255,255,255,.15)' : 'none',
-                  background:'rgba(255,255,255,.06)',
-                }}>
-                  <Icon size={15} style={{ color:'#F5C200', display:'block', margin:'0 auto 5px' }}/>
-                  <div style={{ fontSize:15, fontWeight:700, color:'#fff', lineHeight:1 }}>{val}</div>
-                  <div style={{ fontSize:9, fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'rgba(255,255,255,.45)', marginTop:3 }}>{label}</div>
+            <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
+              {[
+                { Icon:Gauge,   v:`${product.max_speed} км/год`, l:'Швидкість' },
+                { Icon:Zap,     v:`${product.range_km} км`,       l:'Запас ходу' },
+                { Icon:Battery, v:`${product.battery_wh} Wh`,     l:'Акумулятор' },
+                { Icon:Weight,  v:`${product.weight_kg} кг`,      l:'Вага' },
+              ].map(({Icon, v, l}) => (
+                <div key={l} style={{ display:'flex', flexDirection:'column', gap:2 }}>
+                  <span style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{v}</span>
+                  <span style={{ fontSize:10, fontWeight:600, letterSpacing:'.07em', textTransform:'uppercase' as const, color:'var(--text-4)' }}>{l}</span>
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Price */}
-            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:28, flexWrap:'wrap' }}>
-              {disc > 0 && <span style={{ background:'#F5C200', color:'#111', fontSize:12, fontWeight:800, padding:'4px 10px', borderRadius:4 }}>−{disc}%</span>}
-              <span style={{ fontSize:38, fontWeight:800, color:'#fff', letterSpacing:'-.025em', lineHeight:1 }}>₴{p.price.toLocaleString('uk-UA')}</span>
-              {p.old_price && <span style={{ fontSize:18, color:'rgba(255,255,255,.4)', textDecoration:'line-through' }}>₴{p.old_price.toLocaleString('uk-UA')}</span>}
+          {/* Price + CTA */}
+          <div style={{ textAlign:'right', flexShrink:0 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, justifyContent:'flex-end', marginBottom:12, flexWrap:'wrap' }}>
+              {disc > 0 && <span style={{ background:'#F5C200', color:'#111', fontSize:11, fontWeight:800, padding:'3px 8px', borderRadius:4 }}>−{disc}%</span>}
+              <span style={{ fontSize:28, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>₴{product.price.toLocaleString('uk-UA')}</span>
+              {product.old_price && <span style={{ fontSize:15, color:'var(--text-4)', textDecoration:'line-through', fontWeight:400 }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
             </div>
-
-            <div style={{ display:'flex', gap:12 }}>
-              <Link href={`/product/${p.slug}`} className="btn btn-yellow btn-lg">Купити зараз <ArrowRight size={16}/></Link>
-              <Link href="/catalog" className="btn" style={{ background:'transparent', border:'1.5px solid rgba(255,255,255,.35)', color:'#fff', padding:'17px 40px', fontSize:15 }}>Всі моделі</Link>
+            <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
+              <Link href={slide.cta} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
+                <ArrowRight size={14}/> Купити
+              </Link>
+              <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'var(--text)', fontSize:12, fontWeight:600, padding:'11px 18px', borderRadius:6, textDecoration:'none', border:'1.5px solid var(--border-md)' }}>
+                Каталог
+              </Link>
             </div>
           </div>
-
-          {/* RIGHT — product image */}
-          <div style={{ display:'flex', justifyContent:'center', alignItems:'center', opacity: anim ? 0 : 1, transform: anim ? 'scale(.96)' : 'scale(1)', transition:'opacity .22s, transform .22s' }}>
-            {p.images?.[0] && (
-              <div style={{ position:'relative', width:'100%', maxWidth:480, aspectRatio:'1' }}>
-                <Image
-                  src={p.images[0]}
-                  alt={p.name}
-                  fill
-                  priority
-                  sizes="50vw"
-                  style={{ objectFit:'contain', filter:'drop-shadow(0 24px 48px rgba(0,0,0,.6))' }}
-                />
-                {/* Floating price card */}
-                <div style={{
-                  position:'absolute', bottom:'8%', left:'-6%',
-                  background:'rgba(255,255,255,.95)', borderRadius:12,
-                  padding:'12px 18px', boxShadow:'0 8px 32px rgba(0,0,0,.25)',
-                  backdropFilter:'blur(12px)',
-                  animation:'float 4s ease-in-out infinite',
-                }}>
-                  <div style={{ fontSize:10, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'#888', marginBottom:3 }}>від</div>
-                  <div style={{ fontSize:22, fontWeight:800, color:'#111', letterSpacing:'-.02em', lineHeight:1 }}>₴{p.price.toLocaleString('uk-UA')}</div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Slider dots */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, paddingBottom:28, position:'relative', zIndex:2 }}>
-          <button onClick={() => go(idx-1)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,.1)', border:'1px solid rgba(255,255,255,.2)', borderRadius:6, cursor:'pointer', color:'#fff' }}><ChevronLeft size={14}/></button>
-          <div style={{ display:'flex', gap:6 }}>
-            {SLIDES.map((_,i) => (
-              <button key={i} onClick={() => go(i)} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===idx ? 28 : 8, background: i===idx ? '#F5C200' : 'rgba(255,255,255,.3)' }}/>
-            ))}
-          </div>
-          <button onClick={() => go(idx+1)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,.1)', border:'1px solid rgba(255,255,255,.2)', borderRadius:6, cursor:'pointer', color:'#fff' }}><ChevronRight size={14}/></button>
         </div>
       </div>
 
       {/* Stats bar */}
-      <div style={{ position:'relative', zIndex:2, borderTop:'1px solid rgba(255,255,255,.1)', background:'rgba(0,0,0,.5)', backdropFilter:'blur(12px)' }}>
+      <div style={{ borderTop:'1px solid var(--border)', background:'var(--bg-soft)' }}>
         <div className="w-container" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)' }}>
-          {[['50K+','Клієнтів'],['#1','Бренд'],['2Y','Гарантія'],['4.9★','Рейтинг']].map(([v,l],i) => (
-            <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'18px 16px', borderRight: i<3 ? '1px solid rgba(255,255,255,.1)' : 'none' }}>
-              <span style={{ fontSize:24, fontWeight:800, color:'#fff', letterSpacing:'-.02em' }}>{v}</span>
-              <span style={{ fontSize:10, color:'rgba(255,255,255,.5)', textTransform:'uppercase' as const, letterSpacing:'.08em' }}>{l}</span>
+          {[['50K+','Задоволених клієнтів'],['#1','Бренд для дорослих'],['2Y','Офіційна гарантія'],['4.9★','Середній рейтинг']].map(([v,l],i) => (
+            <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'18px 16px', borderRight: i<3 ? '1px solid var(--border)' : 'none' }}>
+              <span style={{ fontSize:24, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>{v}</span>
+              <span style={{ fontSize:11, color:'var(--text-3)', textAlign:'center' }}>{l}</span>
             </div>
           ))}
         </div>
       </div>
-
-      <style>{`@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}`}</style>
     </section>
   )
 }

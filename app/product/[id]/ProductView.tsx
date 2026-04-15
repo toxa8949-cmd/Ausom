@@ -87,6 +87,21 @@ export default function ProductView({ product }: { product: Product }) {
 
           {/* Info */}
           <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+            {/* Thumbnail strip */}
+            {product.images && product.images.length > 1 && (
+              <div style={{ position:'absolute', bottom:12, left:'50%', transform:'translateX(-50%)', display:'flex', gap:6, zIndex:3 }}>
+                {product.images.map((img, i) => (
+                  <button key={i} onClick={e => { e.preventDefault(); setActiveImg(i) }} style={{
+                    width:48, height:48, borderRadius:8, overflow:'hidden', padding:0,
+                    border: activeImg===i ? '2px solid #F5C200' : '2px solid rgba(255,255,255,.5)',
+                    cursor:'pointer', background:'rgba(255,255,255,.9)',
+                    position:'relative', flexShrink:0,
+                  }}>
+                    <Image src={img} alt={`${product.name} ${i+1}`} fill sizes="48px" style={{ objectFit:'contain', padding:3 }}/>
+                  </button>
+                ))}
+              </div>
+            )}
             {/* Badges */}
             <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
               <span style={{ fontSize:10, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'var(--text-3)', background:'var(--bg-subtle)', border:'1px solid var(--border)', padding:'4px 10px', borderRadius:4 }}>
