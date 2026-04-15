@@ -7,12 +7,13 @@ import { useCart } from '@/lib/cart'
 import { createOrder } from '@/lib/queries'
 import { ArrowLeft, Check, CreditCard, Smartphone, Building } from 'lucide-react'
 
-const inp = 'w-full bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg px-4 py-3 text-[14px] text-white placeholder:text-[var(--text-3)] outline-none focus:border-[var(--brand)] transition-colors'
-const PAYMENT = [
-  { id:'card',  Icon: CreditCard,  label: 'Картка' },
-  { id:'mono',  Icon: Smartphone,  label: 'Monobank' },
-  { id:'cash',  Icon: Building,    label: 'При отриманні' },
-]
+const inp = {
+  width:'100%', padding:'12px 16px',
+  background:'var(--bg)', border:'1.5px solid var(--border)',
+  borderRadius:8, fontSize:14, color:'var(--text)',
+  outline:'none', fontFamily:'Inter,sans-serif',
+  transition:'border-color .15s',
+} as React.CSSProperties
 
 export default function CheckoutPage() {
   const { items, total, count, clearCart } = useCart()
@@ -30,137 +31,126 @@ export default function CheckoutPage() {
     e.preventDefault()
     setSaving(true)
     try {
-      await createOrder({ items: items as any, total, ...form, status: 'pending' })
+      await createOrder({ items: items as any, total, ...form, status:'pending' })
       clearCart(); setDone(true)
     } catch { alert('Помилка. Спробуй ще раз.') }
     finally { setSaving(false) }
   }
 
   if (done) return (
-    <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center p-6">
-      <div className="bg-[var(--bg-mid)] border border-[var(--border)] rounded-3xl p-12 text-center max-w-md w-full">
-        <div className="w-20 h-20 bg-green-500/15 border border-green-500/25 rounded-full flex items-center justify-center mx-auto mb-6">
-          <Check size={36} className="text-green-400" strokeWidth={2.5} />
+    <div style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
+      <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:20, padding:56, textAlign:'center', maxWidth:420, width:'100%' }}>
+        <div style={{ width:72, height:72, background:'#DCFCE7', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px' }}>
+          <Check size={32} color="#22C55E" strokeWidth={2.5}/>
         </div>
-        <h1 className="font-display text-[40px] text-white tracking-wide mb-3">Замовлення прийнято!</h1>
-        <p className="text-[var(--text-3)] leading-relaxed mb-8">Ми зв'яжемось з вами найближчим часом для підтвердження.</p>
-        <Link href="/catalog" className="btn-primary w-full justify-center">Продовжити покупки</Link>
+        <h1 style={{ fontSize:36, fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', marginBottom:12 }}>Замовлення прийнято!</h1>
+        <p style={{ fontSize:14, color:'var(--text-3)', lineHeight:1.7, marginBottom:32 }}>Ми зв'яжемось з вами найближчим часом для підтвердження.</p>
+        <Link href="/catalog" className="btn btn-black btn-full" style={{ justifyContent:'center' }}>Продовжити покупки</Link>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
-      <div className="bg-[var(--bg-mid)] border-b border-[var(--border)] py-12">
-        <div className="container-wide">
-          {/* Steps */}
-          <div className="flex items-center gap-2 mb-6">
-            {[['1','Кошик',true],['2','Оформлення',true],['3','Підтвердження',false]].map(([num, label, active]: any, i) => (
-              <div key={num} className="flex items-center gap-2">
-                {i > 0 && <div className="w-10 h-px bg-[var(--border)]" />}
-                <div className={`flex items-center gap-2 text-[12px] font-semibold ${active ? 'text-white' : 'text-[var(--text-3)]'}`}>
-                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${active ? 'bg-[var(--brand)] #111' : 'bg-[var(--border)] text-[var(--text-3)]'}`}>{num}</span>
-                  <span className="hidden sm:block">{label}</span>
-                </div>
-              </div>
+    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
+      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'32px 0' }}>
+        <div className="w-container">
+          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
+            {[['1','Кошик'],[' ','·'],['2','Оформлення'],[' ','·'],['3','Підтвердження']].map(([n,l],i) => (
+              <span key={i} style={{ fontSize:13, fontWeight: n==='2' ? 700 : 400, color: n==='2' ? 'var(--text)' : 'var(--text-3)' }}>
+                {n==='1'||n==='2'||n==='3' ? <><span style={{ background: n==='2'?'#F5C200':'var(--bg-subtle)', color: n==='2'?'#111':'var(--text-3)', width:20, height:20, borderRadius:'50%', display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:800, marginRight:6 }}>{n}</span>{l}</> : l}
+              </span>
             ))}
           </div>
-          <h1 className="section-heading text-white">Оформлення <span className="text-[var(--brand-dk)]">Замовлення</span></h1>
+          <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)' }}>
+            Оформлення <span style={{ color:'var(--yellow-dark)' }}>замовлення</span>
+          </h1>
         </div>
       </div>
 
-      <div className="container-wide py-10">
-        <Link href="/cart" className="inline-flex items-center gap-2 text-[12px] text-[var(--text-3)] hover:text-[var(--text)] transition-colors mb-8">
+      <div className="w-container" style={{ padding:'32px 40px' }}>
+        <Link href="/cart" style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)', textDecoration:'none', marginBottom:28 }}>
           <ArrowLeft size={14}/> Назад до кошика
         </Link>
 
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            {/* Form sections */}
-            <div className="lg:col-span-2 flex flex-col gap-5">
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 360px', gap:32, alignItems:'start' }}>
+            <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
 
               {/* Contact */}
-              <div className="bg-[var(--bg-mid)] border border-[var(--border)] rounded-2xl p-6">
-                <h2 className="font-display text-[22px] text-white tracking-wide mb-5">Контактні дані</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold uppercase tracking-[.07em] text-[var(--text-3)] mb-2">Ім'я та прізвище *</label>
-                    <input value={form.name} onChange={e=>set('name',e.target.value)} required placeholder="Іван Іванов" className={inp} />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-[.07em] text-[var(--text-3)] mb-2">Email *</label>
-                    <input type="email" value={form.email} onChange={e=>set('email',e.target.value)} required placeholder="ivan@email.com" className={inp} />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-[.07em] text-[var(--text-3)] mb-2">Телефон *</label>
-                    <input type="tel" value={form.phone} onChange={e=>set('phone',e.target.value)} required placeholder="+38 (067) 000-00-00" className={inp} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Delivery */}
-              <div className="bg-[var(--bg-mid)] border border-[var(--border)] rounded-2xl p-6">
-                <h2 className="font-display text-[22px] text-white tracking-wide mb-5">Адреса доставки</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-[11px] font-bold uppercase tracking-[.07em] text-[var(--text-3)] mb-2">Місто *</label>
-                    <input value={form.city} onChange={e=>set('city',e.target.value)} required placeholder="Київ" className={inp} />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold uppercase tracking-[.07em] text-[var(--text-3)] mb-2">Адреса *</label>
-                    <input value={form.address} onChange={e=>set('address',e.target.value)} required placeholder="вул. Хрещатик 1, кв. 10" className={inp} />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-bold uppercase tracking-[.07em] text-[var(--text-3)] mb-2">Коментар</label>
-                    <textarea value={form.notes} onChange={e=>set('notes',e.target.value)} rows={3} placeholder="Побажання до доставки..." className={inp+' resize-none'} />
+              {[
+                { title:'Контактні дані', fields:[
+                  { label:"Ім'я та прізвище *", key:'name', type:'text', placeholder:'Іван Іванов', full:true },
+                  { label:'Email *', key:'email', type:'email', placeholder:'ivan@email.com', full:false },
+                  { label:'Телефон *', key:'phone', type:'tel', placeholder:'+38 (067) 000-00-00', full:false },
+                ]},
+                { title:'Адреса доставки', fields:[
+                  { label:'Місто *', key:'city', type:'text', placeholder:'Київ', full:false },
+                  { label:'Адреса *', key:'address', type:'text', placeholder:'вул. Хрещатик 1, кв. 10', full:true },
+                  { label:'Коментар', key:'notes', type:'textarea', placeholder:'Побажання...', full:true },
+                ]},
+              ].map(section => (
+                <div key={section.title} style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:'24px 24px' }}>
+                  <h2 style={{ fontSize:18, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)', marginBottom:20 }}>{section.title}</h2>
+                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+                    {section.fields.map(f => (
+                      <div key={f.key} style={{ gridColumn: f.full ? '1/-1' : 'auto' }}>
+                        <label style={{ display:'block', fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'var(--text-3)', marginBottom:8 }}>{f.label}</label>
+                        {f.type === 'textarea'
+                          ? <textarea value={form[f.key as keyof typeof form]} onChange={e=>set(f.key as any,e.target.value)} placeholder={f.placeholder} rows={3} style={{ ...inp, resize:'vertical' as const }}
+                              onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='var(--border)')}/>
+                          : <input type={f.type} value={form[f.key as keyof typeof form]} onChange={e=>set(f.key as any,e.target.value)} required={f.label.includes('*')} placeholder={f.placeholder} style={inp}
+                              onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='var(--border)')}/>
+                        }
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              ))}
 
               {/* Payment */}
-              <div className="bg-[var(--bg-mid)] border border-[var(--border)] rounded-2xl p-6">
-                <h2 className="font-display text-[22px] text-white tracking-wide mb-5">Спосіб оплати</h2>
-                <div className="grid grid-cols-3 gap-3">
-                  {PAYMENT.map(({ id, Icon, label }) => (
-                    <button key={id} type="button" onClick={() => setPayment(id)}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${payment===id ? 'border-[var(--brand)] bg-[var(--brand)]/6 text-[var(--brand-dk)]' : 'border-[var(--border)] bg-[var(--bg-surface)] text-[var(--text-3)] hover:border-white/20 hover:text-[var(--text)]'}`}>
-                      <Icon size={20} />
-                      <span className="text-[12px] font-semibold">{label}</span>
+              <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:'24px 24px' }}>
+                <h2 style={{ fontSize:18, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)', marginBottom:20 }}>Спосіб оплати</h2>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
+                  {[{id:'card',Icon:CreditCard,label:'Картка'},{id:'mono',Icon:Smartphone,label:'Monobank'},{id:'cash',Icon:Building,label:'При отриманні'}].map(({id,Icon,label}) => (
+                    <button key={id} type="button" onClick={()=>setPayment(id)} style={{
+                      display:'flex', flexDirection:'column', alignItems:'center', gap:8, padding:'16px 12px',
+                      borderRadius:10, border:'1.5px solid', cursor:'pointer', transition:'all .15s',
+                      background: payment===id ? '#FFF3CC' : 'var(--bg)',
+                      borderColor: payment===id ? '#F5C200' : 'var(--border)',
+                      color: payment===id ? '#8B6800' : 'var(--text-3)',
+                    }}>
+                      <Icon size={20}/><span style={{ fontSize:12, fontWeight:600 }}>{label}</span>
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Order summary */}
-            <div>
-              <div className="bg-[var(--bg-mid)] border border-[var(--border)] rounded-2xl p-6 sticky top-[104px] flex flex-col gap-4">
-                <h2 className="font-display text-[22px] text-white tracking-wide">Ваше замовлення</h2>
-                <div className="flex flex-col gap-2.5">
-                  {items.map(({ product, quantity }) => (
-                    <div key={product.id} className="flex justify-between text-[13px]">
-                      <span className="text-[var(--text-3)] truncate mr-2">{product.name} × {quantity}</span>
-                      <span className="font-medium text-white shrink-0">₴{(product.price*quantity).toLocaleString('uk-UA')}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t border-[var(--border)] pt-4 flex justify-between items-center">
-                  <span className="font-semibold text-white">Разом</span>
-                  <span className="font-display text-[28px] text-[var(--brand-dk)] tracking-wide leading-none">₴{total.toLocaleString('uk-UA')}</span>
-                </div>
-                <button type="submit" disabled={saving} className="btn-primary w-full justify-center disabled:opacity-60">
-                  {saving
-                    ? <><span className="w-4 h-4 border-2 border-[#111]/40 border-t-[#111] rounded-full animate-spin" /> Оформлення...</>
-                    : 'Підтвердити замовлення'
-                  }
-                </button>
-                <p className="text-[11px] text-[var(--text-3)] text-center">🔒 Менеджер підтвердить замовлення</p>
+            {/* Summary */}
+            <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:24, position:'sticky', top:84, display:'flex', flexDirection:'column', gap:16 }}>
+              <h2 style={{ fontSize:18, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>Ваше замовлення</h2>
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                {items.map(({product:p,quantity}) => (
+                  <div key={p.id} style={{ display:'flex', justifyContent:'space-between', fontSize:13 }}>
+                    <span style={{ color:'var(--text-3)', flex:1, marginRight:8, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{p.name} × {quantity}</span>
+                    <span style={{ fontWeight:600, color:'var(--text)', flexShrink:0 }}>₴{(p.price*quantity).toLocaleString('uk-UA')}</span>
+                  </div>
+                ))}
               </div>
+              <div style={{ borderTop:'1px solid var(--border)', paddingTop:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>Разом</span>
+                <span style={{ fontSize:26, fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>₴{total.toLocaleString('uk-UA')}</span>
+              </div>
+              <button type="submit" disabled={saving} className="btn btn-black btn-full" style={{ justifyContent:'center', opacity: saving ? .6 : 1 }}>
+                {saving ? <><span style={{ width:14, height:14, border:'2px solid rgba(255,255,255,.4)', borderTopColor:'#fff', borderRadius:'50%', display:'inline-block', animation:'spin .7s linear infinite' }}/>Оформлення...</> : 'Підтвердити замовлення'}
+              </button>
+              <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Менеджер підтвердить замовлення</p>
             </div>
           </div>
         </form>
       </div>
+
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }

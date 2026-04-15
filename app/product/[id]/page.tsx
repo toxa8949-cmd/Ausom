@@ -28,7 +28,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     <div className="min-h-screen bg-white">
       {/* Breadcrumb */}
       <div className="border-b border-[#e8e8e5] py-4">
-        <div className="container-wide flex items-center gap-2 text-sm text-[var(--text-3)]">
+        <div className="w-container flex items-center gap-2 text-sm text-[var(--text-3)]">
           <Link href="/" className="hover:text-[var(--text)] transition-colors">Головна</Link>
           <span>/</span>
           <Link href="/catalog" className="hover:text-[var(--text)] transition-colors">Каталог</Link>
@@ -37,7 +37,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </div>
       </div>
 
-      <div className="container-wide py-12">
+      <div className="w-container py-12">
         <Link href="/catalog" className="inline-flex items-center gap-2 text-sm text-[var(--text-3)] hover:text-[var(--text)] transition-colors mb-8">
           <ArrowLeft size={16} /> Назад до каталогу
         </Link>
@@ -128,7 +128,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <div className="flex gap-3 mb-8 flex-wrap">
               <button
                 onClick={handleAdd}
-                className={`btn-primary flex-1 justify-center ${added ? 'bg-green-600 border-green-600' : ''}`}
+                className={`btn btn-black flex-1 justify-center ${added ? 'bg-green-600 border-green-600' : ''}`}
               >
                 {added ? (
                   <><Check size={16} /> Додано до кошика</>
@@ -136,7 +136,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <><ShoppingBag size={16} /> До кошика</>
                 )}
               </button>
-              <Link href="/cart" className="btn-outline">
+              <Link href="/cart" className="btn btn-white">
                 Оформити зараз
               </Link>
             </div>

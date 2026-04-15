@@ -14,15 +14,15 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-white">
       <div className="bg-[var(--text)] py-16">
-        <div className="container-wide">
-          <span className="section-label">Контакти</span>
-          <h1 className="section-heading text-white">
+        <div className="w-container">
+          <span className="s-label">Контакти</span>
+          <h1 className="t-h1 text-white">
             Зв'яжись <span className="text-[var(--brand-dk)]">з нами</span>
           </h1>
         </div>
       </div>
 
-      <div className="container-wide py-16">
+      <div className="w-container py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
 
           {/* Contact info */}
@@ -87,7 +87,7 @@ export default function ContactPage() {
                     className="w-full bg-[var(--bg-surface)] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[var(--brand-dk)] transition-colors resize-none"
                   />
                 </div>
-                <button type="submit" className="btn-primary w-full justify-center">
+                <button type="submit" className="btn btn-black w-full justify-center">
                   Надіслати повідомлення
                 </button>
               </form>

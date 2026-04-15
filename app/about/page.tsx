@@ -1,69 +1,86 @@
 import Link from 'next/link'
 
 export default function AboutPage() {
+  const stats = [
+    { num: '50K+', label: 'Клієнтів по світу' },
+    { num: '2026', label: 'Рік заснування UA' },
+    { num: '13',   label: 'Моделей в каталозі' },
+    { num: '4.9★', label: 'Рейтинг клієнтів' },
+  ]
+  const values = [
+    { emoji:'⚡', title:'Якість без компромісів', desc:'Кожна модель Ausom — результат сотень годин інженерної роботи та тестувань у реальних умовах.' },
+    { emoji:'🛡️', title:'Повна підтримка',       desc:'Офіційна гарантія 2 роки, сервісний центр в Україні та команда підтримки, яка відповідає швидко.' },
+    { emoji:'🤝', title:'Чесно і прозоро',       desc:'Ніяких прихованих умов. Ціна — це ціна. Гарантія — це гарантія. Повернення — без питань.' },
+  ]
+
   return (
-    <div className="min-h-screen bg-white">
-      <div className="bg-[var(--bg-invert)] py-20">
-        <div className="container-wide">
-          <span className="section-label">Про компанію</span>
-          <h1 className="section-heading text-white max-w-2xl">
-            Ми веземо <span className="text-[var(--brand-dk)]">Майбутнє</span> до тебе
+    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
+
+      {/* Hero section */}
+      <div style={{ background:'#111', padding:'72px 0' }}>
+        <div className="w-container">
+          <div style={{ display:'inline-block', fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, color:'#F5C200', background:'rgba(245,194,0,.12)', border:'1px solid rgba(245,194,0,.25)', padding:'5px 14px', borderRadius:4, marginBottom:24 }}>
+            Про компанію
+          </div>
+          <h1 style={{ fontSize:'clamp(40px,6vw,72px)', fontWeight:800, letterSpacing:'-.03em', color:'#fff', lineHeight:1.05, maxWidth:700, marginBottom:20 }}>
+            Ми веземо <span style={{ color:'#F5C200' }}>майбутнє</span> до тебе
           </h1>
-          <p className="text-white/50 text-sm mt-4 max-w-lg leading-relaxed">
+          <p style={{ fontSize:16, color:'rgba(255,255,255,.6)', lineHeight:1.7, maxWidth:560 }}>
             Ausom Ukraine — офіційний дистриб'ютор бренду Ausom в Україні. Ми віримо, що електромобільність — це не майбутнє, це вже сьогодення.
           </p>
         </div>
       </div>
 
-      <div className="container-wide py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-24">
-          <div>
-            <span className="section-label">Наша місія</span>
-            <h2 className="section-heading mb-6">Чому ми <span className="text-[var(--brand-dk)]">Тут</span></h2>
-            <p className="text-[var(--text-3)] leading-relaxed mb-6">
-              Ausom Ukraine з'явився, тому що ми самі були незадоволені тим, що є на ринку. Занадто дорого, занадто слабко, занадто ненадійно. Ми знайшли Ausom — і зрозуміли: ось воно.
-            </p>
-            <p className="text-[var(--text-3)] leading-relaxed mb-8">
-              Тепер ми приносимо ці самокати прямо в Україну з офіційною гарантією, сервісом та командою, яка сама їздить на цих самокатах щодня.
-            </p>
-            <Link href="/catalog" className="btn-primary">Дивитись самокати →</Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { num: '50K+', label: 'Клієнтів по світу' },
-              { num: '2026', label: 'Рік заснування UA' },
-              { num: '13', label: 'Моделей в каталозі' },
-              { num: '4.9★', label: 'Рейтинг клієнтів' },
-            ].map(s => (
-              <div key={s.label} className="bg-[var(--bg-surface)] rounded-2xl p-8 text-center">
-                <div className="font-display text-5xl text-[var(--brand-dk)] mb-2">{s.num}</div>
-                <div className="text-sm text-[var(--text-3)] font-medium">{s.label}</div>
-              </div>
-            ))}
+      {/* Mission + Stats */}
+      <div style={{ background:'var(--bg)', padding:'72px 0', borderBottom:'1px solid var(--border)' }}>
+        <div className="w-container">
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:64, alignItems:'start' }}>
+            <div>
+              <div className="s-label">Наша місія</div>
+              <h2 style={{ fontSize:'clamp(28px,3vw,40px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)', marginBottom:20, lineHeight:1.1 }}>
+                Чому ми <span style={{ color:'var(--yellow-dark)' }}>тут</span>
+              </h2>
+              <p style={{ fontSize:15, color:'var(--text-2)', lineHeight:1.75, marginBottom:16 }}>
+                Ausom Ukraine з'явився, тому що ми самі були незадоволені тим, що є на ринку. Занадто дорого, занадто слабко, занадто ненадійно. Ми знайшли Ausom — і зрозуміли: ось воно.
+              </p>
+              <p style={{ fontSize:15, color:'var(--text-2)', lineHeight:1.75, marginBottom:28 }}>
+                Тепер ми приносимо ці самокати прямо в Україну з офіційною гарантією, сервісом та командою, яка сама їздить на цих самокатах щодня.
+              </p>
+              <Link href="/catalog" className="btn btn-black">Дивитись самокати →</Link>
+            </div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+              {stats.map(s => (
+                <div key={s.label} style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'28px 24px', textAlign:'center' }}>
+                  <div style={{ fontSize:38, fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1, marginBottom:8 }}>{s.num}</div>
+                  <div style={{ fontSize:12, color:'var(--text-3)', fontWeight:500 }}>{s.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Values */}
-        <div className="border-t border-[var(--border)] pt-20">
-          <div className="text-center mb-14">
-            <span className="section-label justify-center">Наші цінності</span>
-            <h2 className="section-heading">Що нас <span className="text-[var(--brand-dk)]">Відрізняє</span></h2>
+      {/* Values */}
+      <div style={{ background:'var(--bg-soft)', padding:'72px 0' }}>
+        <div className="w-container">
+          <div style={{ textAlign:'center', marginBottom:48 }}>
+            <div className="s-label" style={{ justifyContent:'center' }}>Наші цінності</div>
+            <h2 style={{ fontSize:'clamp(28px,3vw,40px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>
+              Що нас <span style={{ color:'var(--yellow-dark)' }}>відрізняє</span>
+            </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: '⚡', title: 'Якість без компромісів', desc: 'Кожна модель Ausom — результат сотень годин інженерної роботи та тестувань у реальних умовах.' },
-              { icon: '🛡', title: 'Повна підтримка', desc: 'Офіційна гарантія 2 роки, сервісний центр в Україні та команда підтримки, яка відповідає швидко.' },
-              { icon: '🤝', title: 'Чесно і прозоро', desc: 'Ніяких прихованих умов. Ціна — це ціна. Гарантія — це гарантія. Повернення — без питань.' },
-            ].map(v => (
-              <div key={v.title} className="bg-[var(--bg-surface)] rounded-2xl p-8">
-                <div className="text-4xl mb-4">{v.icon}</div>
-                <h3 className="font-bold text-lg mb-3">{v.title}</h3>
-                <p className="text-[var(--text-3)] text-sm leading-relaxed">{v.desc}</p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
+            {values.map(v => (
+              <div key={v.title} style={{ background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:12, padding:'32px 28px' }}>
+                <div style={{ fontSize:32, marginBottom:16 }}>{v.emoji}</div>
+                <h3 style={{ fontSize:17, fontWeight:700, letterSpacing:'-.01em', color:'var(--text)', marginBottom:10 }}>{v.title}</h3>
+                <p style={{ fontSize:14, color:'var(--text-3)', lineHeight:1.7 }}>{v.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
+
     </div>
   )
 }

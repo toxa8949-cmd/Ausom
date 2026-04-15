@@ -48,14 +48,14 @@ export default function ComparePage() {
 
       {/* Header */}
       <div className="bg-[var(--bg-mid)] border-b border-[var(--border)] py-14">
-        <div className="container-wide">
-          <span className="section-label">Інструмент вибору</span>
-          <h1 className="section-heading text-[var(--text)]">Порівняй <span className="text-[var(--brand-dk)]">Моделі</span></h1>
+        <div className="w-container">
+          <span className="s-label">Інструмент вибору</span>
+          <h1 className="t-h1 text-[var(--text)]">Порівняй <span className="text-[var(--brand-dk)]">Моделі</span></h1>
           <p className="text-[var(--text-3)] text-[13px] mt-2">Обери до 4 моделей · жовтим виділено найкраще значення</p>
         </div>
       </div>
 
-      <div className="container-wide py-10">
+      <div className="w-container py-10">
 
         {/* Model selector chips */}
         <div className="mb-8">
@@ -102,7 +102,7 @@ export default function ComparePage() {
                       </div>
                       <div>
                         <p className="text-[13px] font-semibold text-[var(--text)] text-center leading-tight mb-1">{p.name}</p>
-                        <p className="font-display text-[20px] text-[var(--brand-dk)] tracking-wide leading-none text-center">₴{p.price.toLocaleString('uk-UA')}</p>
+                        <p className="font-bold text-[20px] text-[var(--brand-dk)] tracking-wide leading-none text-center">₴{p.price.toLocaleString('uk-UA')}</p>
                       </div>
                       <button onClick={() => toggle(p.slug)}
                         className="w-6 h-6 flex items-center justify-center bg-[var(--bg-surface)] border border-[var(--border)] rounded text-[var(--text-3)] hover:text-red-400 hover:border-red-400/30 transition-all">
@@ -165,10 +165,10 @@ export default function ComparePage() {
                 <td className="bg-[var(--bg-surface)] px-5 py-4" />
                 {compared.map(p => (
                   <td key={p.slug} className="px-4 py-4 border-l border-[var(--border)] bg-[var(--bg-mid)]">
-                    <button onClick={() => addItem(p)} className="btn-primary btn-sm w-full justify-center">
+                    <button onClick={() => addItem(p)} className="btn btn-black btn-sm w-full justify-center">
                       <ShoppingBag size={12}/> До кошика
                     </button>
-                    <Link href={`/product/${p.slug}`} className="btn-ghost btn-sm w-full justify-center mt-1 text-[11px]">Детальніше</Link>
+                    <Link href={`/product/${p.slug}`} className="btn btn-white btn-sm w-full justify-center mt-1 text-[11px]">Детальніше</Link>
                   </td>
                 ))}
                 {selected.length < 4 && <td className="border-l border-dashed border-[var(--border)] bg-[var(--bg-mid)]" />}
