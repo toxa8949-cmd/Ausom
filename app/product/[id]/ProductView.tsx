@@ -11,7 +11,8 @@ import ProductCard from '@/components/ui/ProductCard'
 
 export default function ProductView({ product }: { product: Product }) {
   const { addItem } = useCart()
-  const [added, setAdded] = useState(false)
+  const [added,    setAdded]   = useState(false)
+  const [activeImg, setActiveImg] = useState(0)
 
   const saving  = product.old_price ? product.old_price - product.price : 0
   const discPct = product.old_price ? Math.round(saving / product.old_price * 100) : 0
@@ -64,9 +65,9 @@ export default function ProductView({ product }: { product: Product }) {
                 {product.tag}
               </span>
             )}
-            {product.images?.[0] ? (
+            {product.images?.[activeImg] ? (
               <Image
-                src={product.images[0]}
+                src={product.images[activeImg]}
                 alt={product.name}
                 fill
                 priority

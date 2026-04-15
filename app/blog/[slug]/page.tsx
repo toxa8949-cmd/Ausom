@@ -1,11 +1,13 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Clock, Calendar } from 'lucide-react'
 
 const POSTS: Record<string, {
-  title: string; cat: string; date: string; read: number; content: string[]
+  title: string; cat: string; date: string; read: number; content: string[]; banner?: string
 }> = {
   'best-scooters-heavy-adults-2026': {
+    banner: 'https://pl.ausomstore.com/cdn/shop/files/DT2_Pro.jpg?v=1767606498',
     title: 'Найкращі електросамокати для важких дорослих у 2026',
     cat: 'Огляди', date: '30 берез. 2026', read: 6,
     content: [
@@ -17,6 +19,7 @@ const POSTS: Record<string, {
     ],
   },
   '10-features-buying-scooter': {
+    banner: 'https://pl.ausomstore.com/cdn/shop/files/l2-max-dual-detail-page-mobile.jpg?v=1765511614',
     title: '10 ключових характеристик при виборі електросамоката',
     cat: 'Гід покупця', date: '30 берез. 2026', read: 8,
     content: [
@@ -34,6 +37,7 @@ const POSTS: Record<string, {
     ],
   },
   'best-adult-scooter-2026-guide': {
+    banner: 'https://pl.ausomstore.com/cdn/shop/files/800_1200-wuzi.jpg?v=1772768149',
     title: 'Найкращий електросамокат для дорослих 2026: повний гід',
     cat: 'Порівняння', date: '30 берез. 2026', read: 10,
     content: [
@@ -46,6 +50,7 @@ const POSTS: Record<string, {
     ],
   },
   'dt2-pro-review': {
+    banner: 'https://pl.ausomstore.com/cdn/shop/files/DT2_Pro.jpg?v=1767606498',
     title: 'DT2 Pro: детальний огляд позашляхового самоката',
     cat: 'Огляди', date: '15 берез. 2026', read: 12,
     content: [
@@ -59,6 +64,7 @@ const POSTS: Record<string, {
     ],
   },
   'city-commuter-guide': {
+    banner: 'https://pl.ausomstore.com/cdn/shop/files/k20_pro_listing_800_1000_m.jpg?v=1774004078',
     title: 'Як обрати міський самокат для щоденних поїздок',
     cat: 'Поради', date: '10 берез. 2026', read: 7,
     content: [
@@ -70,6 +76,7 @@ const POSTS: Record<string, {
     ],
   },
   'e-scooter-maintenance-tips': {
+    banner: 'https://pl.ausomstore.com/cdn/shop/files/l1-max-page-mobile.jpg?v=1765511227',
     title: 'Догляд за електросамокатом: 8 важливих порад',
     cat: 'Поради', date: '5 берез. 2026', read: 5,
     content: [
@@ -102,8 +109,24 @@ export default async function BlogPostPage({
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
 
-      {/* Header */}
-      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'48px 0 40px' }}>
+      {/* Hero banner */}
+      {post.banner && (
+        <div style={{ position:'relative', height:360, overflow:'hidden' }}>
+          <Image src={post.banner} alt={post.title} fill sizes="100vw" style={{ objectFit:'cover', objectPosition:'center top' }}/>
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(to bottom, rgba(0,0,0,.3) 0%, rgba(0,0,0,.7) 100%)' }}/>
+          <div className="w-container" style={{ position:'relative', zIndex:1, height:'100%', display:'flex', flexDirection:'column', justifyContent:'flex-end', paddingBottom:40 }}>
+            <span style={{ fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'#F5C200', background:'rgba(245,194,0,.15)', border:'1px solid rgba(245,194,0,.3)', padding:'4px 12px', borderRadius:4, display:'inline-block', marginBottom:14, width:'fit-content' }}>{post.cat}</span>
+            <h1 style={{ fontSize:'clamp(24px,3.5vw,44px)', fontWeight:800, letterSpacing:'-.025em', color:'#fff', lineHeight:1.1, maxWidth:700, marginBottom:14 }}>{post.title}</h1>
+            <div style={{ display:'flex', alignItems:'center', gap:16, fontSize:13, color:'rgba(255,255,255,.6)' }}>
+              <span style={{ display:'flex', alignItems:'center', gap:5 }}>📅 {post.date}</span>
+              <span style={{ display:'flex', alignItems:'center', gap:5 }}>⏱ {post.read} хв читання</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header (fallback when no banner) */}
+      {!post.banner && <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'48px 0 40px' }}>
         <div className="w-container">
           <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)', marginBottom:20 }}>
             <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
@@ -123,7 +146,7 @@ export default async function BlogPostPage({
             <span style={{ display:'flex', alignItems:'center', gap:6 }}><Clock size={13}/>{post.read} хв читання</span>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Content */}
       <div className="w-container" style={{ padding:'48px 40px 80px' }}>

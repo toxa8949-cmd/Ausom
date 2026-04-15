@@ -3,236 +3,172 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, ChevronLeft, ChevronRight, Zap, Gauge, Battery, Weight } from 'lucide-react'
-import { PRODUCTS } from '@/lib/data'
+import { ArrowRight, ChevronLeft, ChevronRight, Gauge, Zap, Battery, Weight } from 'lucide-react'
+import { PRODUCTS, BANNERS } from '@/lib/data'
 
-const ScooterSVG = ({ color = '#F5C200' }: { color?: string }) => (
-  <svg viewBox="0 0 400 340" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width:'100%', height:'100%' }}>
-    {/* Rear wheel */}
-    <circle cx="90" cy="268" r="62" stroke={color} strokeWidth="12"/>
-    <circle cx="90" cy="268" r="42" stroke={color} strokeWidth="3" opacity=".3"/>
-    <circle cx="90" cy="268" r="8" fill={color}/>
-    {/* Front wheel */}
-    <circle cx="310" cy="268" r="62" stroke={color} strokeWidth="12"/>
-    <circle cx="310" cy="268" r="42" stroke={color} strokeWidth="3" opacity=".3"/>
-    <circle cx="310" cy="268" r="8" fill={color}/>
-    {/* Frame */}
-    <path d="M90 268 L140 120 L260 95 L310 268" stroke="var(--text)" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round"/>
-    {/* Stem */}
-    <path d="M140 120 L180 42" stroke={color} strokeWidth="11" strokeLinecap="round"/>
-    {/* Handlebar */}
-    <rect x="165" y="24" width="66" height="32" rx="9" fill={color}/>
-    <rect x="178" y="32" width="40" height="16" rx="4" fill="#111" opacity=".25"/>
-    {/* Rear arm */}
-    <path d="M260 95 L318 148" stroke="var(--text-3)" strokeWidth="9" strokeLinecap="round"/>
-    <rect x="307" y="136" width="46" height="24" rx="6" fill="var(--bg-subtle)" stroke="var(--border-md)" strokeWidth="2"/>
-    {/* Footboard */}
-    <rect x="100" y="258" width="200" height="18" rx="6" fill="var(--text)" opacity=".15"/>
-    {/* Spokes */}
-    {[0,60,120,180,240,300].map(a => (
-      <line key={a} x1={90} y1={268}
-        x2={90 + 52*Math.cos(a*Math.PI/180)}
-        y2={268 + 52*Math.sin(a*Math.PI/180)}
-        stroke={color} strokeWidth="2" opacity=".4"/>
-    ))}
-    {[0,60,120,180,240,300].map(a => (
-      <line key={a+'f'} x1={310} y1={268}
-        x2={310 + 52*Math.cos(a*Math.PI/180)}
-        y2={268 + 52*Math.sin(a*Math.PI/180)}
-        stroke={color} strokeWidth="2" opacity=".4"/>
-    ))}
-  </svg>
-)
+const SLIDES = [
+  {
+    product: PRODUCTS[3], // DT2 Pro
+    banner: BANNERS.hero3,
+    dark: true,
+    tagline: 'Флагман 2026',
+  },
+  {
+    product: PRODUCTS[2], // L2 Max
+    banner: BANNERS.lifestyle1,
+    dark: true,
+    tagline: 'Хіт продажів',
+  },
+  {
+    product: PRODUCTS[1], // L2 Dual
+    banner: BANNERS.lifestyle2,
+    dark: false,
+    tagline: 'Оптимальний вибір',
+  },
+]
 
 export default function Hero() {
-  const products = PRODUCTS.filter(p => p.is_featured)
   const [idx,  setIdx]  = useState(0)
   const [anim, setAnim] = useState(false)
 
   const go = useCallback((n: number) => {
     if (anim) return
     setAnim(true)
-    setTimeout(() => { setIdx((n + products.length) % products.length); setAnim(false) }, 200)
-  }, [anim, products.length])
+    setTimeout(() => { setIdx((n + SLIDES.length) % SLIDES.length); setAnim(false) }, 220)
+  }, [anim])
 
   useEffect(() => {
-    const t = setInterval(() => go(idx + 1), 6000)
+    const t = setInterval(() => go(idx + 1), 6500)
     return () => clearInterval(t)
   }, [idx, go])
 
-  const p    = products[idx]
-  const disc = p.old_price ? Math.round((p.old_price - p.price) / p.old_price * 100) : 0
+  const slide = SLIDES[idx]
+  const p     = slide.product
+  const disc  = p.old_price ? Math.round((p.old_price - p.price) / p.old_price * 100) : 0
+
+  const specs = [
+    { Icon: Gauge,   val: `${p.max_speed} км/г`, label: 'Швидкість' },
+    { Icon: Zap,     val: `${p.range_km} км`,    label: 'Запас ходу' },
+    { Icon: Battery, val: `${p.battery_wh} Wh`,  label: 'Батарея' },
+    { Icon: Weight,  val: `${p.weight_kg} кг`,   label: 'Вага' },
+  ]
 
   return (
-    <section style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
-      <div className="w-container">
-        <div className="hero-main-grid">
+    <section style={{ position:'relative', overflow:'hidden', background:'#111' }}>
+
+      {/* Background banner image */}
+      <div style={{ position:'absolute', inset:0, opacity: anim ? 0 : 1, transition:'opacity .3s' }}>
+        {slide.banner && (
+          <Image
+            src={slide.banner}
+            alt="Ausom banner"
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit:'cover', objectPosition:'center' }}
+          />
+        )}
+        {/* Gradient overlay */}
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to right, rgba(0,0,0,.85) 40%, rgba(0,0,0,.3) 100%)' }}/>
+      </div>
+
+      {/* Content */}
+      <div className="w-container" style={{ position:'relative', zIndex:2 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', minHeight:'calc(100vh - 100px)', alignItems:'center', gap:40, padding:'60px 0 40px' }}>
 
           {/* LEFT */}
-          <div style={{
-            opacity: anim ? 0 : 1,
-            transform: anim ? 'translateX(-12px)' : 'translateX(0)',
-            transition:'opacity .2s, transform .2s',
-          }}>
-            {/* Label */}
-            <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:20 }}>
-              <span style={{
-                background: p.category === 'offroad' ? '#111' : '#F5F5F5',
-                color:       p.category === 'offroad' ? '#F5C200' : '#444',
-                fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
-                padding:'5px 12px', borderRadius:4,
-              }}>
-                {p.category === 'offroad' ? '⚡ Позашляховий' : '🏙 Міський'}
-              </span>
-              {p.tag && (
-                <span style={{ background:'#F5C200', color:'#111', fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', padding:'5px 12px', borderRadius:4 }}>
-                  {p.tag}
-                </span>
-              )}
+          <div style={{ opacity: anim ? 0 : 1, transform: anim ? 'translateX(-12px)' : 'translateX(0)', transition:'opacity .22s, transform .22s' }}>
+            <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'#F5C200', color:'#111', fontSize:11, fontWeight:800, letterSpacing:'.1em', textTransform:'uppercase' as const, padding:'5px 14px', borderRadius:4, marginBottom:20 }}>
+              ⚡ {slide.tagline}
             </div>
-
-            {/* Name */}
-            <h1 style={{ fontSize:'clamp(52px,6vw,80px)', fontWeight:800, lineHeight:1.0, letterSpacing:'-.03em', color:'var(--text)', marginBottom:16 }}>
+            <h1 style={{ fontSize:'clamp(48px,6vw,80px)', fontWeight:800, lineHeight:1.0, letterSpacing:'-.03em', color:'#fff', marginBottom:16 }}>
               {p.name}
             </h1>
-
-            <p style={{ fontSize:16, color:'var(--text-3)', lineHeight:1.7, maxWidth:440, marginBottom:32 }}>
-              {p.description.slice(0, 120)}...
+            <p style={{ fontSize:16, color:'rgba(255,255,255,.7)', lineHeight:1.7, maxWidth:440, marginBottom:28 }}>
+              {p.description.slice(0, 110)}...
             </p>
 
-            {/* Specs row */}
-            <div style={{ display:'flex', gap:0, marginBottom:36, border:'1.5px solid var(--border)', borderRadius:10, overflow:'hidden' }}>
-              {[
-                { Icon: Gauge,   val: `${p.max_speed} км/г`, label: 'Швидкість' },
-                { Icon: Zap,     val: `${p.range_km} км`,    label: 'Запас ходу' },
-                { Icon: Battery, val: `${p.battery_wh} Wh`,  label: 'Акумулятор' },
-                { Icon: Weight,  val: `${p.weight_kg} кг`,   label: 'Вага' },
-              ].map(({ Icon, val, label }, i) => (
+            {/* Spec pills */}
+            <div style={{ display:'flex', gap:0, marginBottom:28, border:'1px solid rgba(255,255,255,.15)', borderRadius:10, overflow:'hidden', width:'fit-content' }}>
+              {specs.map(({ Icon, val, label }, i) => (
                 <div key={label} style={{
-                  flex:1, padding:'16px 12px', textAlign:'center',
-                  borderRight: i < 3 ? '1.5px solid var(--border)' : 'none',
-                  background:'var(--bg-soft)',
+                  padding:'14px 18px', textAlign:'center' as const,
+                  borderRight: i < 3 ? '1px solid rgba(255,255,255,.15)' : 'none',
+                  background:'rgba(255,255,255,.06)',
                 }}>
-                  <Icon size={16} style={{ color:'var(--yellow-dark)', marginBottom:6, display:'block', margin:'0 auto 6px' }}/>
-                  <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{val}</div>
-                  <div style={{ fontSize:10, fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--text-4)', marginTop:2 }}>{label}</div>
+                  <Icon size={15} style={{ color:'#F5C200', display:'block', margin:'0 auto 5px' }}/>
+                  <div style={{ fontSize:15, fontWeight:700, color:'#fff', lineHeight:1 }}>{val}</div>
+                  <div style={{ fontSize:9, fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'rgba(255,255,255,.45)', marginTop:3 }}>{label}</div>
                 </div>
               ))}
             </div>
 
             {/* Price */}
-            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:32, flexWrap:'wrap' }}>
-              {disc > 0 && (
-                <span style={{ background:'#F5C200', color:'#111', fontSize:12, fontWeight:800, padding:'4px 10px', borderRadius:4 }}>
-                  −{disc}%
-                </span>
-              )}
-              <span style={{ fontSize:38, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>
-                ₴{p.price.toLocaleString('uk-UA')}
-              </span>
-              {p.old_price && (
-                <span style={{ fontSize:18, color:'var(--text-4)', textDecoration:'line-through', fontWeight:400 }}>
-                  ₴{p.old_price.toLocaleString('uk-UA')}
-                </span>
-              )}
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:28, flexWrap:'wrap' }}>
+              {disc > 0 && <span style={{ background:'#F5C200', color:'#111', fontSize:12, fontWeight:800, padding:'4px 10px', borderRadius:4 }}>−{disc}%</span>}
+              <span style={{ fontSize:38, fontWeight:800, color:'#fff', letterSpacing:'-.025em', lineHeight:1 }}>₴{p.price.toLocaleString('uk-UA')}</span>
+              {p.old_price && <span style={{ fontSize:18, color:'rgba(255,255,255,.4)', textDecoration:'line-through' }}>₴{p.old_price.toLocaleString('uk-UA')}</span>}
             </div>
 
-            <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
-              <Link href={`/product/${p.slug}`} className="btn btn-black btn-lg">
-                Купити зараз <ArrowRight size={16}/>
-              </Link>
-              <Link href="/catalog" className="btn btn-white btn-lg">Всі моделі</Link>
+            <div style={{ display:'flex', gap:12 }}>
+              <Link href={`/product/${p.slug}`} className="btn btn-yellow btn-lg">Купити зараз <ArrowRight size={16}/></Link>
+              <Link href="/catalog" className="btn" style={{ background:'transparent', border:'1.5px solid rgba(255,255,255,.35)', color:'#fff', padding:'17px 40px', fontSize:15 }}>Всі моделі</Link>
             </div>
           </div>
 
-          {/* RIGHT — scooter illustration */}
-          <div className="hidden lg:flex" style={{
-            alignItems:'center', justifyContent:'center',
-            opacity: anim ? 0 : 1,
-            transform: anim ? 'translateX(12px) scale(.97)' : 'translateX(0) scale(1)',
-            transition:'opacity .2s, transform .2s',
-            position:'relative',
-          }}>
-            {/* BG circle */}
-            <div style={{
-              position:'absolute', inset:0, borderRadius:'50%',
-              background:'var(--bg-soft)',
-              margin:'5%',
-            }}/>
-            <div style={{ position:'relative', width:'100%', maxWidth:480, aspectRatio:'1', padding:'8%' }}>
-              {p.images?.[0] ? (
-                <div style={{ position:'relative', width:'88%', aspectRatio:'1' }}>
-                  <Image
-                    src={p.images[0]}
-                    alt={p.name}
-                    fill
-                    priority
-                    sizes="50vw"
-                    style={{ objectFit:'contain' }}
-                  />
+          {/* RIGHT — product image */}
+          <div style={{ display:'flex', justifyContent:'center', alignItems:'center', opacity: anim ? 0 : 1, transform: anim ? 'scale(.96)' : 'scale(1)', transition:'opacity .22s, transform .22s' }}>
+            {p.images?.[0] && (
+              <div style={{ position:'relative', width:'100%', maxWidth:480, aspectRatio:'1' }}>
+                <Image
+                  src={p.images[0]}
+                  alt={p.name}
+                  fill
+                  priority
+                  sizes="50vw"
+                  style={{ objectFit:'contain', filter:'drop-shadow(0 24px 48px rgba(0,0,0,.6))' }}
+                />
+                {/* Floating price card */}
+                <div style={{
+                  position:'absolute', bottom:'8%', left:'-6%',
+                  background:'rgba(255,255,255,.95)', borderRadius:12,
+                  padding:'12px 18px', boxShadow:'0 8px 32px rgba(0,0,0,.25)',
+                  backdropFilter:'blur(12px)',
+                  animation:'float 4s ease-in-out infinite',
+                }}>
+                  <div style={{ fontSize:10, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'#888', marginBottom:3 }}>від</div>
+                  <div style={{ fontSize:22, fontWeight:800, color:'#111', letterSpacing:'-.02em', lineHeight:1 }}>₴{p.price.toLocaleString('uk-UA')}</div>
                 </div>
-              ) : (
-                <ScooterSVG color="#F5C200"/>
-              )}
-            </div>
-            {/* Floating card */}
-            <div style={{
-              position:'absolute', bottom:'12%', left:'-4%',
-              background:'var(--bg)', border:'1.5px solid var(--border)',
-              borderRadius:12, padding:'14px 18px',
-              boxShadow:'var(--shadow-lg)',
-              animation:'float 4s ease-in-out infinite',
-            }}>
-              <div style={{ fontSize:10, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--text-3)', marginBottom:4 }}>від</div>
-              <div style={{ fontSize:22, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em', lineHeight:1 }}>
-                ₴{p.price.toLocaleString('uk-UA')}
               </div>
-            </div>
+            )}
           </div>
         </div>
 
-        {/* Slider controls */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:12, paddingBottom:32 }}>
-          <button onClick={() => go(idx-1)} style={{
-            width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center',
-            background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:6,
-            cursor:'pointer', color:'var(--text-3)', transition:'all .15s',
-          }}>
-            <ChevronLeft size={15}/>
-          </button>
+        {/* Slider dots */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:10, paddingBottom:28, position:'relative', zIndex:2 }}>
+          <button onClick={() => go(idx-1)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,.1)', border:'1px solid rgba(255,255,255,.2)', borderRadius:6, cursor:'pointer', color:'#fff' }}><ChevronLeft size={14}/></button>
           <div style={{ display:'flex', gap:6 }}>
-            {products.map((_,i) => (
-              <button key={i} onClick={() => go(i)} style={{
-                height:4, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s',
-                width: i===idx ? 28 : 8,
-                background: i===idx ? '#F5C200' : 'var(--border-md)',
-              }}/>
+            {SLIDES.map((_,i) => (
+              <button key={i} onClick={() => go(i)} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===idx ? 28 : 8, background: i===idx ? '#F5C200' : 'rgba(255,255,255,.3)' }}/>
             ))}
           </div>
-          <button onClick={() => go(idx+1)} style={{
-            width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center',
-            background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:6,
-            cursor:'pointer', color:'var(--text-3)', transition:'all .15s',
-          }}>
-            <ChevronRight size={15}/>
-          </button>
+          <button onClick={() => go(idx+1)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,.1)', border:'1px solid rgba(255,255,255,.2)', borderRadius:6, cursor:'pointer', color:'#fff' }}><ChevronRight size={14}/></button>
         </div>
       </div>
 
       {/* Stats bar */}
-      <div style={{ borderTop:'1px solid var(--border)', background:'var(--bg-soft)' }}>
+      <div style={{ position:'relative', zIndex:2, borderTop:'1px solid rgba(255,255,255,.1)', background:'rgba(0,0,0,.5)', backdropFilter:'blur(12px)' }}>
         <div className="w-container" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)' }}>
-          {[['50K+','Задоволених клієнтів'],['#1','Бренд для дорослих'],['2Y','Офіційна гарантія'],['4.9★','Середній рейтинг']].map(([v,l],i) => (
-            <div key={i} style={{
-              display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'20px 16px',
-              borderRight: i<3 ? '1px solid var(--border)' : 'none',
-            }}>
-              <span style={{ fontSize:26, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>{v}</span>
-              <span style={{ fontSize:11, color:'var(--text-3)', textAlign:'center' }}>{l}</span>
+          {[['50K+','Клієнтів'],['#1','Бренд'],['2Y','Гарантія'],['4.9★','Рейтинг']].map(([v,l],i) => (
+            <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'18px 16px', borderRight: i<3 ? '1px solid rgba(255,255,255,.1)' : 'none' }}>
+              <span style={{ fontSize:24, fontWeight:800, color:'#fff', letterSpacing:'-.02em' }}>{v}</span>
+              <span style={{ fontSize:10, color:'rgba(255,255,255,.5)', textTransform:'uppercase' as const, letterSpacing:'.08em' }}>{l}</span>
             </div>
           ))}
         </div>
       </div>
+
+      <style>{`@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}`}</style>
     </section>
   )
 }
