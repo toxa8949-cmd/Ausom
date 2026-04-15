@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ShoppingBag, ArrowLeft, Check, Zap, Gauge, Battery, Weight, ChevronRight } from 'lucide-react'
-import { Product, PRODUCTS } from '@/lib/data'
+import { PRODUCTS } from '@/lib/data'
+import { Product } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 import ProductCard from '@/components/ui/ProductCard'
 
