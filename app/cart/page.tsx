@@ -44,11 +44,11 @@ export default function CartPage() {
                   {/* Image */}
                   <div className="bg-[var(--surface)] rounded-xl w-24 h-24 flex items-center justify-center shrink-0">
                     <svg viewBox="0 0 80 70" fill="none" className="w-14 h-14">
-                      <circle cx="16" cy="56" r="12" stroke="#E8FF00" strokeWidth="3"/>
-                      <circle cx="64" cy="56" r="12" stroke="#E8FF00" strokeWidth="3"/>
+                      <circle cx="16" cy="56" r="12" stroke="#F5C200" strokeWidth="3"/>
+                      <circle cx="64" cy="56" r="12" stroke="#F5C200" strokeWidth="3"/>
                       <path d="M16 56 L26 24 L52 18 L64 56" stroke="#F5F5F0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M26 24 L34 8" stroke="#E8FF00" strokeWidth="3" strokeLinecap="round"/>
-                      <rect x="28" y="4" width="16" height="8" rx="2" fill="#E8FF00"/>
+                      <path d="M26 24 L34 8" stroke="#F5C200" strokeWidth="3" strokeLinecap="round"/>
+                      <rect x="28" y="4" width="16" height="8" rx="2" fill="#F5C200"/>
                     </svg>
                   </div>
 

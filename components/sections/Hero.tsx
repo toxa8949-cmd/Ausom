@@ -53,7 +53,7 @@ export default function Hero() {
     <section className="relative min-h-[calc(100vh-104px)] bg-[var(--black)] overflow-hidden flex flex-col">
 
       {/* Glow */}
-      <div className="absolute top-[-200px] right-[-100px] w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle,rgba(232,255,0,.06)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute top-[-200px] right-[-100px] w-[700px] h-[700px] rounded-full bg-[radial-gradient(circle,rgba(245,194,0,.06)_0%,transparent_70%)] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[var(--black)] to-transparent pointer-events-none z-10" />
 
       {/* Content */}
@@ -108,17 +108,17 @@ export default function Hero() {
             <div className="absolute inset-16 rounded-full border border-[var(--brand)]/5" />
             <div className="absolute inset-0 flex items-center justify-center">
               <svg viewBox="0 0 340 300" fill="none" className="w-[80%] drop-shadow-[0_24px_48px_rgba(0,0,0,.8)] hover:scale-[1.02] transition-transform duration-700">
-                <circle cx="68" cy="248" r="46" stroke="#E8FF00" strokeWidth="8" />
-                <circle cx="68" cy="248" r="28" stroke="#E8FF00" strokeWidth="3" strokeDasharray="4 6" opacity=".4" />
-                <circle cx="272" cy="248" r="46" stroke="#E8FF00" strokeWidth="8" />
-                <circle cx="272" cy="248" r="28" stroke="#E8FF00" strokeWidth="3" strokeDasharray="4 6" opacity=".4" />
+                <circle cx="68" cy="248" r="46" stroke="#F5C200" strokeWidth="8" />
+                <circle cx="68" cy="248" r="28" stroke="#F5C200" strokeWidth="3" strokeDasharray="4 6" opacity=".4" />
+                <circle cx="272" cy="248" r="46" stroke="#F5C200" strokeWidth="8" />
+                <circle cx="272" cy="248" r="28" stroke="#F5C200" strokeWidth="3" strokeDasharray="4 6" opacity=".4" />
                 <path d="M68 248 L108 108 L216 88 L272 248" stroke="#F5F5F0" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M108 108 L148 40" stroke="#E8FF00" strokeWidth="9" strokeLinecap="round" />
-                <rect x="134" y="24" width="54" height="30" rx="8" fill="#E8FF00" />
+                <path d="M108 108 L148 40" stroke="#F5C200" strokeWidth="9" strokeLinecap="round" />
+                <rect x="134" y="24" width="54" height="30" rx="8" fill="#F5C200" />
                 <path d="M216 88 L268 132" stroke="#666" strokeWidth="7" strokeLinecap="round" />
                 <rect x="258" y="118" width="40" height="22" rx="6" fill="#1A1A1A" stroke="#2A2A2A" strokeWidth="2" />
-                <circle cx="170" cy="165" r="16" fill="#E8FF00" opacity=".12" />
-                <circle cx="170" cy="165" r="8" fill="#E8FF00" opacity=".2" />
+                <circle cx="170" cy="165" r="16" fill="#F5C200" opacity=".12" />
+                <circle cx="170" cy="165" r="8" fill="#F5C200" opacity=".2" />
               </svg>
             </div>
             {/* Floating price tag */}

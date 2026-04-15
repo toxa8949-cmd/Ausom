@@ -29,11 +29,11 @@ const POSTS = [
 
 const ScooterIcon = ({ size = 48 }: { size?: number }) => (
   <svg viewBox="0 0 80 60" fill="none" width={size} height={size}>
-    <circle cx="12" cy="48" r="10" stroke="#E8FF00" strokeWidth="3"/>
-    <circle cx="68" cy="48" r="10" stroke="#E8FF00" strokeWidth="3"/>
+    <circle cx="12" cy="48" r="10" stroke="#F5C200" strokeWidth="3"/>
+    <circle cx="68" cy="48" r="10" stroke="#F5C200" strokeWidth="3"/>
     <path d="M12 48L22 18L52 12L68 48" stroke="#F5F5F0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".6"/>
-    <path d="M22 18L30 6" stroke="#E8FF00" strokeWidth="3" strokeLinecap="round"/>
-    <rect x="24" y="2" width="14" height="8" rx="2" fill="#E8FF00"/>
+    <path d="M22 18L30 6" stroke="#F5C200" strokeWidth="3" strokeLinecap="round"/>
+    <rect x="24" y="2" width="14" height="8" rx="2" fill="#F5C200"/>
   </svg>
 )
 

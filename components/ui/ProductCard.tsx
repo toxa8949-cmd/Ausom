@@ -21,7 +21,7 @@ export default function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <article className="group bg-[var(--mid)] border border-[var(--border)] rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:border-[var(--brand)]/30 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,.5),0_0_32px_rgba(232,255,0,.05)]">
+    <article className="group bg-[var(--mid)] border border-[var(--border)] rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:border-[var(--brand)]/30 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,.5),0_0_32px_rgba(245,194,0,.05)]">
       <Link href={`/product/${product.slug}`} className="flex flex-col flex-1">
 
         {/* Image */}

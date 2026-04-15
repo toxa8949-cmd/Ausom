@@ -93,11 +93,11 @@ export default function ComparePage() {
                       {/* Mini scooter icon */}
                       <div className="w-16 h-16 bg-[var(--surface)] rounded-xl flex items-center justify-center">
                         <svg viewBox="0 0 60 50" fill="none" width="40" height="32">
-                          <circle cx="10" cy="40" r="8" stroke="#E8FF00" strokeWidth="2.5"/>
-                          <circle cx="50" cy="40" r="8" stroke="#E8FF00" strokeWidth="2.5"/>
+                          <circle cx="10" cy="40" r="8" stroke="#F5C200" strokeWidth="2.5"/>
+                          <circle cx="50" cy="40" r="8" stroke="#F5C200" strokeWidth="2.5"/>
                           <path d="M10 40L18 16L40 11L50 40" stroke="#F5F5F0" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
-                          <path d="M18 16L24 4" stroke="#E8FF00" strokeWidth="2.5" strokeLinecap="round"/>
-                          <rect x="19" y="1" width="11" height="6" rx="1.5" fill="#E8FF00"/>
+                          <path d="M18 16L24 4" stroke="#F5C200" strokeWidth="2.5" strokeLinecap="round"/>
+                          <rect x="19" y="1" width="11" height="6" rx="1.5" fill="#F5C200"/>
                         </svg>
                       </div>
                       <div>

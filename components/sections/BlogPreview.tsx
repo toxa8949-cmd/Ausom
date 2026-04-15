@@ -33,11 +33,11 @@ export default function BlogPreview() {
               className={`group bg-[var(--surface)] border border-[var(--border)] rounded-xl overflow-hidden hover:border-[var(--brand)]/30 hover:-translate-y-1 transition-all duration-300 flex flex-col ${i===0 ? 'lg:row-span-1' : ''}`}>
               <div className="bg-[var(--mid)] h-44 flex items-center justify-center relative">
                 <svg viewBox="0 0 80 60" fill="none" width="56" height="42" className="opacity-15 group-hover:opacity-30 transition-opacity duration-500">
-                  <circle cx="12" cy="48" r="10" stroke="#E8FF00" strokeWidth="3"/>
-                  <circle cx="68" cy="48" r="10" stroke="#E8FF00" strokeWidth="3"/>
+                  <circle cx="12" cy="48" r="10" stroke="#F5C200" strokeWidth="3"/>
+                  <circle cx="68" cy="48" r="10" stroke="#F5C200" strokeWidth="3"/>
                   <path d="M12 48L22 18L52 12L68 48" stroke="#F5F5F0" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M22 18L30 6" stroke="#E8FF00" strokeWidth="3" strokeLinecap="round"/>
-                  <rect x="24" y="2" width="14" height="8" rx="2" fill="#E8FF00"/>
+                  <path d="M22 18L30 6" stroke="#F5C200" strokeWidth="3" strokeLinecap="round"/>
+                  <rect x="24" y="2" width="14" height="8" rx="2" fill="#F5C200"/>
                 </svg>
                 <span className="absolute bottom-3 right-3 bg-[var(--brand)] text-[var(--black)] text-[9px] font-black px-2 py-0.5 rounded">{post.read} хв</span>
               </div>

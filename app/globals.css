@@ -3,8 +3,8 @@
 @import "tailwindcss";
 
 :root {
-  --brand:    #E8FF00;
-  --brand-dk: #C8E000;
+  --brand:    #F5C200;
+  --brand-dk: #D4A800;
   --black:    #0A0A0A;
   --mid:      #111111;
   --surface:  #1A1A1A;
@@ -55,8 +55,8 @@ body {
   transition: background .15s, transform .15s, box-shadow .15s;
 }
 .btn-primary:hover {
-  background: #F5FF40;
-  box-shadow: 0 0 28px rgba(232,255,0,.35);
+  background: #FFD740;
+  box-shadow: 0 0 28px rgba(245,194,0,.35);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: scale(.97); }

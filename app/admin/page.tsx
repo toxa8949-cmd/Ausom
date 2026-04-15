@@ -193,7 +193,7 @@ export default function AdminDashboard() {
             <div className="bg-[var(--mid)] border border-[var(--border)] rounded-xl p-6">
               <p className="text-[14px] font-semibold text-white mb-4">Продажі по товарах</p>
               <div className="flex items-center justify-center mb-4">
-                <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{background:'conic-gradient(#E8FF00 0% 29%,#3B82F6 29% 63%,#8B5CF6 63% 84%,#2A2A2A 84% 100%)'}}>
+                <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{background:'conic-gradient(#F5C200 0% 29%,#3B82F6 29% 63%,#8B5CF6 63% 84%,#2A2A2A 84% 100%)'}}>
                   <div className="w-14 h-14 rounded-full bg-[var(--mid)] flex flex-col items-center justify-center">
                     <span className="font-display text-[18px] text-white leading-none">101</span>
                     <span className="text-[8px] text-[var(--muted)]">шт</span>
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                {[['#E8FF00','DT2 Pro','29'],['#3B82F6','L1','34'],['#8B5CF6','L2 Dual','21'],['#2A2A2A','L2 Max','17']].map(([col,name,val]) => (
+                {[['#F5C200','DT2 Pro','29'],['#3B82F6','L1','34'],['#8B5CF6','L2 Dual','21'],['#2A2A2A','L2 Max','17']].map(([col,name,val]) => (
                   <div key={name} className="flex items-center justify-between text-[11px]">
                     <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-sm" style={{background:col}}/><span className="text-[var(--light)]">{name}</span></div>
                     <span className="font-mono font-medium text-white">{val} шт</span>

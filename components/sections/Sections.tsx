@@ -73,7 +73,7 @@ export function Press() {
 export function Newsletter() {
   return (
     <section className="bg-[var(--mid)] border-t border-[var(--border)] py-24 relative overflow-hidden">
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-[radial-gradient(ellipse,rgba(232,255,0,.05),transparent_70%)] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-[radial-gradient(ellipse,rgba(245,194,0,.05),transparent_70%)] pointer-events-none" />
       <div className="container-wide relative z-10 text-center max-w-xl mx-auto">
         <h2 className="font-display text-[clamp(40px,6vw,68px)] leading-none text-white tracking-wide mb-4">
           Будь у <span className="text-[var(--brand)]">Курсі</span>
