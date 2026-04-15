@@ -65,12 +65,7 @@ export default function Hero() {
   return (
     <section style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
       <div className="w-container">
-        <div style={{
-          display:'grid', gridTemplateColumns:'1fr 1fr',
-          gap:60, alignItems:'center',
-          minHeight:'calc(100vh - 100px)',
-          padding:'60px 0 40px',
-        }}>
+        <div className="hero-main-grid">
 
           {/* LEFT */}
           <div style={{
@@ -150,8 +145,8 @@ export default function Hero() {
           </div>
 
           {/* RIGHT — scooter illustration */}
-          <div style={{
-            display:'flex', alignItems:'center', justifyContent:'center',
+          <div className="hidden lg:flex" style={{
+            alignItems:'center', justifyContent:'center',
             opacity: anim ? 0 : 1,
             transform: anim ? 'translateX(12px) scale(.97)' : 'translateX(0) scale(1)',
             transition:'opacity .2s, transform .2s',
@@ -224,14 +219,6 @@ export default function Hero() {
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @media(max-width:768px) {
-          .hero-grid { grid-template-columns: 1fr !important; }
-          .hero-right { display: none !important; }
-        }
-      `}</style>
     </section>
   )
 }
