@@ -3,77 +3,75 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { PRODUCTS } from '@/lib/data'
-import { Check, X, ShoppingBag } from 'lucide-react'
+import { Check, X, ShoppingBag, GitCompare, Plus } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 
 const SPECS = [
-  { key: 'price', label: 'Ціна', format: (v: number) => `€${v}` },
-  { key: 'old_price', label: 'Стара ціна', format: (v: number | null) => v ? `€${v}` : '—' },
-  { key: 'voltage', label: 'Напруга', format: (v: string) => v.toUpperCase() },
-  { key: 'motor', label: 'Мотор', format: (v: string) => v === 'dual' ? 'Подвійний' : 'Одиночний' },
-  { key: 'range_km', label: 'Запас ходу', format: (v: number) => `${v} км` },
-  { key: 'max_speed', label: 'Макс. швидкість', format: (v: number) => `${v} км/год` },
-  { key: 'battery_wh', label: 'Акумулятор', format: (v: number) => `${v} Wh` },
-  { key: 'weight_kg', label: 'Вага', format: (v: number) => `${v} кг` },
-  { key: 'max_load_kg', label: 'Макс. навантаження', format: (v: number) => `${v} кг` },
-  { key: 'category', label: 'Тип', format: (v: string) => v === 'offroad' ? 'Позашляховий' : 'Міський' },
-  { key: 'in_stock', label: 'Наявність', format: (v: boolean) => v ? 'В наявності' : 'Немає' },
+  { key:'price',        label:'Ціна',               fmt:(v:any)=>`₴${Number(v).toLocaleString('uk-UA')}`,  higherBetter:false },
+  { key:'voltage',      label:'Напруга',             fmt:(v:any)=>v.toUpperCase(),                           higherBetter:true  },
+  { key:'range_km',     label:'Запас ходу',          fmt:(v:any)=>`${v} км`,                                 higherBetter:true  },
+  { key:'max_speed',    label:'Макс. швидкість',     fmt:(v:any)=>`${v} км/год`,                             higherBetter:true  },
+  { key:'battery_wh',   label:'Акумулятор',          fmt:(v:any)=>`${v} Wh`,                                 higherBetter:true  },
+  { key:'weight_kg',    label:'Вага',                fmt:(v:any)=>`${v} кг`,                                 higherBetter:false },
+  { key:'max_load_kg',  label:'Макс. навантаження',  fmt:(v:any)=>`${v} кг`,                                 higherBetter:true  },
+  { key:'motor',        label:'Мотор',               fmt:(v:any)=>v==='dual'?'Подвійний':'Одиночний',        higherBetter:null  },
+  { key:'category',     label:'Тип',                 fmt:(v:any)=>v==='offroad'?'Позашляховий':'Міський',    higherBetter:null  },
+  { key:'in_stock',     label:'Наявність',           fmt:(v:any)=>v?'В наявності':'Немає',                   higherBetter:null  },
 ]
 
 export default function ComparePage() {
   const { addItem } = useCart()
-  const [selected, setSelected] = useState<string[]>(['gosoul-2-pro', 'dt2-pro', 'f1-max'])
+  const [selected, setSelected] = useState<string[]>(['l1','l2-dual','dt2-pro'])
+  const [picking,  setPicking]  = useState(false)
 
   const toggle = (slug: string) => {
     if (selected.includes(slug)) {
-      if (selected.length > 1) setSelected(prev => prev.filter(s => s !== slug))
+      if (selected.length > 1) setSelected(s => s.filter(x => x !== slug))
     } else {
-      if (selected.length < 4) setSelected(prev => [...prev, slug])
+      if (selected.length < 4) setSelected(s => [...s, slug])
     }
   }
 
-  const compared = PRODUCTS.filter(p => selected.includes(p.slug))
+  const compared  = PRODUCTS.filter(p => selected.includes(p.slug))
+  const available = PRODUCTS.filter(p => !selected.includes(p.slug))
+
+  // Find best numeric value per row
+  const getBest = (key: string, higherBetter: boolean | null) => {
+    if (higherBetter === null) return null
+    const vals = compared.map(p => parseFloat(String((p as any)[key]))).filter(v => !isNaN(v))
+    if (vals.length < 2) return null
+    return higherBetter ? Math.max(...vals) : Math.min(...vals)
+  }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--black)]">
+
       {/* Header */}
-      <div className="bg-[#0b0b0b] py-16">
+      <div className="bg-[var(--mid)] border-b border-[var(--border)] py-14">
         <div className="container-wide">
           <span className="section-label">Інструмент вибору</span>
-          <h1 className="section-heading text-white">
-            Порівняй <span className="text-[#ff5c00]">Моделі</span>
-          </h1>
-          <p className="text-white/50 text-sm mt-3">Обери до 4 моделей для порівняння</p>
+          <h1 className="section-heading text-white">Порівняй <span className="text-[var(--brand)]">Моделі</span></h1>
+          <p className="text-[var(--muted)] text-[13px] mt-2">Обери до 4 моделей · жовтим виділено найкраще значення</p>
         </div>
       </div>
 
-      <div className="container-wide py-12">
+      <div className="container-wide py-10">
 
-        {/* Model selector */}
-        <div className="mb-10">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-[#888884] mb-4">
-            Обрані моделі ({selected.length}/4)
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+        {/* Model selector chips */}
+        <div className="mb-8">
+          <p className="text-[11px] font-bold uppercase tracking-[.1em] text-[var(--muted)] mb-3">Обрані моделі ({selected.length}/4)</p>
+          <div className="flex flex-wrap gap-2">
             {PRODUCTS.map(p => {
-              const isSelected = selected.includes(p.slug)
+              const isSel = selected.includes(p.slug)
+              const disabled = !isSel && selected.length >= 4
               return (
-                <button
-                  key={p.slug}
-                  onClick={() => toggle(p.slug)}
-                  className={`relative p-3 rounded-xl border-2 text-left transition-all text-xs font-semibold leading-snug
-                    ${isSelected
-                      ? 'border-[#ff5c00] bg-[#ff5c00]/5 text-[#0b0b0b]'
-                      : 'border-[#e8e8e5] bg-white text-[#888884] hover:border-[#c8c8c4] hover:text-[#0b0b0b]'
-                    }
-                    ${!isSelected && selected.length >= 4 ? 'opacity-40 cursor-not-allowed' : ''}
-                  `}
-                >
-                  {isSelected && (
-                    <span className="absolute top-2 right-2 w-4 h-4 bg-[#ff5c00] rounded-full flex items-center justify-center">
-                      <Check size={9} color="white" strokeWidth={3} />
-                    </span>
-                  )}
+                <button key={p.slug} onClick={() => !disabled && toggle(p.slug)} disabled={disabled}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[12px] font-semibold transition-all ${
+                    isSel    ? 'border-[var(--brand)] bg-[var(--brand)]/8 text-white' :
+                    disabled ? 'border-[var(--border)] text-[var(--muted)] opacity-40 cursor-not-allowed' :
+                               'border-[var(--border)] text-[var(--muted)] hover:border-white/30 hover:text-white'
+                  }`}>
+                  {isSel && <span className="w-4 h-4 bg-[var(--brand)] rounded-full flex items-center justify-center"><Check size={9} className="text-[var(--black)]" strokeWidth={3}/></span>}
                   {p.name}
                 </button>
               )
@@ -82,138 +80,107 @@ export default function ComparePage() {
         </div>
 
         {/* Comparison table */}
-        <div className="overflow-x-auto rounded-2xl border border-[#e8e8e5]">
-          <table className="w-full min-w-[600px]">
+        <div className="overflow-x-auto rounded-2xl border border-[var(--border)]">
+          <table className="w-full min-w-[600px]" style={{ borderCollapse:'collapse' }}>
 
             {/* Product headers */}
             <thead>
-              <tr className="border-b border-[#e8e8e5]">
-                <th className="text-left px-6 py-5 text-xs font-bold uppercase tracking-wider text-[#888884] w-40 bg-[#f4f4f2]">
-                  Характеристика
-                </th>
-                {compared.map(p => {
-                  const saving = p.old_price ? p.old_price - p.price : 0
-                  return (
-                    <th key={p.id} className="px-5 py-5 text-center bg-white border-l border-[#e8e8e5] min-w-[180px]">
-                      {/* Scooter icon */}
-                      <div className="bg-[#f4f4f2] rounded-xl aspect-square w-24 mx-auto mb-3 flex items-center justify-center">
-                        <svg viewBox="0 0 80 72" fill="none" className="w-16 h-16">
-                          <circle cx="16" cy="58" r="12" stroke="#ff5c00" strokeWidth="3.5"/>
-                          <circle cx="64" cy="58" r="12" stroke="#ff5c00" strokeWidth="3.5"/>
-                          <path d="M16 58 L26 22 L52 16 L64 58" stroke="#1a1a1a" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
-                          <path d="M26 22 L34 6" stroke="#ff5c00" strokeWidth="3.5" strokeLinecap="round"/>
-                          <rect x="28" y="2" width="16" height="8" rx="2.5" fill="#ff5c00"/>
+              <tr className="border-b border-[var(--border)]">
+                <th className="bg-[var(--surface)] w-44 p-4 text-left text-[11px] font-bold uppercase tracking-[.08em] text-[var(--muted)]">Характеристика</th>
+                {compared.map(p => (
+                  <th key={p.slug} className="bg-[var(--mid)] p-5 border-l border-[var(--border)]">
+                    <div className="flex flex-col items-center gap-3">
+                      {/* Mini scooter icon */}
+                      <div className="w-16 h-16 bg-[var(--surface)] rounded-xl flex items-center justify-center">
+                        <svg viewBox="0 0 60 50" fill="none" width="40" height="32">
+                          <circle cx="10" cy="40" r="8" stroke="#E8FF00" strokeWidth="2.5"/>
+                          <circle cx="50" cy="40" r="8" stroke="#E8FF00" strokeWidth="2.5"/>
+                          <path d="M10 40L18 16L40 11L50 40" stroke="#F5F5F0" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" opacity=".7"/>
+                          <path d="M18 16L24 4" stroke="#E8FF00" strokeWidth="2.5" strokeLinecap="round"/>
+                          <rect x="19" y="1" width="11" height="6" rx="1.5" fill="#E8FF00"/>
                         </svg>
                       </div>
-                      <div className="font-bold text-sm text-[#0b0b0b] leading-snug mb-1">{p.name}</div>
-                      <div className="flex items-baseline gap-1.5 justify-center mb-1">
-                        <span className="font-bold text-lg text-[#0b0b0b]">€{p.price}</span>
-                        {p.old_price && <span className="text-xs text-[#c8c8c4] line-through">€{p.old_price}</span>}
+                      <div>
+                        <p className="text-[13px] font-semibold text-white text-center leading-tight mb-1">{p.name}</p>
+                        <p className="font-display text-[20px] text-[var(--brand)] tracking-wide leading-none text-center">₴{p.price.toLocaleString('uk-UA')}</p>
                       </div>
-                      {saving > 0 && (
-                        <span className="text-[10px] font-bold text-[#ff5c00] bg-[#ff5c00]/10 px-2 py-0.5 rounded-full">
-                          −€{saving}
-                        </span>
+                      <button onClick={() => toggle(p.slug)}
+                        className="w-6 h-6 flex items-center justify-center bg-[var(--surface)] border border-[var(--border)] rounded text-[var(--muted)] hover:text-red-400 hover:border-red-400/30 transition-all">
+                        <X size={11}/>
+                      </button>
+                    </div>
+                  </th>
+                ))}
+                {/* Add slot */}
+                {selected.length < 4 && (
+                  <th className="bg-[var(--mid)] p-5 border-l border-[var(--border)] border-dashed">
+                    <div className="flex flex-col items-center gap-2 relative">
+                      <button onClick={() => setPicking(!picking)}
+                        className="w-16 h-16 bg-[var(--surface)] border border-dashed border-[var(--border)] rounded-xl flex items-center justify-center text-[var(--muted)] hover:border-[var(--brand)]/40 hover:text-[var(--brand)] transition-all">
+                        <Plus size={20}/>
+                      </button>
+                      <p className="text-[11px] text-[var(--muted)]">Додати</p>
+                      {picking && available.length > 0 && (
+                        <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 bg-[var(--surface)] border border-[var(--border)] rounded-xl p-1.5 min-w-[160px] z-20 shadow-xl">
+                          {available.map(p => (
+                            <button key={p.slug} onClick={() => { toggle(p.slug); setPicking(false) }}
+                              className="block w-full text-left px-3 py-2 text-[12px] text-[var(--light)] hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                              {p.name}
+                            </button>
+                          ))}
+                        </div>
                       )}
-                    </th>
-                  )
-                })}
+                    </div>
+                  </th>
+                )}
               </tr>
             </thead>
 
             <tbody>
-              {SPECS.map((spec, i) => (
-                <tr
-                  key={spec.key}
-                  className={`border-b border-[#f4f4f2] ${i % 2 === 0 ? 'bg-white' : 'bg-[#fafaf8]'}`}
-                >
-                  <td className="px-6 py-4 text-sm font-semibold text-[#444440] bg-[#f4f4f2] border-r border-[#e8e8e5]">
-                    {spec.label}
-                  </td>
-                  {compared.map(p => {
-                    const raw = p[spec.key as keyof typeof p]
-                    const val = spec.format(raw as never)
-                    const isHighlight = spec.key === 'price'
-                    const isGood = spec.key === 'in_stock' && raw === true
-                    const isBad = spec.key === 'in_stock' && raw === false
-
-                    return (
-                      <td
-                        key={p.id}
-                        className="px-5 py-4 text-sm text-center border-l border-[#f4f4f2]"
-                      >
-                        {isBad ? (
-                          <span className="inline-flex items-center gap-1 text-red-500 font-medium">
-                            <X size={14} /> Немає
-                          </span>
-                        ) : isGood ? (
-                          <span className="inline-flex items-center gap-1 text-green-600 font-medium">
-                            <Check size={14} /> В наявності
-                          </span>
-                        ) : (
-                          <span className={isHighlight ? 'font-bold text-base text-[#0b0b0b]' : 'text-[#444440]'}>
-                            {val}
-                          </span>
-                        )}
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))}
-
-              {/* Features row */}
-              <tr className="border-b border-[#f4f4f2]">
-                <td className="px-6 py-4 text-sm font-semibold text-[#444440] bg-[#f4f4f2] border-r border-[#e8e8e5]">
-                  Особливості
-                </td>
-                {compared.map(p => (
-                  <td key={p.id} className="px-5 py-4 border-l border-[#f4f4f2]">
-                    <ul className="space-y-1.5">
-                      {p.features.map((f, i) => (
-                        <li key={i} className="flex items-start gap-2 text-xs text-[#444440]">
-                          <Check size={11} className="text-[#ff5c00] shrink-0 mt-0.5" strokeWidth={3} />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-                ))}
-              </tr>
+              {SPECS.map(({ key, label, fmt, higherBetter }, i) => {
+                const best = getBest(key, higherBetter)
+                return (
+                  <tr key={key} className={`border-b border-[var(--border)] ${i%2===0 ? 'bg-[var(--black)]' : 'bg-[var(--mid)]/40'} hover:bg-[var(--surface)]/40 transition-colors`}>
+                    <td className="bg-[var(--surface)] px-5 py-3.5 text-[12px] font-medium text-[var(--muted)]">{label}</td>
+                    {compared.map(p => {
+                      const val = (p as any)[key]
+                      const num = parseFloat(String(val))
+                      const isBest = best !== null && !isNaN(num) && num === best
+                      return (
+                        <td key={p.slug} className={`px-5 py-3.5 text-center text-[13px] border-l border-[var(--border)] font-medium ${isBest ? 'text-[var(--brand)] font-bold' : 'text-white'}`}>
+                          {val === true ? <Check size={16} className="text-green-400 mx-auto" /> :
+                           val === false ? <X size={16} className="text-[var(--border)] mx-auto" /> :
+                           fmt(val)}
+                          {isBest && <span className="block text-[9px] text-[var(--brand)]/60 font-normal mt-0.5">найкраще</span>}
+                        </td>
+                      )
+                    })}
+                    {selected.length < 4 && <td className="border-l border-dashed border-[var(--border)]" />}
+                  </tr>
+                )
+              })}
 
               {/* CTA row */}
               <tr>
-                <td className="px-6 py-5 bg-[#f4f4f2] border-r border-[#e8e8e5]" />
+                <td className="bg-[var(--surface)] px-5 py-4" />
                 {compared.map(p => (
-                  <td key={p.id} className="px-5 py-5 text-center border-l border-[#f4f4f2]">
-                    <div className="flex flex-col gap-2">
-                      <button
-                        onClick={() => addItem(p)}
-                        className="w-full flex items-center justify-center gap-2 bg-[#0b0b0b] text-white text-xs font-bold uppercase tracking-wider py-3 rounded-lg transition-all hover:bg-[#ff5c00]"
-                      >
-                        <ShoppingBag size={13} />
-                        До кошика
-                      </button>
-                      <Link
-                        href={`/product/${p.slug}`}
-                        className="w-full text-center text-xs font-semibold text-[#888884] hover:text-[#ff5c00] transition-colors py-1"
-                      >
-                        Детальніше →
-                      </Link>
-                    </div>
+                  <td key={p.slug} className="px-4 py-4 border-l border-[var(--border)] bg-[var(--mid)]">
+                    <button onClick={() => addItem(p)} className="btn-primary btn-sm w-full justify-center">
+                      <ShoppingBag size={12}/> До кошика
+                    </button>
+                    <Link href={`/product/${p.slug}`} className="btn-ghost btn-sm w-full justify-center mt-1 text-[11px]">Детальніше</Link>
                   </td>
                 ))}
+                {selected.length < 4 && <td className="border-l border-dashed border-[var(--border)] bg-[var(--mid)]" />}
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Back to catalog */}
-        <div className="mt-8 text-center">
-          <Link href="/catalog" className="btn-outline">
-            ← Назад до каталогу
-          </Link>
-        </div>
-
+        {/* Tip */}
+        <p className="text-[11px] text-[var(--muted)] text-center mt-4 flex items-center justify-center gap-1">
+          <GitCompare size={12}/> Можна порівняти до 4 моделей одночасно
+        </p>
       </div>
     </div>
   )

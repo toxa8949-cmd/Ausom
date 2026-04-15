@@ -1,22 +1,19 @@
-export default function AnnouncementBar() {
-  const items = [
-    'Весняний розпродаж — знижки до €400',
-    'Безкоштовна доставка від €39.99',
-    'Гарантія 2 роки на всі моделі',
-    '14 днів повернення без питань',
-    'Офіційний дилер Ausom в Україні',
-  ]
+const MSGS = [
+  'Безкоштовна доставка по всій Україні',
+  'Офіційна гарантія 2 роки на всі моделі',
+  'Весняний розпродаж — знижки до ₴11 050',
+  '14 днів повернення без питань',
+  'Офіційний дилер Ausom в Україні',
+]
 
+export default function AnnouncementBar() {
+  const items = [...MSGS, ...MSGS]
   return (
-    <div className="bg-[#ff5c00] overflow-hidden py-2.5">
-      <div className="flex animate-ticker whitespace-nowrap">
-        {[...items, ...items].map((item, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center gap-2.5 px-10 text-white text-xs font-bold tracking-[.08em] uppercase shrink-0"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-white/60 shrink-0" />
-            {item}
+    <div className="h-9 bg-[var(--brand)] text-[var(--black)] overflow-hidden flex items-center">
+      <div className="animate-ticker flex gap-16 whitespace-nowrap">
+        {items.map((msg, i) => (
+          <span key={i} className="text-[11px] font-bold tracking-[.08em] uppercase flex items-center gap-2">
+            <span className="opacity-50">▸</span>{msg}
           </span>
         ))}
       </div>

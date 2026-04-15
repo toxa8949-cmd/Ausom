@@ -3,101 +3,64 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Eye, EyeOff, Lock } from 'lucide-react'
+import { Zap, Eye, EyeOff } from 'lucide-react'
 
 export default function AdminLogin() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [email,    setEmail]   = useState('')
   const [password, setPassword] = useState('')
-  const [showPass, setShowPass] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [showPw,   setShowPw]  = useState(false)
+  const [loading,  setLoading] = useState(false)
+  const [error,    setError]   = useState('')
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError('Невірний email або пароль')
-      setLoading(false)
-    } else {
-      router.replace('/admin')
-    }
+    if (error) { setError('Невірний email або пароль'); setLoading(false) }
+    else router.replace('/admin')
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center p-6">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-[var(--black)] flex items-center justify-center p-6">
+      <div className="w-full max-w-[380px]">
+
         {/* Logo */}
-        <div className="text-center mb-10">
-          <span className="font-display text-3xl tracking-widest text-white">
-            AUSOM <span className="text-[#ff5c00]">UA</span>
-          </span>
-          <p className="text-white/40 text-sm mt-2">Адмін-панель</p>
+        <div className="flex items-center justify-center gap-2 mb-10">
+          <Zap size={20} className="text-[var(--brand)]" strokeWidth={2.5}/>
+          <span className="font-display text-[26px] tracking-[.08em] text-white">AUSOM UA</span>
+          <sup className="font-sans text-[10px] font-bold text-[var(--brand)] tracking-normal -mt-2">Admin</sup>
         </div>
 
-        <div className="bg-white rounded-2xl p-8 shadow-2xl">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-[#ff5c00] rounded-xl flex items-center justify-center">
-              <Lock size={18} color="white" />
-            </div>
-            <div>
-              <h1 className="font-bold text-lg">Вхід</h1>
-              <p className="text-[#888884] text-sm">Введи свої дані для входу</p>
-            </div>
-          </div>
+        <div className="bg-[var(--mid)] border border-[var(--border)] rounded-2xl p-8">
+          <h1 className="font-display text-[28px] text-white tracking-wide mb-1">Вхід</h1>
+          <p className="text-[13px] text-[var(--muted)] mb-7">Адмін-панель Ausom Ukraine</p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="admin@ausom.ua"
-                required
-                className="w-full bg-[#f4f4f2] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ff5c00] transition-colors"
-              />
+              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[var(--muted)] mb-2">Email</label>
+              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="admin@ausom.ua"
+                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3 text-[14px] text-white placeholder:text-[var(--muted)] outline-none focus:border-[var(--brand)] transition-colors"/>
             </div>
-
             <div>
-              <label className="block text-sm font-medium mb-1.5">Пароль</label>
+              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[var(--muted)] mb-2">Пароль</label>
               <div className="relative">
-                <input
-                  type={showPass ? 'text' : 'password'}
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  className="w-full bg-[#f4f4f2] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ff5c00] transition-colors pr-12"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#888884] hover:text-[#0b0b0b]"
-                >
-                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} required placeholder="••••••••"
+                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3 pr-11 text-[14px] text-white placeholder:text-[var(--muted)] outline-none focus:border-[var(--brand)] transition-colors"/>
+                <button type="button" onClick={()=>setShowPw(!showPw)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-white transition-colors">
+                  {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
-                {error}
-              </div>
+              <p className="text-[12px] text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">{error}</p>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full justify-center mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-2 disabled:opacity-60">
               {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  Вхід...
-                </span>
+                <><span className="w-4 h-4 border-2 border-[var(--black)]/40 border-t-[var(--black)] rounded-full animate-spin"/>Вхід...</>
               ) : 'Увійти'}
             </button>
           </form>

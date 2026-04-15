@@ -1,139 +1,139 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
-import { ShoppingBag, Search, Heart, Menu, X, ChevronDown } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { ShoppingBag, Menu, X, ChevronDown, Zap, GitCompare } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 
 const NAV = [
   {
-    label: 'Самокати',
-    href: '/catalog',
+    label: 'Самокати', href: '/catalog',
     children: [
-      { label: 'Всі моделі', href: '/catalog' },
-      { label: 'Позашляхові', href: '/catalog?category=offroad' },
-      { label: 'Міські', href: '/catalog?category=commuter' },
-      { label: '48V моделі', href: '/catalog?voltage=48v' },
-      { label: '52V моделі', href: '/catalog?voltage=52v' },
-      { label: '60V моделі', href: '/catalog?voltage=60v' },
-      { label: 'Новинки 2026', href: '/catalog?filter=new' },
-      { label: '⚖ Порівняти моделі', href: '/compare' },
+      { label: 'Всі моделі',    href: '/catalog' },
+      { label: 'Позашляхові',  href: '/catalog?category=offroad' },
+      { label: 'Міські',       href: '/catalog?category=commuter' },
+      { label: 'Порівняти',    href: '/compare' },
     ],
   },
   { label: 'Запчастини', href: '/parts' },
-  {
-    label: 'Про нас',
-    href: '/about',
-    children: [
-      { label: 'Про компанію', href: '/about' },
-      { label: 'Сервісний центр', href: '/service' },
-      { label: 'Контакти', href: '/contact' },
-    ],
-  },
-  { label: 'Блог', href: '/blog' },
+  { label: 'Блог',       href: '/blog' },
+  { label: 'Про нас',    href: '/about' },
 ]
 
 export default function Header() {
+  const pathname = usePathname()
   const { count } = useCart()
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [openDrop, setOpenDrop] = useState<string | null>(null)
+  const [open, setOpen]       = useState(false)
+  const [drop, setDrop]       = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', h, { passive: true })
+    return () => window.removeEventListener('scroll', h)
+  }, [])
+
+  useEffect(() => { document.body.style.overflow = open ? 'hidden' : ''; return () => { document.body.style.overflow = '' } }, [open])
+
+  const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
-    <header className="sticky top-0 z-50 bg-[#0b0b0b] border-b border-white/5">
-      <div className="container-wide flex items-center h-16 gap-8">
+    <>
+      <header className={`sticky top-0 z-50 h-[68px] transition-all duration-300 ${scrolled ? 'bg-[#0A0A0A]/95 backdrop-blur-xl border-b border-[var(--border)] shadow-[0_4px_32px_rgba(0,0,0,.5)]' : 'bg-[#0A0A0A]/80 backdrop-blur-md border-b border-transparent'}`}>
+        <div className="container-wide h-full flex items-center gap-8">
 
-        {/* Logo */}
-        <Link href="/" className="font-display text-2xl tracking-widest text-white shrink-0">
-          AUSOM <span className="text-[#ff5c00]">UA</span>
-        </Link>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-1.5 font-display text-[22px] tracking-[.08em] text-[var(--snow)] hover:text-[var(--brand)] transition-colors shrink-0" onClick={() => setOpen(false)}>
+            <Zap size={17} className="text-[var(--brand)]" strokeWidth={2.5} />
+            AUSOM
+            <sup className="font-sans text-[10px] font-bold text-[var(--brand)] tracking-normal mt-[-8px]">UA</sup>
+          </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-1 flex-1">
-          {NAV.map(item => (
-            <div
-              key={item.label}
-              className="relative group"
-              onMouseEnter={() => item.children && setOpenDrop(item.label)}
-              onMouseLeave={() => setOpenDrop(null)}
-            >
-              <Link
-                href={item.href}
-                className="flex items-center gap-1 px-3.5 py-2 text-sm font-medium text-white/75 hover:text-white hover:bg-white/8 rounded-md transition-all"
-              >
-                {item.label}
-                {item.children && <ChevronDown size={13} className="opacity-50 group-hover:opacity-100 transition-transform group-hover:rotate-180" />}
-              </Link>
+          {/* Desktop nav */}
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1">
+            {NAV.map(item => (
+              <div key={item.label} className="relative" onMouseEnter={() => item.children && setDrop(item.label)} onMouseLeave={() => setDrop(null)}>
+                <Link
+                  href={item.href}
+                  className={`flex items-center gap-1 px-3.5 py-2 text-[13px] font-medium rounded-md transition-all ${active(item.href) ? 'text-white bg-white/6' : 'text-[var(--light)] hover:text-white hover:bg-white/5'}`}
+                >
+                  {item.label}
+                  {item.children && <ChevronDown size={12} className={`transition-transform duration-200 ${drop === item.label ? 'rotate-180 opacity-100' : 'opacity-50'}`} />}
+                </Link>
+                {active(item.href) && (
+                  <span className="absolute bottom-0 left-3 right-3 h-px bg-[var(--brand)] rounded-full" />
+                )}
+                {item.children && drop === item.label && (
+                  <div className="absolute top-full left-0 mt-2 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,.6)] p-1.5 min-w-[190px] animate-[fadeInUp_.15s_ease_both]">
+                    {item.children.map(c => (
+                      <Link key={c.href} href={c.href} onClick={() => setDrop(null)}
+                        className="block px-4 py-2.5 text-[13px] text-[var(--light)] hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+                        {c.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            <Link href="/sale" className="px-3.5 py-2 text-[13px] font-medium text-[var(--brand)] hover:bg-[var(--brand)]/10 rounded-md transition-all">
+              🔥 Розпродаж
+            </Link>
+          </nav>
 
-              {item.children && openDrop === item.label && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-white border border-[#e8e8e5] rounded-xl shadow-2xl p-2 min-w-[220px] z-50">
-                  {item.children.map(child => (
-                    <Link
-                      key={child.href}
-                      href={child.href}
-                      className="block px-4 py-2.5 text-sm text-[#444440] hover:bg-[#f4f4f2] hover:text-black rounded-lg transition-colors font-medium"
-                      onClick={() => setOpenDrop(null)}
-                    >
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
+          {/* Actions */}
+          <div className="flex items-center gap-1 ml-auto">
+            <Link href="/compare" className="hidden sm:flex w-9 h-9 items-center justify-center text-[var(--light)] hover:text-white hover:bg-white/6 rounded-lg transition-all" aria-label="Порівняти">
+              <GitCompare size={17} />
+            </Link>
+            <Link href="/cart" className="relative flex w-9 h-9 items-center justify-center text-[var(--light)] hover:text-white hover:bg-white/6 rounded-lg transition-all">
+              <ShoppingBag size={17} />
+              {count > 0 && (
+                <span className="absolute top-1 right-1 min-w-[17px] h-[17px] bg-[var(--brand)] text-[var(--black)] text-[9px] font-black rounded-full flex items-center justify-center px-1 animate-[popIn_.2s_cubic-bezier(.34,1.56,.64,1)_both]">
+                  {count}
+                </span>
               )}
+            </Link>
+            <button className="lg:hidden flex w-9 h-9 items-center justify-center text-[var(--light)] hover:text-white rounded-lg transition-all" onClick={() => setOpen(!open)}>
+              {open ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Mobile drawer */}
+      <div className={`lg:hidden fixed inset-x-0 top-[104px] bottom-0 z-40 bg-[var(--mid)] transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'} overflow-y-auto`}>
+        <nav className="p-6 flex flex-col gap-1">
+          {NAV.map(item => (
+            <div key={item.label}>
+              {item.children && <p className="text-[10px] font-bold tracking-[.1em] uppercase text-[var(--muted)] px-1 pt-4 pb-1">{item.label}</p>}
+              {item.children
+                ? item.children.map(c => (
+                    <Link key={c.href} href={c.href} onClick={() => setOpen(false)}
+                      className="block px-3 py-3 text-[15px] text-[var(--light)] hover:text-white border-b border-[var(--border)] transition-colors last:border-0">
+                      {c.label}
+                    </Link>
+                  ))
+                : (
+                  <Link href={item.href} onClick={() => setOpen(false)}
+                    className={`block px-3 py-3 text-[15px] border-b border-[var(--border)] transition-colors ${active(item.href) ? 'text-white' : 'text-[var(--light)] hover:text-white'}`}>
+                    {item.label}
+                  </Link>
+                )
+              }
             </div>
           ))}
-
-          <Link
-            href="/sale"
-            className="px-3.5 py-2 text-sm font-medium text-[#ff5c00] hover:text-[#ff7a2b] hover:bg-[#ff5c00]/10 rounded-md transition-all"
-          >
+          <Link href="/sale" onClick={() => setOpen(false)} className="block px-3 py-3 text-[15px] text-[var(--brand)] border-b border-[var(--border)]">
             🔥 Розпродаж
           </Link>
-        </nav>
-
-        {/* Actions */}
-        <div className="flex items-center gap-1 ml-auto">
-          <button className="hidden sm:flex w-9 h-9 items-center justify-center text-white/70 hover:text-white hover:bg-white/8 rounded-lg transition-all">
-            <Search size={18} />
-          </button>
-          <button className="hidden sm:flex w-9 h-9 items-center justify-center text-white/70 hover:text-white hover:bg-white/8 rounded-lg transition-all">
-            <Heart size={18} />
-          </button>
-          <Link href="/cart" className="relative flex w-9 h-9 items-center justify-center text-white/70 hover:text-white hover:bg-white/8 rounded-lg transition-all">
-            <ShoppingBag size={18} />
-            {count > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-[#ff5c00] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                {count}
-              </span>
-            )}
-          </Link>
-
-          {/* Burger */}
-          <button
-            className="lg:hidden flex w-9 h-9 items-center justify-center text-white/70 hover:text-white rounded-lg transition-all ml-1"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="lg:hidden bg-[#0b0b0b] border-t border-white/5 px-6 py-4 flex flex-col gap-1">
-          {NAV.map(item => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className="text-white/75 hover:text-white py-3 border-b border-white/5 text-base font-medium transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              {item.label}
+          <div className="pt-6">
+            <Link href="/cart" className="btn-primary w-full justify-center" onClick={() => setOpen(false)}>
+              <ShoppingBag size={15} /> Кошик {count > 0 && `(${count})`}
             </Link>
-          ))}
-          <Link href="/sale" className="text-[#ff5c00] py-3 text-base font-medium" onClick={() => setMobileOpen(false)}>
-            🔥 Розпродаж
-          </Link>
-        </div>
-      )}
-    </header>
+          </div>
+        </nav>
+      </div>
+      {open && <div className="lg:hidden fixed inset-0 z-30 bg-black/70 backdrop-blur-sm" onClick={() => setOpen(false)} />}
+    </>
   )
 }
