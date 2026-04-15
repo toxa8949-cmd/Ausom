@@ -70,26 +70,26 @@ export default function AdminDashboard() {
     { label:'Очікують',         val: loading ? '...' : String(pending),                        trend:'',     up:false, iconCls:'bg-red-500/10   text-red-400',               Icon: TrendingDown },
   ]
 
-  const thCls = 'px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[.08em] text-[var(--muted)] border-b border-[var(--border)] bg-[var(--surface)]'
+  const thCls = 'px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[.08em] text-[#666] border-b border-[var(--border)] bg-[#1A1A1A]'
   const tdCls = 'px-5 py-3.5 text-[13px] text-[var(--light)] border-b border-[var(--border)]'
 
   return (
-    <div className="flex min-h-screen bg-[var(--black)]">
+    <div className="flex min-h-screen bg-[#0A0A0A]">
 
       {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-[240px] bg-[var(--mid)] border-r border-[var(--border)] sticky top-0 h-screen overflow-y-auto shrink-0">
+      <aside className="hidden lg:flex flex-col w-[240px] bg-[#111111] border-r border-[var(--border)] sticky top-0 h-screen overflow-y-auto shrink-0">
         <Link href="/admin" className="flex items-center gap-2 px-5 py-4 border-b border-[var(--border)] font-display text-[20px] tracking-[.06em] text-white hover:text-[var(--brand)] transition-colors">
           <Zap size={17} className="text-[var(--brand)]" strokeWidth={2.5}/> AUSOM UA
-          <span className="ml-auto text-[9px] font-bold font-sans bg-[var(--brand)] text-[var(--black)] px-1.5 py-0.5 rounded">Admin</span>
+          <span className="ml-auto text-[9px] font-bold font-sans bg-[var(--brand)] text-[#111] px-1.5 py-0.5 rounded">Admin</span>
         </Link>
 
         <nav className="flex-1 p-3">
           {NAV_ITEMS.map(section => (
             <div key={section.group}>
-              <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[var(--muted)] px-3 pt-4 pb-1.5">{section.group}</p>
+              <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#666] px-3 pt-4 pb-1.5">{section.group}</p>
               {section.items.map(item => (
                 <Link key={item.href} href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all mb-0.5 ${item.href==='/admin' ? 'bg-[var(--brand)]/8 text-white border-l-[3px] border-[var(--brand)]' : 'text-[var(--muted)] hover:text-white hover:bg-white/4'}`}>
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all mb-0.5 ${item.href==='/admin' ? 'bg-[#F5C200]/8 text-white border-l-[3px] border-[var(--brand)]' : 'text-[#666] hover:text-white hover:bg-white/4'}`}>
                   <item.icon size={15} className="shrink-0"/>
                   {item.label}
                   {item.badge && (
@@ -105,10 +105,10 @@ export default function AdminDashboard() {
 
         <div className="p-3 border-t border-[var(--border)]">
           <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/4 cursor-pointer transition-colors">
-            <div className="w-8 h-8 rounded-full bg-[var(--brand)] flex items-center justify-center text-[var(--black)] text-[12px] font-black shrink-0">А</div>
+            <div className="w-8 h-8 rounded-full bg-[var(--brand)] flex items-center justify-center text-[#111] text-[12px] font-black shrink-0">А</div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-medium text-white truncate">Адмін</p>
-              <p className="text-[11px] text-[var(--muted)] truncate">Головний адміністратор</p>
+              <p className="text-[11px] text-[#666] truncate">Головний адміністратор</p>
             </div>
           </div>
         </div>
@@ -118,23 +118,23 @@ export default function AdminDashboard() {
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Topbar */}
-        <header className="sticky top-0 z-50 h-[60px] bg-[var(--black)]/90 backdrop-blur-xl border-b border-[var(--border)] flex items-center justify-between px-6 gap-4">
+        <header className="sticky top-0 z-50 h-[60px] bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-[var(--border)] flex items-center justify-between px-6 gap-4">
           <div className="flex items-center gap-4">
-            <span className="text-[13px] text-[var(--muted)]">Адмінка / <strong className="text-white font-medium">Дашборд</strong></span>
-            <div className="hidden sm:flex items-center gap-2 bg-[var(--mid)] border border-[var(--border)] rounded-lg px-3 py-2 w-56 focus-within:border-[var(--brand)] transition-colors">
-              <Search size={13} className="text-[var(--muted)] shrink-0"/>
-              <input placeholder="Пошук…" className="bg-transparent text-[12px] text-white outline-none w-full placeholder:text-[var(--muted)]"/>
+            <span className="text-[13px] text-[#666]">Адмінка / <strong className="text-white font-medium">Дашборд</strong></span>
+            <div className="hidden sm:flex items-center gap-2 bg-[#111111] border border-[var(--border)] rounded-lg px-3 py-2 w-56 focus-within:border-[var(--brand)] transition-colors">
+              <Search size={13} className="text-[#666] shrink-0"/>
+              <input placeholder="Пошук…" className="bg-transparent text-[12px] text-white outline-none w-full placeholder:text-[#666]"/>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button className="relative w-8 h-8 flex items-center justify-center bg-[var(--mid)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-white transition-colors">
+            <button className="relative w-8 h-8 flex items-center justify-center bg-[#111111] border border-[var(--border)] rounded-lg text-[#666] hover:text-white transition-colors">
               <Bell size={14}/>
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-[var(--black)]"/>
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-[#111]"/>
             </button>
-            <Link href="/" target="_blank" className="w-8 h-8 flex items-center justify-center bg-[var(--mid)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-white transition-colors">
+            <Link href="/" target="_blank" className="w-8 h-8 flex items-center justify-center bg-[#111111] border border-[var(--border)] rounded-lg text-[#666] hover:text-white transition-colors">
               <Eye size={14}/>
             </Link>
-            <button className="w-8 h-8 flex items-center justify-center bg-[var(--mid)] border border-[var(--border)] rounded-lg text-[var(--muted)] hover:text-red-400 transition-colors">
+            <button className="w-8 h-8 flex items-center justify-center bg-[#111111] border border-[var(--border)] rounded-lg text-[#666] hover:text-red-400 transition-colors">
               <LogOut size={14}/>
             </button>
           </div>
@@ -147,7 +147,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
             <div>
               <h1 className="font-display text-[36px] text-white tracking-wide leading-none mb-1">Дашборд</h1>
-              <p className="text-[13px] text-[var(--muted)]">Середа, 15 квітня 2026</p>
+              <p className="text-[13px] text-[#666]">Середа, 15 квітня 2026</p>
             </div>
             <Link href="/admin/products/new" className="btn-primary btn-sm">
               <Plus size={13}/> Новий товар
@@ -157,9 +157,9 @@ export default function AdminDashboard() {
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {STATS.map((s, i) => (
-              <div key={i} className="bg-[var(--mid)] border border-[var(--border)] rounded-xl p-5 flex flex-col gap-3 hover:border-[var(--brand)]/20 hover:-translate-y-0.5 transition-all">
+              <div key={i} className="bg-[#111111] border border-[var(--border)] rounded-xl p-5 flex flex-col gap-3 hover:border-[var(--brand)]/20 hover:-translate-y-0.5 transition-all">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-[.08em] text-[var(--muted)]">{s.label}</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[.08em] text-[#666]">{s.label}</span>
                   <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${s.iconCls}`}>
                     <s.Icon size={14}/>
                   </div>
@@ -177,26 +177,26 @@ export default function AdminDashboard() {
           {/* Charts row */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
             {/* Bar chart */}
-            <div className="lg:col-span-2 bg-[var(--mid)] border border-[var(--border)] rounded-xl p-6">
+            <div className="lg:col-span-2 bg-[#111111] border border-[var(--border)] rounded-xl p-6">
               <p className="text-[14px] font-semibold text-white mb-6">Продажі за місяць</p>
               <div className="flex items-end gap-2 h-[110px]">
                 {MONTHS.map((m, i) => (
                   <div key={m} onClick={() => setActiveBar(i)}
                     className={`flex-1 rounded-t-md cursor-pointer transition-all duration-200 relative group ${i===activeBar ? 'bg-[var(--brand)]' : 'bg-[var(--brand)]/15 hover:bg-[var(--brand)]/30'}`}
                     style={{ height: `${BARS[i]}%` }}>
-                    <span className={`absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] whitespace-nowrap ${i===activeBar ? 'text-[var(--brand)]' : 'text-[var(--muted)]'}`}>{m}</span>
+                    <span className={`absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] whitespace-nowrap ${i===activeBar ? 'text-[var(--brand)]' : 'text-[#666]'}`}>{m}</span>
                   </div>
                 ))}
               </div>
             </div>
             {/* Donut */}
-            <div className="bg-[var(--mid)] border border-[var(--border)] rounded-xl p-6">
+            <div className="bg-[#111111] border border-[var(--border)] rounded-xl p-6">
               <p className="text-[14px] font-semibold text-white mb-4">Продажі по товарах</p>
               <div className="flex items-center justify-center mb-4">
                 <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{background:'conic-gradient(#F5C200 0% 29%,#3B82F6 29% 63%,#8B5CF6 63% 84%,#2A2A2A 84% 100%)'}}>
-                  <div className="w-14 h-14 rounded-full bg-[var(--mid)] flex flex-col items-center justify-center">
+                  <div className="w-14 h-14 rounded-full bg-[#111111] flex flex-col items-center justify-center">
                     <span className="font-display text-[18px] text-white leading-none">101</span>
-                    <span className="text-[8px] text-[var(--muted)]">шт</span>
+                    <span className="text-[8px] text-[#666]">шт</span>
                   </div>
                 </div>
               </div>
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Orders table */}
-          <div className="bg-[var(--mid)] border border-[var(--border)] rounded-xl overflow-hidden mb-6">
+          <div className="bg-[#111111] border border-[var(--border)] rounded-xl overflow-hidden mb-6">
             <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
               <p className="text-[14px] font-semibold text-white">Останні замовлення</p>
               <Link href="/admin/orders" className="btn-outline btn-sm">Всі замовлення</Link>
@@ -241,8 +241,8 @@ export default function AdminDashboard() {
                         <td className={tdCls}>{o.date}</td>
                         <td className={tdCls}>
                           <div className="flex gap-1 justify-end">
-                            <Link href={`/admin/orders/${o.id}`} className="w-7 h-7 flex items-center justify-center bg-[var(--surface)] border border-[var(--border)] rounded text-[var(--muted)] hover:text-[var(--brand)] hover:border-[var(--brand)]/30 transition-all"><Eye size={12}/></Link>
-                            <button className="w-7 h-7 flex items-center justify-center bg-[var(--surface)] border border-[var(--border)] rounded text-[var(--muted)] hover:text-white transition-all"><Edit size={12}/></button>
+                            <Link href={`/admin/orders/${o.id}`} className="w-7 h-7 flex items-center justify-center bg-[#1A1A1A] border border-[var(--border)] rounded text-[#666] hover:text-[var(--brand)] hover:border-[var(--brand)]/30 transition-all"><Eye size={12}/></Link>
+                            <button className="w-7 h-7 flex items-center justify-center bg-[#1A1A1A] border border-[var(--border)] rounded text-[#666] hover:text-white transition-all"><Edit size={12}/></button>
                           </div>
                         </td>
                       </tr>

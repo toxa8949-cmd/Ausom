@@ -22,7 +22,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--black)] flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-6">
       <div className="w-full max-w-[380px]">
 
         {/* Logo */}
@@ -32,23 +32,23 @@ export default function AdminLogin() {
           <sup className="font-sans text-[10px] font-bold text-[var(--brand)] tracking-normal -mt-2">Admin</sup>
         </div>
 
-        <div className="bg-[var(--mid)] border border-[var(--border)] rounded-2xl p-8">
+        <div className="bg-[#111111] border border-[var(--border)] rounded-2xl p-8">
           <h1 className="font-display text-[28px] text-white tracking-wide mb-1">Вхід</h1>
-          <p className="text-[13px] text-[var(--muted)] mb-7">Адмін-панель Ausom Ukraine</p>
+          <p className="text-[13px] text-[#666] mb-7">Адмін-панель Ausom Ukraine</p>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[var(--muted)] mb-2">Email</label>
+              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[#666] mb-2">Email</label>
               <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="admin@ausom.ua"
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3 text-[14px] text-white placeholder:text-[var(--muted)] outline-none focus:border-[var(--brand)] transition-colors"/>
+                className="w-full bg-[#1A1A1A] border border-[var(--border)] rounded-lg px-4 py-3 text-[14px] text-white placeholder:text-[#666] outline-none focus:border-[var(--brand)] transition-colors"/>
             </div>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[var(--muted)] mb-2">Пароль</label>
+              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[#666] mb-2">Пароль</label>
               <div className="relative">
                 <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} required placeholder="••••••••"
-                  className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-lg px-4 py-3 pr-11 text-[14px] text-white placeholder:text-[var(--muted)] outline-none focus:border-[var(--brand)] transition-colors"/>
+                  className="w-full bg-[#1A1A1A] border border-[var(--border)] rounded-lg px-4 py-3 pr-11 text-[14px] text-white placeholder:text-[#666] outline-none focus:border-[var(--brand)] transition-colors"/>
                 <button type="button" onClick={()=>setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted)] hover:text-white transition-colors">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors">
                   {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
                 </button>
               </div>
@@ -60,7 +60,7 @@ export default function AdminLogin() {
 
             <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-2 disabled:opacity-60">
               {loading ? (
-                <><span className="w-4 h-4 border-2 border-[var(--black)]/40 border-t-[var(--black)] rounded-full animate-spin"/>Вхід...</>
+                <><span className="w-4 h-4 border-2 border-[#111]/40 border-t-[var(--black)] rounded-full animate-spin"/>Вхід...</>
               ) : 'Увійти'}
             </button>
           </form>

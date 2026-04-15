@@ -39,7 +39,7 @@ export default function AdminProducts() {
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-bold">Товари</h1>
-          <p className="text-[#888884] text-sm mt-1">{products.length} моделей в каталозі</p>
+          <p className="text-[#666] text-sm mt-1">{products.length} моделей в каталозі</p>
         </div>
         <Link href="/admin/products/new" className="btn-primary">
           <Plus size={16} />
@@ -49,29 +49,29 @@ export default function AdminProducts() {
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#888884]" />
+        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666]" />
         <input
           type="text"
           placeholder="Пошук товарів..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full bg-white border border-[#e8e8e5] rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-[#ff5c00] transition-colors"
+          className="w-full bg-white border border-[#2A2A2A] rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-[#F5C200] transition-colors"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#e8e8e5] overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#2A2A2A] overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-[#888884]">
-            <div className="w-8 h-8 border-2 border-[#ff5c00] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="p-12 text-center text-[#666]">
+            <div className="w-8 h-8 border-2 border-[#F5C200] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             Завантаження...
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[#e8e8e5]">
+              <tr className="border-b border-[#2A2A2A]">
                 {['Назва', 'Ціна', 'Категорія', 'Наявність', 'Дії'].map(h => (
-                  <th key={h} className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#888884]">
+                  <th key={h} className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#666]">
                     {h}
                   </th>
                 ))}
@@ -82,12 +82,12 @@ export default function AdminProducts() {
                 <tr key={p.id} className="border-b border-[#f4f4f2] hover:bg-[#fafaf8] transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-semibold text-sm">{p.name}</div>
-                    <div className="text-xs text-[#888884] mt-0.5">{p.slug}</div>
+                    <div className="text-xs text-[#666] mt-0.5">{p.slug}</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="font-bold text-sm">€{p.price}</div>
                     {p.old_price && (
-                      <div className="text-xs text-[#888884] line-through">€{p.old_price}</div>
+                      <div className="text-xs text-[#666] line-through">€{p.old_price}</div>
                     )}
                   </td>
                   <td className="px-6 py-4">
@@ -110,14 +110,14 @@ export default function AdminProducts() {
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/admin/products/${p.id}`}
-                        className="w-8 h-8 flex items-center justify-center text-[#888884] hover:text-[#0b0b0b] hover:bg-[#f4f4f2] rounded-lg transition-all"
+                        className="w-8 h-8 flex items-center justify-center text-[#666] hover:text-[#F5F5F0] hover:bg-[#1A1A1A] rounded-lg transition-all"
                       >
                         <Pencil size={14} />
                       </Link>
                       <button
                         onClick={() => handleDelete(p.id, p.name)}
                         disabled={deleting === p.id}
-                        className="w-8 h-8 flex items-center justify-center text-[#888884] hover:text-red-500 hover:bg-red-50 rounded-lg transition-all disabled:opacity-40"
+                        className="w-8 h-8 flex items-center justify-center text-[#666] hover:text-red-500 hover:bg-red-50 rounded-lg transition-all disabled:opacity-40"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -130,7 +130,7 @@ export default function AdminProducts() {
         )}
 
         {!loading && filtered.length === 0 && (
-          <div className="p-12 text-center text-[#888884] text-sm">
+          <div className="p-12 text-center text-[#666] text-sm">
             Нічого не знайдено
           </div>
         )}

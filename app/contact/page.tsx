@@ -13,11 +13,11 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="bg-[#0b0b0b] py-16">
+      <div className="bg-[var(--text)] py-16">
         <div className="container-wide">
           <span className="section-label">Контакти</span>
           <h1 className="section-heading text-white">
-            Зв'яжись <span className="text-[#ff5c00]">з нами</span>
+            Зв'яжись <span className="text-[var(--brand-dk)]">з нами</span>
           </h1>
         </div>
       </div>
@@ -38,11 +38,11 @@ export default function ContactPage() {
                 const Icon = c.icon
                 return (
                   <div key={c.label} className="flex items-start gap-4">
-                    <div className="w-11 h-11 bg-[#f4f4f2] rounded-xl flex items-center justify-center shrink-0">
-                      <Icon size={18} className="text-[#ff5c00]" />
+                    <div className="w-11 h-11 bg-[var(--bg-surface)] rounded-xl flex items-center justify-center shrink-0">
+                      <Icon size={18} className="text-[var(--brand-dk)]" />
                     </div>
                     <div>
-                      <div className="text-xs text-[#888884] font-medium uppercase tracking-wider mb-0.5">{c.label}</div>
+                      <div className="text-xs text-[var(--text-3)] font-medium uppercase tracking-wider mb-0.5">{c.label}</div>
                       <div className="font-semibold">{c.value}</div>
                     </div>
                   </div>
@@ -58,7 +58,7 @@ export default function ContactPage() {
               <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
                 <div className="text-4xl mb-4">✅</div>
                 <h3 className="font-bold text-lg mb-2">Повідомлення надіслано!</h3>
-                <p className="text-[#888884] text-sm">Ми відповімо протягом 24 годин.</p>
+                <p className="text-[var(--text-3)] text-sm">Ми відповімо протягом 24 годин.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -74,7 +74,7 @@ export default function ContactPage() {
                       type={f.type}
                       placeholder={f.placeholder}
                       required
-                      className="w-full bg-[#f4f4f2] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ff5c00] transition-colors"
+                      className="w-full bg-[var(--bg-surface)] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[var(--brand-dk)] transition-colors"
                     />
                   </div>
                 ))}
@@ -84,7 +84,7 @@ export default function ContactPage() {
                     rows={5}
                     placeholder="Ваше питання або коментар..."
                     required
-                    className="w-full bg-[#f4f4f2] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ff5c00] transition-colors resize-none"
+                    className="w-full bg-[var(--bg-surface)] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[var(--brand-dk)] transition-colors resize-none"
                   />
                 </div>
                 <button type="submit" className="btn-primary w-full justify-center">

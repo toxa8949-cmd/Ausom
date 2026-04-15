@@ -6,7 +6,7 @@ export default function NewsletterForm() {
       <input
         type="email"
         placeholder="твій@email.com"
-        className="flex-1 bg-white/8 border border-white/12 text-white placeholder-white/30 px-5 py-3.5 rounded-lg text-sm focus:outline-none focus:border-[#ff5c00] transition-colors"
+        className="flex-1 bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text)] placeholder:text-[var(--text-3)] px-5 py-3.5 rounded-lg text-sm focus:outline-none focus:border-[var(--brand-dk)] transition-colors"
         style={{ background: 'rgba(255,255,255,.08)', borderColor: 'rgba(255,255,255,.12)', color: 'white' }}
       />
       <button type="submit" className="btn-primary shrink-0">Підписатися</button>

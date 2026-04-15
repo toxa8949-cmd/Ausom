@@ -9,7 +9,7 @@ const MSGS = [
 export default function AnnouncementBar() {
   const items = [...MSGS, ...MSGS]
   return (
-    <div className="h-9 bg-[var(--brand)] text-[var(--black)] overflow-hidden flex items-center">
+    <div className="h-9 bg-[var(--brand)] text-[#111] overflow-hidden flex items-center">
       <div className="animate-ticker flex gap-16 whitespace-nowrap">
         {items.map((msg, i) => (
           <span key={i} className="text-[11px] font-bold tracking-[.08em] uppercase flex items-center gap-2">

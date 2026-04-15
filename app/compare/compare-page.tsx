@@ -50,7 +50,7 @@ export default function ComparePage() {
       <div className="bg-[var(--bg-mid)] border-b border-[var(--border)] py-14">
         <div className="container-wide">
           <span className="section-label">Інструмент вибору</span>
-          <h1 className="section-heading text-white">Порівняй <span className="text-[var(--brand-dk)]">Моделі</span></h1>
+          <h1 className="section-heading text-[var(--text)]">Порівняй <span className="text-[var(--brand-dk)]">Моделі</span></h1>
           <p className="text-[var(--text-3)] text-[13px] mt-2">Обери до 4 моделей · жовтим виділено найкраще значення</p>
         </div>
       </div>
@@ -67,7 +67,7 @@ export default function ComparePage() {
               return (
                 <button key={p.slug} onClick={() => !disabled && toggle(p.slug)} disabled={disabled}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-[12px] font-semibold transition-all ${
-                    isSel    ? 'border-[var(--brand)] bg-[var(--brand)]/10 text-white' :
+                    isSel    ? 'border-[var(--brand)] bg-[var(--brand)]/10 text-[var(--text)]' :
                     disabled ? 'border-[var(--border)] text-[var(--text-3)] opacity-40 cursor-not-allowed' :
                                'border-[var(--border)] text-[var(--text-3)] hover:border-white/30 hover:text-[var(--text)]'
                   }`}>
@@ -101,7 +101,7 @@ export default function ComparePage() {
                         </svg>
                       </div>
                       <div>
-                        <p className="text-[13px] font-semibold text-white text-center leading-tight mb-1">{p.name}</p>
+                        <p className="text-[13px] font-semibold text-[var(--text)] text-center leading-tight mb-1">{p.name}</p>
                         <p className="font-display text-[20px] text-[var(--brand-dk)] tracking-wide leading-none text-center">₴{p.price.toLocaleString('uk-UA')}</p>
                       </div>
                       <button onClick={() => toggle(p.slug)}
@@ -147,7 +147,7 @@ export default function ComparePage() {
                       const num = parseFloat(String(val))
                       const isBest = best !== null && !isNaN(num) && num === best
                       return (
-                        <td key={p.slug} className={`px-5 py-3.5 text-center text-[13px] border-l border-[var(--border)] font-medium ${isBest ? 'text-[var(--brand-dk)] font-bold' : 'text-white'}`}>
+                        <td key={p.slug} className={`px-5 py-3.5 text-center text-[13px] border-l border-[var(--border)] font-medium ${isBest ? 'text-[var(--brand-dk)] font-bold' : 'text-[var(--text)]'}`}>
                           {val === true ? <Check size={16} className="text-green-400 mx-auto" /> :
                            val === false ? <X size={16} className="text-[var(--border)] mx-auto" /> :
                            fmt(val)}

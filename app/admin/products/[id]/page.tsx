@@ -101,31 +101,31 @@ export default function ProductForm({ params }: { params: { id: string } }) {
     }
   }
 
-  const inputCls = "w-full bg-[#f4f4f2] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#ff5c00] transition-colors"
+  const inputCls = "w-full bg-[#1A1A1A] border border-transparent rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#F5C200] transition-colors"
   const labelCls = "block text-sm font-medium mb-1.5"
 
   if (loading) return (
     <div className="flex items-center justify-center py-20">
-      <div className="w-8 h-8 border-2 border-[#ff5c00] border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-2 border-[#F5C200] border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
   return (
     <div className="max-w-3xl">
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/admin/products" className="w-9 h-9 flex items-center justify-center text-[#888884] hover:text-[#0b0b0b] bg-white border border-[#e8e8e5] rounded-xl transition-all">
+        <Link href="/admin/products" className="w-9 h-9 flex items-center justify-center text-[#666] hover:text-[#F5F5F0] bg-white border border-[#2A2A2A] rounded-xl transition-all">
           <ArrowLeft size={16} />
         </Link>
         <div>
           <h1 className="text-2xl font-bold">{isNew ? 'Новий товар' : 'Редагувати товар'}</h1>
-          <p className="text-[#888884] text-sm mt-0.5">{isNew ? 'Додай новий самокат до каталогу' : form.name}</p>
+          <p className="text-[#666] text-sm mt-0.5">{isNew ? 'Додай новий самокат до каталогу' : form.name}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* Basic info */}
-        <div className="bg-white rounded-2xl p-6 border border-[#e8e8e5]">
+        <div className="bg-white rounded-2xl p-6 border border-[#2A2A2A]">
           <h2 className="font-bold mb-5">Основна інформація</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
@@ -161,7 +161,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         </div>
 
         {/* Price */}
-        <div className="bg-white rounded-2xl p-6 border border-[#e8e8e5]">
+        <div className="bg-white rounded-2xl p-6 border border-[#2A2A2A]">
           <h2 className="font-bold mb-5">Ціна</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -176,7 +176,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         </div>
 
         {/* Specs */}
-        <div className="bg-white rounded-2xl p-6 border border-[#e8e8e5]">
+        <div className="bg-white rounded-2xl p-6 border border-[#2A2A2A]">
           <h2 className="font-bold mb-5">Характеристики</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <div>
@@ -222,13 +222,13 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         </div>
 
         {/* Features */}
-        <div className="bg-white rounded-2xl p-6 border border-[#e8e8e5]">
+        <div className="bg-white rounded-2xl p-6 border border-[#2A2A2A]">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-bold">Особливості</h2>
             <button
               type="button"
               onClick={() => set('features', [...form.features, ''])}
-              className="text-sm font-medium text-[#ff5c00] flex items-center gap-1 hover:opacity-80"
+              className="text-sm font-medium text-[#F5C200] flex items-center gap-1 hover:opacity-80"
             >
               <Plus size={14} /> Додати
             </button>
@@ -250,7 +250,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                   <button
                     type="button"
                     onClick={() => set('features', form.features.filter((_, j) => j !== i))}
-                    className="w-11 h-11 flex items-center justify-center text-[#888884] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0"
+                    className="w-11 h-11 flex items-center justify-center text-[#666] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0"
                   >
                     <X size={15} />
                   </button>
@@ -261,7 +261,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
         </div>
 
         {/* Flags */}
-        <div className="bg-white rounded-2xl p-6 border border-[#e8e8e5]">
+        <div className="bg-white rounded-2xl p-6 border border-[#2A2A2A]">
           <h2 className="font-bold mb-5">Статус</h2>
           <div className="flex flex-wrap gap-6">
             {[
@@ -273,7 +273,7 @@ export default function ProductForm({ params }: { params: { id: string } }) {
                 <div
                   onClick={() => set(f.key as keyof FormData, !form[f.key as keyof FormData])}
                   className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer
-                    ${form[f.key as keyof FormData] ? 'bg-[#ff5c00]' : 'bg-[#e8e8e5]'}`}
+                    ${form[f.key as keyof FormData] ? 'bg-[#F5C200]' : 'bg-[#e8e8e5]'}`}
                 >
                   <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform
                     ${form[f.key as keyof FormData] ? 'translate-x-6' : 'translate-x-0.5'}`}
