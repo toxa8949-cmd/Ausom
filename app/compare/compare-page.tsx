@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { PRODUCTS } from '@/lib/data'
 import { Check, X, ShoppingBag, Plus, ChevronRight } from 'lucide-react'
 import { useCart } from '@/lib/cart'
@@ -132,10 +133,16 @@ export default function ComparePage() {
                           Best Choice
                         </div>
                       )}
-                      {/* Mini scooter */}
+                      {/* Product image */}
                       <div style={{ display:'flex', justifyContent:'center', marginBottom:12, marginTop: isBest ? 12 : 0 }}>
-                        <div style={{ background:'var(--bg-subtle)', border:'1px solid var(--border)', borderRadius:10, padding:'12px 16px', display:'inline-flex' }}>
-                          <ScooterIcon/>
+                        <div style={{ background:'var(--bg-subtle)', border:'1px solid var(--border)', borderRadius:10, width:100, height:100, position:'relative', overflow:'hidden' }}>
+                          {p.images?.[0] ? (
+                            <Image src={p.images[0]} alt={p.name} fill sizes="120px" style={{ objectFit:'contain', padding:8 }}/>
+                          ) : (
+                            <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                              <ScooterIcon/>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div style={{ fontSize:14, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em', marginBottom:6 }}>{p.name}</div>

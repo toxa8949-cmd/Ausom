@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, ChevronLeft, ChevronRight, Zap, Gauge, Battery, Weight } from 'lucide-react'
 import { PRODUCTS } from '@/lib/data'
 
@@ -159,7 +160,20 @@ export default function Hero() {
               margin:'5%',
             }}/>
             <div style={{ position:'relative', width:'100%', maxWidth:480, aspectRatio:'1', padding:'8%' }}>
-              <ScooterSVG color="#F5C200"/>
+              {p.images?.[0] ? (
+                <div style={{ position:'relative', width:'88%', aspectRatio:'1' }}>
+                  <Image
+                    src={p.images[0]}
+                    alt={p.name}
+                    fill
+                    priority
+                    sizes="50vw"
+                    style={{ objectFit:'contain' }}
+                  />
+                </div>
+              ) : (
+                <ScooterSVG color="#F5C200"/>
+              )}
             </div>
             {/* Floating card */}
             <div style={{

@@ -1,5 +1,8 @@
 import { Product } from './types'
 
+// Official Ausom CDN image URLs
+const CDN = 'https://pl.ausomstore.com/cdn/shop/files'
+
 export const PRODUCTS: Product[] = [
   {
     id: '1',
@@ -17,7 +20,9 @@ export const PRODUCTS: Product[] = [
     battery_wh: 468,
     description: 'Ausom L1 — ідеальний старт у світ електросамокатів. Легкий, надійний та доступний міський самокат для щоденних поїздок по місту.',
     features: ['Мотор 500W', 'Запас ходу 50 км', 'Швидкість до 45 км/год', 'Вага лише 20 кг', 'Складається за 3 секунди', 'Підходить для початківців'],
-    images: [],
+    images: [
+      `${CDN}/l1-max-page-mobile.jpg?v=1765511227`,
+    ],
     in_stock: true,
     is_new: false,
     is_featured: true,
@@ -40,7 +45,9 @@ export const PRODUCTS: Product[] = [
     battery_wh: 768,
     description: 'Ausom L2 Dual Motor — потужний міський самокат з подвійним мотором. Чудовий баланс між міськими їздами та підвищеною продуктивністю.',
     features: ['Подвійний мотор 2×600W', 'Запас ходу 70 км', 'Швидкість до 55 км/год', 'Пневматичні шини', 'Передня вилочна підвіска', 'Складна конструкція'],
-    images: [],
+    images: [
+      `${CDN}/800x1000_0936ab86-a006-46f0-b540-fddd9d2028dc.jpg?v=1772504724`,
+    ],
     in_stock: true,
     is_new: false,
     is_featured: true,
@@ -63,7 +70,9 @@ export const PRODUCTS: Product[] = [
     battery_wh: 960,
     description: 'Ausom L2 Max Dual Motor — найпотужніша модель серії L. Збільшений акумулятор та подвійний мотор для максимального запасу ходу та тяги.',
     features: ['Подвійний мотор 2×800W', 'Запас ходу 85 км', 'Швидкість до 55 км/год', 'Акумулятор 960 Wh', 'Пневматичні шини', 'Вилочна підвіска'],
-    images: [],
+    images: [
+      `${CDN}/l2-max-dual-detail-page-mobile.jpg?v=1765511614`,
+    ],
     in_stock: true,
     is_new: false,
     is_featured: true,
@@ -86,7 +95,10 @@ export const PRODUCTS: Product[] = [
     battery_wh: 1066,
     description: 'Ausom DT2 Pro — позашляховий самокат преміум класу. Розроблений для бездоріжжя та екстремальних умов з власною архітектурою підвіски Ausom.',
     features: ['Мотор 2×1000W', 'Позашляхова підвіска', 'Запас ходу 70 км', 'Швидкість до 65 км/год', 'Гідравлічні гальма Zoom', 'Навантаження до 150 кг'],
-    images: [],
+    images: [
+      `${CDN}/dt2-pro-detail-page-mobile.jpg?v=1765510548`,
+      `${CDN}/DT2_Pro.jpg?v=1767606498`,
+    ],
     in_stock: true,
     is_new: false,
     is_featured: true,

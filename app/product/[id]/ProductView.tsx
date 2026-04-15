@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ShoppingBag, ArrowLeft, Check, Zap, Gauge, Battery, Weight, ChevronRight } from 'lucide-react'
 import { PRODUCTS } from '@/lib/data'
 import { Product } from '@/lib/types'
@@ -63,18 +64,24 @@ export default function ProductView({ product }: { product: Product }) {
                 {product.tag}
               </span>
             )}
-            <svg viewBox="0 0 300 260" fill="none" style={{ width:'72%', height:'72%' }}>
-              <circle cx="60"  cy="208" r="42" stroke="#F5C200" strokeWidth="8"/>
-              <circle cx="240" cy="208" r="42" stroke="#F5C200" strokeWidth="8"/>
-              <circle cx="60"  cy="208" r="26" stroke="#F5C200" strokeWidth="2.5" strokeDasharray="4 5" opacity=".4"/>
-              <circle cx="240" cy="208" r="26" stroke="#F5C200" strokeWidth="2.5" strokeDasharray="4 5" opacity=".4"/>
-              <path d="M60 208 L96 92 L188 72 L240 208" stroke="var(--text)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" opacity=".85"/>
-              <path d="M96 92 L132 34" stroke="#F5C200" strokeWidth="9" strokeLinecap="round"/>
-              <rect x="118" y="20" width="48" height="26" rx="7" fill="#F5C200"/>
-              <rect x="128" y="27" width="28" height="12" rx="3" fill="#111" opacity=".2"/>
-              <path d="M188 72 L236 112" stroke="var(--text-3)" strokeWidth="7" strokeLinecap="round"/>
-              <rect x="225" y="100" width="32" height="18" rx="5" fill="var(--bg-subtle)" stroke="var(--border)" strokeWidth="1.5"/>
-            </svg>
+            {product.images?.[0] ? (
+              <Image
+                src={product.images[0]}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width:768px) 100vw, 50vw"
+                style={{ objectFit:'contain', padding:24 }}
+              />
+            ) : (
+              <svg viewBox="0 0 300 260" fill="none" style={{ width:'72%', height:'72%' }}>
+                <circle cx="60"  cy="208" r="42" stroke="#F5C200" strokeWidth="8"/>
+                <circle cx="240" cy="208" r="42" stroke="#F5C200" strokeWidth="8"/>
+                <path d="M60 208 L96 92 L188 72 L240 208" stroke="var(--text)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" opacity=".85"/>
+                <path d="M96 92 L132 34" stroke="#F5C200" strokeWidth="9" strokeLinecap="round"/>
+                <rect x="118" y="20" width="48" height="26" rx="7" fill="#F5C200"/>
+              </svg>
+            )}
           </div>
 
           {/* Info */}
