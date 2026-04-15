@@ -132,12 +132,12 @@ export default function CheckoutPage() {
                   {items.map(item => (
                     <div key={item.product.id} className="flex justify-between text-sm">
                       <span className="text-[#888884] truncate mr-2">{item.product.name} × {item.quantity}</span>
-                      <span className="font-medium shrink-0">€{item.product.price * item.quantity}</span>
+                      <span className="font-medium shrink-0">₴{(item.product.price * item.quantity).toLocaleString('uk-UA')}</span>
                     </div>
                   ))}
                   <div className="border-t border-[#e8e8e5] pt-3 flex justify-between">
                     <span className="font-bold">Разом</span>
-                    <span className="font-bold text-xl">€{total}</span>
+                    <span className="font-bold text-xl">₴{total.toLocaleString('uk-UA')}</span>
                   </div>
                 </div>
                 <button type="submit" disabled={saving} className="btn-primary w-full justify-center disabled:opacity-60">

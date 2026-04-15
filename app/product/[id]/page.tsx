@@ -47,7 +47,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
           <div className="bg-[#f4f4f2] rounded-2xl aspect-square flex items-center justify-center relative">
             {saving > 0 && (
               <span className="absolute top-5 left-5 bg-[#ff5c00] text-white text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg">
-                −€{saving}
+                −₴{saving.toLocaleString('uk-UA')}
               </span>
             )}
             {product.tag && (
@@ -92,9 +92,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
 
             {/* Price */}
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-4xl font-bold text-[#0b0b0b]">€{product.price}</span>
+              <span className="text-4xl font-bold text-[#0b0b0b]">₴{product.price.toLocaleString('uk-UA')}</span>
               {product.old_price && (
-                <span className="text-xl text-[#c8c8c4] line-through">€{product.old_price}</span>
+                <span className="text-xl text-[#c8c8c4] line-through">₴{product.old_price!.toLocaleString('uk-UA')}</span>
               )}
               {saving > 0 && (
                 <span className="text-sm font-bold text-[#ff5c00] bg-[#ff5c00]/10 px-3 py-1 rounded-full">

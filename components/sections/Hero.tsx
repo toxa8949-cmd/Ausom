@@ -7,22 +7,22 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 const SLIDES = [
   {
     eyebrow: 'Новинка 2026',
-    title: 'Gosoul 2 Pro',
-    subtitle: 'Dual Motor',
-    desc: 'Подвійний мотор 2×800W, 80 км запас ходу, 60 км/год. Місто більше не має меж.',
-    price: 569,
-    oldPrice: 749,
-    href: '/product/gosoul-2-pro',
+    title: 'Ausom L1',
+    subtitle: 'Міський самокат',
+    desc: 'Мотор 500W, запас ходу 50 км, вага лише 20 кг. Ідеальний для міських поїздок.',
+    price: 27050,
+    oldPrice: 33800,
+    href: '/product/l1',
     bg: 'from-[#1a0500] via-[#3d1000] to-[#7a2500]',
   },
   {
     eyebrow: 'Флагман лінійки',
-    title: 'F1 Max',
-    subtitle: 'Electric Scooter',
-    desc: '60V акумулятор 1440Wh, 90 км пробіг, максимальна швидкість 75 км/год.',
-    price: 1299,
-    oldPrice: 1479,
-    href: '/product/f1-max',
+    title: 'DT2 Pro',
+    subtitle: 'Позашляховий',
+    desc: 'Подвійний мотор 2×1000W, 70 км запас ходу, 65 км/год. Для бездоріжжя та міста.',
+    price: 44250,
+    oldPrice: 55300,
+    href: '/product/dt2-pro',
     bg: 'from-[#070d14] via-[#0d1e2e] to-[#1a3048]',
   },
   {
@@ -107,10 +107,10 @@ export default function Hero() {
               className="inline-flex items-baseline gap-3 mt-10 bg-white/8 backdrop-blur-sm border border-white/12 rounded-xl px-5 py-4"
             >
               <span className="text-white/50 text-xs font-medium uppercase tracking-wider">від</span>
-              <span className="font-display text-4xl text-white tracking-wide">€{slide.price}</span>
+              <span className="font-display text-4xl text-white tracking-wide">₴{slide.price.toLocaleString('uk-UA')}</span>
               {slide.oldPrice && (
                 <span className="text-[#ff5c00] text-xs font-bold bg-[#ff5c00]/15 px-2.5 py-1 rounded-full">
-                  −€{slide.oldPrice - slide.price}
+                  −₴{(slide.oldPrice - slide.price).toLocaleString('uk-UA')}
                 </span>
               )}
             </div>

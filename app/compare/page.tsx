@@ -7,8 +7,8 @@ import { Check, X, ShoppingBag } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 
 const SPECS = [
-  { key: 'price', label: 'Ціна', format: (v: number) => `€${v}` },
-  { key: 'old_price', label: 'Стара ціна', format: (v: number | null) => v ? `€${v}` : '—' },
+  { key: 'price', label: 'Ціна', format: (v: number) => `₴${v.toLocaleString('uk-UA')}` },
+  { key: 'old_price', label: 'Стара ціна', format: (v: number | null) => v ? `₴${v.toLocaleString('uk-UA')}` : '—' },
   { key: 'voltage', label: 'Напруга', format: (v: string) => v.toUpperCase() },
   { key: 'motor', label: 'Мотор', format: (v: string) => v === 'dual' ? 'Подвійний' : 'Одиночний' },
   { key: 'range_km', label: 'Запас ходу', format: (v: number) => `${v} км` },

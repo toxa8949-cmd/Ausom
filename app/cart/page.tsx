@@ -84,7 +84,7 @@ export default function CartPage() {
                       <div className="text-right">
                         <div className="font-bold text-lg">€{product.price * quantity}</div>
                         {saving > 0 && (
-                          <div className="text-xs text-[#ff5c00]">Економія €{saving * quantity}</div>
+                          <div className="text-xs text-[#ff5c00]">Економія ₴{(saving * quantity).toLocaleString('uk-UA')}</div>
                         )}
                       </div>
                     </div>
@@ -106,7 +106,7 @@ export default function CartPage() {
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
                   <span className="text-[#888884]">Товарів ({count})</span>
-                  <span className="font-medium">€{total}</span>
+                  <span className="font-medium">₴{total.toLocaleString('uk-UA')}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-[#888884]">Доставка</span>
@@ -114,7 +114,7 @@ export default function CartPage() {
                 </div>
                 <div className="border-t border-[#e8e8e5] pt-3 flex justify-between">
                   <span className="font-bold">Разом</span>
-                  <span className="font-bold text-xl">€{total}</span>
+                  <span className="font-bold text-xl">₴{total.toLocaleString('uk-UA')}</span>
                 </div>
               </div>
 

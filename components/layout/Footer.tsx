@@ -1,14 +1,11 @@
 import Link from 'next/link'
 
 const SCOOTERS = [
-  { label: 'Gosoul 2 Pro', href: '/product/gosoul-2-pro' },
-  { label: 'K20 Pro Dual', href: '/product/k20-pro' },
-  { label: 'DT2 Pro', href: '/product/dt2-pro' },
-  { label: 'F1 Max', href: '/product/f1-max' },
-  { label: 'SR1', href: '/product/sr1' },
-  { label: 'L2 Max Dual', href: '/product/l2-max-dual' },
-  { label: 'L1', href: '/product/l1' },
-  { label: 'Porівняти моделі', href: '/compare' },
+  { label: 'Ausom L1', href: '/product/l1' },
+  { label: 'Ausom L2 Dual Motor', href: '/product/l2-dual' },
+  { label: 'Ausom L2 Max Dual Motor', href: '/product/l2-max-dual' },
+  { label: 'Ausom DT2 Pro', href: '/product/dt2-pro' },
+  { label: 'Порівняти моделі', href: '/compare' },
 ]
 
 const COMPANY = [

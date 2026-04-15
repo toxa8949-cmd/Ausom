@@ -1,11 +1,10 @@
 import Link from 'next/link'
 
 const ROWS = [
-  { model: 'L1', speed: '45 км/г', range: '50 км', price: '€499' },
-  { model: 'Gosoul 2 Pro', speed: '60 км/г', range: '80 км', price: '€569' },
-  { model: 'DT2 Pro', speed: '65 км/г', range: '70 км', price: '€949' },
-  { model: 'SR1', speed: '70 км/г', range: '75 км', price: '€759' },
-  { model: 'F1 Max', speed: '75 км/г', range: '90 км', price: '€1299' },
+  { model: 'L1', speed: '45 км/г', range: '50 км', price: '27 050 ₴' },
+  { model: 'L2 Dual Motor', speed: '55 км/г', range: '70 км', price: '32 200 ₴' },
+  { model: 'L2 Max Dual', speed: '55 км/г', range: '85 км', price: '40 800 ₴' },
+  { model: 'DT2 Pro', speed: '65 км/г', range: '70 км', price: '44 250 ₴' },
 ]
 
 export default function CompareCTA() {

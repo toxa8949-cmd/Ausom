@@ -21,7 +21,7 @@ export default function ProductCard({ product }: Props) {
           {/* Saving badge */}
           {saving > 0 && (
             <span className="absolute top-3 left-3 bg-[#ff5c00] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded z-10">
-              −€{saving}
+              −₴{saving.toLocaleString('uk-UA')}
             </span>
           )}
           {/* Tag badge */}
@@ -74,9 +74,9 @@ export default function ProductCard({ product }: Props) {
 
         {/* Pricing */}
         <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-xl font-bold text-[#0b0b0b]">€{product.price}</span>
+          <span className="text-xl font-bold text-[#0b0b0b]">₴{product.price.toLocaleString('uk-UA')}</span>
           {product.old_price && (
-            <span className="text-sm text-[#c8c8c4] line-through">€{product.old_price}</span>
+            <span className="text-sm text-[#c8c8c4] line-through">₴{product.old_price!.toLocaleString('uk-UA')}</span>
           )}
         </div>
 
