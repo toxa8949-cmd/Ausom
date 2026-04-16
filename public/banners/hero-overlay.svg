@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 640" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Strong dark gradient on the left for text contrast. Fades to
+         transparent on the right so the photo is fully visible there. -->
+    <linearGradient id="leftDark" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"  stop-color="#000" stop-opacity=".75"/>
+      <stop offset="30%" stop-color="#000" stop-opacity=".55"/>
+      <stop offset="55%" stop-color="#000" stop-opacity=".2"/>
+      <stop offset="80%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Subtle vertical fade — darkens bottom for product strip area,
+         which makes the white strip below pop more -->
+    <linearGradient id="vertFade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="75%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".35"/>
+    </linearGradient>
+
+    <!-- Yellow atmospheric glow — warm accent in upper-right to tie banner
+         to the brand without being overpowering -->
+    <radialGradient id="yellowGlow" cx="85%" cy="20%" r="45%">
+      <stop offset="0%"   stop-color="#F5C200" stop-opacity=".15"/>
+      <stop offset="50%"  stop-color="#F5C200" stop-opacity=".04"/>
+      <stop offset="100%" stop-color="#F5C200" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Grain texture — breaks up flat gradients, adds premium "film" feel -->
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" seed="3"/>
+      <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 .12 0"/>
+    </filter>
+
+    <!-- Vignette — darkens corners slightly for cinematic focus -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="75%">
+      <stop offset="60%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".25"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Stack order matters: darker layers first, accents last -->
+  <rect width="1920" height="640" fill="url(#leftDark)"/>
+  <rect width="1920" height="640" fill="url(#vertFade)"/>
+  <rect width="1920" height="640" fill="url(#yellowGlow)"/>
+  <rect width="1920" height="640" fill="url(#vignette)"/>
+  <rect width="1920" height="640" filter="url(#grain)" opacity=".4"/>
+
+  <!-- Diagonal yellow "spark" line — upper right, suggests electric/speed -->
+  <line x1="1500" y1="60" x2="1880" y2="180" stroke="#F5C200" stroke-width="1.5" stroke-opacity=".5"/>
+  <circle cx="1880" cy="180" r="3" fill="#F5C200"/>
+  <circle cx="1880" cy="180" r="9" fill="#F5C200" fill-opacity=".18"/>
+
+  <!-- Thin yellow accent at very top — like a signal bar -->
+  <rect x="0" y="0" width="160" height="3" fill="#F5C200"/>
+
+  <!-- Corner bracket — bottom left (technical/blueprint feel, subtle) -->
+  <g stroke="#F5C200" stroke-width="1.5" fill="none" stroke-opacity=".4">
+    <path d="M 40 600 L 40 560 L 80 560"/>
+  </g>
+</svg>
