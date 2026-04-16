@@ -1,11 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, Truck, RotateCcw, Shield } from 'lucide-react'
+import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, Truck, RotateCcw, Shield, Loader2 } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 
 export default function CartPage() {
-  const { items, count, total, removeItem, updateQty, clearCart } = useCart()
+  const { items, count, total, removeItem, updateQty, clearCart, ready } = useCart()
+
+  // Don't render the empty-cart screen until we've loaded from localStorage,
+  // otherwise we'd flash it on every reload.
+  if (!ready) {
+    return (
+      <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <Loader2 size={24} style={{ color:'var(--text-3)', animation:'spin 1s linear infinite' }}/>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      </div>
+    )
+  }
 
   if (count === 0) {
     return (
