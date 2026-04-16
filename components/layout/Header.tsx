@@ -7,14 +7,20 @@ import { ShoppingBag, Menu, X, Sun, Moon, ChevronDown } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 import { useTheme } from '@/lib/theme'
 
-const NAV = [
+// Submenu items render in order. Items with `divider: true` draw a thin
+// line above themselves — used to visually group "brand" vs "category".
+type SubItem = { label: string; href: string; divider?: boolean }
+
+const NAV: Array<{ label: string; href: string; sub?: SubItem[] }> = [
   {
     label: 'Самокати', href: '/catalog',
     sub: [
-      { label: 'Всі моделі',   href: '/catalog' },
-      { label: 'Позашляхові', href: '/catalog?category=offroad' },
-      { label: 'Міські',      href: '/catalog?category=commuter' },
-      { label: 'Порівняти',   href: '/compare' },
+      { label: 'Всі моделі',    href: '/catalog' },
+      { label: 'Ausom',         href: '/catalog?brand=ausom' },
+      { label: 'Kukirin',       href: '/catalog?brand=kukirin' },
+      { label: 'Позашляхові',   href: '/catalog?category=offroad', divider: true },
+      { label: 'Міські',        href: '/catalog?category=commuter' },
+      { label: 'Порівняти',     href: '/compare', divider: true },
     ],
   },
   { label: 'Запчастини', href: '/parts' },
@@ -41,7 +47,6 @@ export default function Header() {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  // Close drawer when the route actually changes
   useEffect(() => { setOpen(false) }, [pathname])
 
   const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
@@ -69,8 +74,7 @@ export default function Header() {
             <sup style={{ fontFamily:'Inter,sans-serif', fontWeight:700, fontSize:9, color:'var(--yellow-dark)', marginTop:-8, letterSpacing:'.04em' }}>UA</sup>
           </Link>
 
-          {/* Desktop nav — .nav-desktop hides below 1024px via globals.css
-             (replaces unreliable Tailwind v4 "hidden lg:flex") */}
+          {/* Desktop nav */}
           <nav className="nav-desktop" style={{ alignItems:'center', gap:4, flex:1 }}>
             {NAV.map(item => (
               <div key={item.label} style={{ position:'relative' }}
@@ -91,7 +95,7 @@ export default function Header() {
                   <div style={{
                     position:'absolute', top:'calc(100% + 8px)', left:0,
                     background:'var(--bg)', border:'1.5px solid var(--border)',
-                    borderRadius:10, padding:6, minWidth:180,
+                    borderRadius:10, padding:6, minWidth:200,
                     boxShadow:'var(--shadow-md)', zIndex:100,
                     animation:'fadeUp .15s ease both',
                   }}>
@@ -100,6 +104,9 @@ export default function Header() {
                         display:'block', padding:'10px 14px', borderRadius:6,
                         fontSize:13, fontWeight:500, color:'var(--text-2)',
                         textDecoration:'none', transition:'background .1s, color .1s',
+                        borderTop: c.divider ? '1px solid var(--border)' : 'none',
+                        marginTop:  c.divider ? 4 : 0,
+                        paddingTop: c.divider ? 14 : 10,
                       }}
                       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='var(--bg-subtle)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
                       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color='var(--text-2)' }}>
@@ -117,25 +124,19 @@ export default function Header() {
 
           {/* Right actions */}
           <div style={{ display:'flex', alignItems:'center', gap:4, marginLeft:'auto' }}>
-            {/* Theme toggle */}
             <button onClick={toggle} aria-label="Тема" style={{
               width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
               background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
               color:'var(--text-3)', cursor:'pointer', transition:'all .15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-dark)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-3)' }}>
+            }}>
               {theme==='light' ? <Moon size={15}/> : <Sun size={15}/>}
             </button>
 
-            {/* Cart */}
             <Link href="/cart" aria-label="Кошик" style={{
               position:'relative', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
               background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
               color:'var(--text-3)', textDecoration:'none', transition:'all .15s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border-dark)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.color='var(--text-3)' }}>
+            }}>
               <ShoppingBag size={16}/>
               {count > 0 && (
                 <span style={{
@@ -149,7 +150,6 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Burger — .nav-burger visible only below 1024px */}
             <button
               className="nav-burger"
               aria-label={open ? 'Закрити меню' : 'Відкрити меню'}
@@ -179,9 +179,7 @@ export default function Header() {
         />
       )}
 
-      {/* Mobile drawer — hidden (visibility+pointer-events) when closed so it
-          can't intercept clicks or cause horizontal scroll on mobile.
-          See .mobile-drawer in globals.css */}
+      {/* Mobile drawer */}
       <div
         className={`mobile-drawer${open ? ' is-open' : ''}`}
         role="dialog"
@@ -199,13 +197,30 @@ export default function Header() {
           <span style={{ fontWeight:700, fontSize:15, color:'var(--text)' }}>Меню</span>
           <button onClick={() => setOpen(false)} aria-label="Закрити меню" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><X size={18}/></button>
         </div>
+
+        {/* Main items */}
         {NAV.map(item => (
-          <Link key={item.href} href={item.href} onClick={() => setOpen(false)} style={{
-            display:'block', padding:'14px 0',
-            fontSize:16, fontWeight:500, color: active(item.href) ? 'var(--text)' : 'var(--text-2)',
-            textDecoration:'none', borderBottom:'1px solid var(--border)',
-          }}>{item.label}</Link>
+          <div key={item.href}>
+            <Link href={item.href} onClick={() => setOpen(false)} style={{
+              display:'block', padding:'14px 0',
+              fontSize:16, fontWeight:500, color: active(item.href) ? 'var(--text)' : 'var(--text-2)',
+              textDecoration:'none', borderBottom:'1px solid var(--border)',
+            }}>{item.label}</Link>
+            {/* Inline sub-items on mobile: render brand shortcuts directly
+                under "Самокати" so user can tap straight into a brand */}
+            {item.sub && item.label === 'Самокати' && (
+              <div style={{ paddingLeft:12, display:'flex', flexDirection:'column' }}>
+                {item.sub.filter(s => s.href.includes('brand=')).map(s => (
+                  <Link key={s.href} href={s.href} onClick={() => setOpen(false)} style={{
+                    display:'block', padding:'10px 0', fontSize:14,
+                    color:'var(--text-3)', textDecoration:'none',
+                  }}>{s.label}</Link>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
+
         <Link href="/sale" onClick={() => setOpen(false)} style={{ display:'block', padding:'14px 0', fontSize:16, fontWeight:600, color:'var(--yellow-dark)', textDecoration:'none', borderBottom:'1px solid var(--border)' }}>
           🔥 Розпродаж
         </Link>

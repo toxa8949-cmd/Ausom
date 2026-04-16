@@ -5,6 +5,9 @@ export interface Product {
   price: number
   old_price: number | null
   category: 'offroad' | 'commuter'
+  /** Brand — Ausom is our own, Kukirin is a partner-resold line.
+      Defaults to 'ausom' on existing rows via the SQL migration. */
+  brand: 'ausom' | 'kukirin'
   voltage: '48v' | '52v' | '60v'
   motor: 'single' | 'dual'
   range_km: number

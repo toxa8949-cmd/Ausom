@@ -9,13 +9,17 @@ import { Save, Plus, X, ArrowLeft, Upload } from 'lucide-react'
 import AdminShell from '../../AdminShell'
 
 interface F {
-  name:string;slug:string;price:string;old_price:string;category:'offroad'|'commuter';voltage:'48v'|'52v'|'60v';motor:'single'|'dual'
+  name:string;slug:string;price:string;old_price:string
+  brand:'ausom'|'kukirin'
+  category:'offroad'|'commuter';voltage:'48v'|'52v'|'60v';motor:'single'|'dual'
   range_km:string;max_speed:string;weight_kg:string;max_load_kg:string;battery_wh:string;description:string;tag:string
   in_stock:boolean;is_new:boolean;is_featured:boolean;features:string[];images:string[]
 }
 
 const EMPTY: F = {
-  name:'',slug:'',price:'',old_price:'',category:'commuter',voltage:'48v',motor:'single',
+  name:'',slug:'',price:'',old_price:'',
+  brand:'ausom',
+  category:'commuter',voltage:'48v',motor:'single',
   range_km:'',max_speed:'',weight_kg:'',max_load_kg:'',battery_wh:'',description:'',tag:'',
   in_stock:true,is_new:false,is_featured:false,features:[''],images:[]
 }
@@ -41,6 +45,8 @@ export default function ProductFormInner({ id }: { id: string }) {
         const p = ps.find(x => x.id === id)
         if (p) setForm({
           name:p.name,slug:p.slug,price:String(p.price),old_price:String(p.old_price||''),
+          // Fall back to 'ausom' for products created before the brand column existed
+          brand: (p.brand === 'kukirin' ? 'kukirin' : 'ausom'),
           category:p.category,voltage:p.voltage,motor:p.motor,range_km:String(p.range_km),
           max_speed:String(p.max_speed),weight_kg:String(p.weight_kg),max_load_kg:String(p.max_load_kg),
           battery_wh:String(p.battery_wh),description:p.description,tag:p.tag||'',
@@ -82,6 +88,7 @@ export default function ProductFormInner({ id }: { id: string }) {
       const data: any = {
         name:form.name,slug:form.slug,price:parseFloat(form.price),
         old_price:form.old_price?parseFloat(form.old_price):null,
+        brand:form.brand,
         category:form.category,voltage:form.voltage,motor:form.motor,
         range_km:parseInt(form.range_km),max_speed:parseInt(form.max_speed),
         weight_kg:parseFloat(form.weight_kg),max_load_kg:parseInt(form.max_load_kg),
@@ -101,6 +108,12 @@ export default function ProductFormInner({ id }: { id: string }) {
     padding:'9px 20px',borderRadius:7,border:B,fontSize:13,fontWeight:600,
     cursor:'pointer',transition:'all .15s',
     background:v?'#111':'#fff',color:v?'#fff':'#444'
+  })
+  const brandToggle = (v: boolean): React.CSSProperties => ({
+    ...toggle(v),
+    background: v ? '#F5C200' : '#fff',
+    color:      v ? '#111'    : '#444',
+    borderColor:v ? '#F5C200' : '#EEEEEE',
   })
 
   const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
@@ -131,7 +144,7 @@ export default function ProductFormInner({ id }: { id: string }) {
       {error && <div style={{ background:'#FEF2F2',border:'1.5px solid #FECACA',color:'#DC2626',padding:'12px 16px',borderRadius:8,fontSize:13,marginBottom:16 }}>{error}</div>}
 
       <form id="pf" onSubmit={submit}>
-        <div style={{ display:'grid',gridTemplateColumns:'2fr 1fr',gap:16 }}>
+        <div style={{ display:'grid',gridTemplateColumns:'2fr 1fr',gap:16 }} className="grid-2-1">
           <div>
             <Card title="Основна інформація">
               <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
@@ -183,6 +196,17 @@ export default function ProductFormInner({ id }: { id: string }) {
           </div>
 
           <div>
+            {/* Brand — NEW card */}
+            <Card title="Бренд">
+              <div style={{ display:'flex',gap:8 }}>
+                <button type="button" onClick={() => set('brand','ausom')} style={brandToggle(form.brand==='ausom')}>Ausom</button>
+                <button type="button" onClick={() => set('brand','kukirin')} style={brandToggle(form.brand==='kukirin')}>Kukirin</button>
+              </div>
+              <p style={{ fontSize:11, color:'#BBB', marginTop:10, lineHeight:1.5 }}>
+                Kukirin — товари партнера. Не впливає на візуал, тільки на фільтр у меню сайту.
+              </p>
+            </Card>
+
             <Card title="Ціна">
               <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
                 <div><div style={lbl}>Ціна (₴) *</div><input type="number" value={form.price} onChange={e => set('price', e.target.value)} required placeholder="44250" style={inp} onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')} /></div>
