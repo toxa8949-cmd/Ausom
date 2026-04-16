@@ -17,12 +17,12 @@ const POSTS = [
 
 export default function BlogPreview() {
   return (
-    <section style={{ padding:'88px 0', background:'var(--bg-soft)', borderTop:'1px solid var(--border)' }}>
+    <section className="home-section" style={{ padding:'88px 0', background:'var(--bg-soft)', borderTop:'1px solid var(--border)' }}>
       <div className="w-container">
-        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:40 }}>
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16, marginBottom:32 }}>
           <div>
             <div className="s-label">Блог</div>
-            <h2 style={{ fontSize:'clamp(28px,3vw,42px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>
+            <h2 style={{ fontSize:'clamp(22px,3vw,42px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>
               Поради та <span style={{ color:'var(--yellow-dark)' }}>огляди</span>
             </h2>
           </div>
@@ -30,12 +30,12 @@ export default function BlogPreview() {
             Всі статті <ArrowRight size={15}/>
           </Link>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+        <div className="home-blog-grid">
           {POSTS.map(post => (
             <Link key={post.slug} href={`/blog/${post.slug}`} style={{ textDecoration:'none' }}>
               <div style={{
                 background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:12,
-                overflow:'hidden', transition:'transform .2s, box-shadow .2s',
+                overflow:'hidden', transition:'transform .2s, box-shadow .2s', height:'100%',
               }}
               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='translateY(-4px)';(e.currentTarget as HTMLElement).style.boxShadow='var(--shadow-lg)'}}
               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='none';(e.currentTarget as HTMLElement).style.boxShadow='none'}}>

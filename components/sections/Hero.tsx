@@ -14,7 +14,6 @@ const SLIDES = [
     eyebrow:  'Флагман 2026',
     headline: 'Ausom DT2 Pro',
     sub:      'Подвійний мотор 2×800W, 70 км, 65 км/год. Для міста та бездоріжжя.',
-    // Wide landscape banner — K20 Pro Dual banner is the best landscape we have
     banner:   `${CDN}/Ausom_K20_Pro_Dual_banner.jpg?v=1774515143`,
     position: 'center 30%',
     cta:      '/product/dt2-pro',
@@ -61,8 +60,8 @@ export default function Hero() {
   return (
     <section style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
 
-      {/* Full-width banner — fixed height, not aspect-ratio to avoid crop */}
-      <div style={{ position:'relative', width:'100%', height:'520px', overflow:'hidden' }}>
+      {/* Full-width banner — responsive height via .hero-banner */}
+      <div className="hero-banner" style={{ position:'relative', width:'100%', overflow:'hidden' }}>
         {SLIDES.map((s, i) => (
           <div key={i} style={{
             position:'absolute', inset:0,
@@ -93,29 +92,29 @@ export default function Hero() {
               transform: i === cur && !anim ? 'translateX(0)' : 'translateX(-24px)',
               transition:'opacity .5s .15s ease, transform .5s .15s ease',
             }}>
-              <span style={{ fontSize:12, fontWeight:700, letterSpacing:'.14em', textTransform:'uppercase' as const, color:'#F5C200', marginBottom:14, display:'block' }}>
+              <span style={{ fontSize:'clamp(10px,2vw,12px)', fontWeight:700, letterSpacing:'.14em', textTransform:'uppercase' as const, color:'#F5C200', marginBottom:14, display:'block' }}>
                 {s.eyebrow}
               </span>
-              <h1 style={{ fontSize:'clamp(40px,5.5vw,76px)', fontWeight:800, color:'#fff', letterSpacing:'-.03em', lineHeight:1.0, marginBottom:14, textShadow:'0 2px 12px rgba(0,0,0,.3)' }}>
+              <h1 style={{ fontSize:'clamp(32px,5.5vw,76px)', fontWeight:800, color:'#fff', letterSpacing:'-.03em', lineHeight:1.0, marginBottom:14, textShadow:'0 2px 12px rgba(0,0,0,.3)' }}>
                 {s.headline}
               </h1>
-              <p style={{ fontSize:'clamp(14px,1.6vw,17px)', color:'rgba(255,255,255,.82)', maxWidth:440, lineHeight:1.65, marginBottom:28 }}>
+              <p style={{ fontSize:'clamp(13px,1.6vw,17px)', color:'rgba(255,255,255,.82)', maxWidth:440, lineHeight:1.65, marginBottom:24 }}>
                 {s.sub}
               </p>
-              <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+              <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
                 <Link href={s.cta} style={{
                   display:'inline-flex', alignItems:'center', gap:8,
                   background:'#F5C200', color:'#111',
-                  fontSize:13, fontWeight:800, letterSpacing:'.06em', textTransform:'uppercase' as const,
-                  padding:'14px 30px', borderRadius:7, textDecoration:'none',
+                  fontSize:'clamp(12px,1.3vw,13px)', fontWeight:800, letterSpacing:'.06em', textTransform:'uppercase' as const,
+                  padding:'13px 24px', borderRadius:7, textDecoration:'none',
                 }}>
                   Купити зараз <ArrowRight size={15}/>
                 </Link>
                 <Link href="/catalog" style={{
                   display:'inline-flex', alignItems:'center',
                   background:'rgba(255,255,255,.12)', color:'#fff',
-                  fontSize:13, fontWeight:600, letterSpacing:'.04em', textTransform:'uppercase' as const,
-                  padding:'14px 28px', borderRadius:7, textDecoration:'none',
+                  fontSize:'clamp(12px,1.3vw,13px)', fontWeight:600, letterSpacing:'.04em', textTransform:'uppercase' as const,
+                  padding:'13px 22px', borderRadius:7, textDecoration:'none',
                   border:'1.5px solid rgba(255,255,255,.35)', backdropFilter:'blur(6px)',
                 }}>
                   Всі моделі
@@ -126,22 +125,22 @@ export default function Hero() {
         ))}
 
         {/* Slider dots */}
-        <div style={{ position:'absolute', bottom:20, left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', gap:8, zIndex:10 }}>
-          <button onClick={() => go(cur-1)} style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
+        <div style={{ position:'absolute', bottom:16, left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', gap:8, zIndex:10 }}>
+          <button onClick={() => go(cur-1)} aria-label="Попередній слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
             <ChevronLeft size={14}/>
           </button>
           {SLIDES.map((_,i) => (
-            <button key={i} onClick={() => go(i)} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===cur ? 28 : 8, background: i===cur ? '#F5C200' : 'rgba(255,255,255,.5)' }}/>
+            <button key={i} onClick={() => go(i)} aria-label={`Слайд ${i+1}`} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===cur ? 28 : 8, background: i===cur ? '#F5C200' : 'rgba(255,255,255,.5)' }}/>
           ))}
-          <button onClick={() => go(cur+1)} style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
+          <button onClick={() => go(cur+1)} aria-label="Наступний слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
             <ChevronRight size={14}/>
           </button>
         </div>
       </div>
 
-      {/* Product strip */}
-      <div className="w-container" style={{ padding:'32px 40px 40px' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:32, alignItems:'center' }}>
+      {/* Product strip — .hero-product-strip restacks for mobile */}
+      <div className="w-container hero-strip-wrap">
+        <div className="hero-product-strip">
           {/* Thumbnail */}
           <div style={{ width:100, height:100, background:'#F8F8F8', borderRadius:12, border:'1.5px solid var(--border)', position:'relative', overflow:'hidden', flexShrink:0 }}>
             {product.images?.[0] && (
@@ -149,7 +148,7 @@ export default function Hero() {
             )}
           </div>
           {/* Specs */}
-          <div>
+          <div style={{ minWidth:0 }}>
             <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10, flexWrap:'wrap' }}>
               <span style={{ fontSize:17, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>{product.name}</span>
               {product.tag && <span style={{ fontSize:10, fontWeight:800, background:'#F5C200', color:'#111', padding:'3px 8px', borderRadius:4, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>{product.tag}</span>}
@@ -160,7 +159,7 @@ export default function Hero() {
                 { Icon:Zap,     v:`${product.range_km} км`,       l:'Запас ходу' },
                 { Icon:Battery, v:`${product.battery_wh} Wh`,     l:'Акумулятор' },
                 { Icon:Weight,  v:`${product.weight_kg} кг`,      l:'Вага' },
-              ].map(({Icon, v, l}) => (
+              ].map(({ v, l }) => (
                 <div key={l}>
                   <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{v}</div>
                   <div style={{ fontSize:10, fontWeight:600, letterSpacing:'.07em', textTransform:'uppercase' as const, color:'var(--text-4)' }}>{l}</div>
@@ -175,7 +174,7 @@ export default function Hero() {
               <span style={{ fontSize:28, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>₴{product.price.toLocaleString('uk-UA')}</span>
               {product.old_price && <span style={{ fontSize:14, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
             </div>
-            <div style={{ display:'flex', gap:8, justifyContent:'flex-end' }}>
+            <div style={{ display:'flex', gap:8, justifyContent:'flex-end', flexWrap:'wrap' }}>
               <Link href={slide.cta} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
                 <ArrowRight size={14}/> Купити
               </Link>
@@ -187,12 +186,12 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats — .hero-stats collapses 4→2 on mobile with proper borders */}
       <div style={{ borderTop:'1px solid var(--border)', background:'var(--bg-soft)' }}>
-        <div className="w-container" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)' }}>
+        <div className="w-container hero-stats">
           {[['50K+','Задоволених клієнтів'],['#1','Бренд для дорослих'],['2Y','Офіційна гарантія'],['4.9★','Середній рейтинг']].map(([v,l],i) => (
-            <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'18px 16px', borderRight: i<3 ? '1px solid var(--border)' : 'none' }}>
-              <span style={{ fontSize:24, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>{v}</span>
+            <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'18px 12px', borderRight: i<3 ? '1px solid var(--border)' : 'none' }}>
+              <span style={{ fontSize:'clamp(20px,2.8vw,24px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>{v}</span>
               <span style={{ fontSize:11, color:'var(--text-3)', textAlign:'center' }}>{l}</span>
             </div>
           ))}

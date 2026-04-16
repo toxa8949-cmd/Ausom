@@ -10,19 +10,19 @@ const CATS = [
 
 export default function Categories() {
   return (
-    <section style={{ padding:'72px 0', background:'var(--bg-soft)', borderTop:'1px solid var(--border)' }}>
+    <section className="home-section" style={{ padding:'72px 0', background:'var(--bg-soft)', borderTop:'1px solid var(--border)' }}>
       <div className="w-container">
-        <div style={{ marginBottom:40 }}>
+        <div style={{ marginBottom:32 }}>
           <div className="s-label">Категорії</div>
-          <h2 style={{ fontSize:'clamp(28px,3vw,42px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>
+          <h2 style={{ fontSize:'clamp(22px,3vw,42px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>
             Де ти <span style={{ color:'var(--yellow-dark)' }}>їдеш?</span>
           </h2>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+        <div className="home-categories">
           {CATS.map(c => (
             <Link key={c.href} href={c.href} style={{ textDecoration:'none' }}>
               <div style={{
-                padding:'36px 28px',
+                padding:'32px 24px',
                 background: c.dark ? '#111' : 'var(--bg)',
                 border:'1.5px solid var(--border)',
                 borderRadius:12,
@@ -31,9 +31,9 @@ export default function Categories() {
               }}
               onMouseEnter={e=>{(e.currentTarget as HTMLElement).style.transform='translateY(-4px)';(e.currentTarget as HTMLElement).style.boxShadow='var(--shadow-lg)'}}
               onMouseLeave={e=>{(e.currentTarget as HTMLElement).style.transform='none';(e.currentTarget as HTMLElement).style.boxShadow='none'}}>
-                <div style={{ fontSize:36, marginBottom:16 }}>{c.emoji}</div>
-                <h3 style={{ fontSize:22, fontWeight:800, letterSpacing:'-.02em', color: c.dark ? '#fff' : 'var(--text)', marginBottom:6 }}>{c.title}</h3>
-                <p style={{ fontSize:13, color: c.dark ? 'rgba(255,255,255,.5)' : 'var(--text-3)', marginBottom:20 }}>{c.sub}</p>
+                <div style={{ fontSize:36, marginBottom:14 }}>{c.emoji}</div>
+                <h3 style={{ fontSize:'clamp(18px,2.5vw,22px)', fontWeight:800, letterSpacing:'-.02em', color: c.dark ? '#fff' : 'var(--text)', marginBottom:6 }}>{c.title}</h3>
+                <p style={{ fontSize:13, color: c.dark ? 'rgba(255,255,255,.5)' : 'var(--text-3)', marginBottom:18 }}>{c.sub}</p>
                 <span style={{ fontSize:12, fontWeight:700, letterSpacing:'.06em', textTransform:'uppercase', color:'#F5C200', display:'flex', alignItems:'center', gap:6 }}>
                   Переглянути →
                 </span>

@@ -41,6 +41,9 @@ export default function Header() {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
+  // Close drawer when the route actually changes
+  useEffect(() => { setOpen(false) }, [pathname])
+
   const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
 
   return (
@@ -125,7 +128,7 @@ export default function Header() {
             </button>
 
             {/* Cart */}
-            <Link href="/cart" style={{
+            <Link href="/cart" aria-label="Кошик" style={{
               position:'relative', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
               background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
               color:'var(--text-3)', textDecoration:'none', transition:'all .15s',
@@ -146,36 +149,54 @@ export default function Header() {
             </Link>
 
             {/* Burger */}
-            <button className="lg:hidden" onClick={() => setOpen(!open)} style={{
-              width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
-              background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
-              color:'var(--text-2)', cursor:'pointer',
-            }}>
+            <button
+              className="lg:hidden"
+              aria-label={open ? 'Закрити меню' : 'Відкрити меню'}
+              aria-expanded={open}
+              onClick={() => setOpen(!open)}
+              style={{
+                width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
+                background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
+                color:'var(--text-2)', cursor:'pointer',
+              }}>
               {open ? <X size={16}/> : <Menu size={16}/>}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Mobile drawer */}
+      {/* Backdrop */}
       {open && (
-        <div style={{
-          position:'fixed', inset:0, zIndex:45,
-          background:'rgba(0,0,0,.4)',
-          backdropFilter:'blur(4px)',
-        }} onClick={() => setOpen(false)} />
+        <div
+          aria-hidden="true"
+          style={{
+            position:'fixed', inset:0, zIndex:45,
+            background:'rgba(0,0,0,.4)',
+            backdropFilter:'blur(4px)',
+          }}
+          onClick={() => setOpen(false)}
+        />
       )}
-      <div style={{
-        position:'fixed', top:0, right:0, bottom:0, width:300, zIndex:46,
-        background:'var(--bg)', borderLeft:'1.5px solid var(--border)',
-        padding:'24px 20px', display:'flex', flexDirection:'column', gap:4,
-        transform: open ? 'translateX(0)' : 'translateX(100%)',
-        transition:'transform .3s ease',
-        overflowY:'auto',
-      }}>
+
+      {/* Mobile drawer — hidden (visibility+pointer-events) when closed so it
+          can't intercept clicks or cause horizontal scroll on mobile.
+          See .mobile-drawer in globals.css */}
+      <div
+        className={`mobile-drawer${open ? ' is-open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Мобільне меню"
+        style={{
+          position:'fixed', top:0, right:0, bottom:0, width:300, zIndex:46,
+          background:'var(--bg)', borderLeft:'1.5px solid var(--border)',
+          padding:'24px 20px', display:'flex', flexDirection:'column', gap:4,
+          transform: open ? 'translateX(0)' : 'translateX(100%)',
+          transition:'transform .3s ease',
+          overflowY:'auto',
+        }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24 }}>
           <span style={{ fontWeight:700, fontSize:15, color:'var(--text)' }}>Меню</span>
-          <button onClick={() => setOpen(false)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><X size={18}/></button>
+          <button onClick={() => setOpen(false)} aria-label="Закрити меню" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><X size={18}/></button>
         </div>
         {NAV.map(item => (
           <Link key={item.href} href={item.href} onClick={() => setOpen(false)} style={{

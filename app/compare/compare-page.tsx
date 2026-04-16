@@ -61,7 +61,7 @@ export default function ComparePage() {
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
 
       {/* Header */}
-      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'40px 0 32px' }}>
+      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'clamp(24px,4vw,40px) 0 clamp(20px,3vw,32px)' }}>
         <div className="w-container">
           <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, color:'var(--text-3)', marginBottom:16 }}>
             <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
@@ -69,17 +69,17 @@ export default function ComparePage() {
             <span style={{ color:'var(--text)', fontWeight:500 }}>Порівняння</span>
           </div>
           <div className="s-label">Інструмент вибору</div>
-          <h1 style={{ fontSize:'clamp(32px,4vw,56px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1.05, marginBottom:8 }}>
+          <h1 style={{ fontSize:'clamp(26px,4vw,56px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1.05, marginBottom:8 }}>
             Порівняй <span style={{ color:'var(--yellow-dark)' }}>моделі</span>
           </h1>
           <p style={{ fontSize:14, color:'var(--text-3)' }}>Обери до 4 моделей · жовтим виділено найкраще значення</p>
         </div>
       </div>
 
-      <div className="w-container" style={{ padding:'32px 40px 80px' }}>
+      <div className="w-container compare-inner">
 
         {/* Model selector chips */}
-        <div style={{ marginBottom:32 }}>
+        <div style={{ marginBottom:24 }}>
           <p style={{ fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, color:'var(--text-3)', marginBottom:12 }}>
             Обрані моделі ({selected.length}/4)
           </p>
@@ -107,8 +107,14 @@ export default function ComparePage() {
           </div>
         </div>
 
-        {/* Comparison table */}
-        <div style={{ overflowX:'auto', borderRadius:14, border:'1.5px solid var(--border)' }}>
+        {/* Hint for mobile users that the table scrolls */}
+        <p style={{ fontSize:12, color:'var(--text-4)', marginBottom:8 }}>
+          <span className="hide-mobile">Порівняльна таблиця:</span>
+          <span style={{ display:'inline' }}>↔ Таблиця прокручується горизонтально</span>
+        </p>
+
+        {/* Comparison table — .compare-table-wrap gives overflow-x auto */}
+        <div className="compare-table-wrap">
           <table style={{ width:'100%', minWidth: labelW + colW * compared.length + (selected.length < 4 ? colW : 0), borderCollapse:'collapse' }}>
 
             {/* Product headers */}
@@ -119,6 +125,7 @@ export default function ComparePage() {
                 </th>
                 {compared.map(p => {
                   const isBest = p.slug === 'dt2-pro'
+                  const disc   = p.old_price ? Math.round((p.old_price - p.price) / p.old_price * 100) : 0
                   return (
                     <td key={p.slug} style={{
                       width:colW, minWidth:colW, padding:'20px 16px',
@@ -137,16 +144,18 @@ export default function ComparePage() {
                       <div style={{ display:'flex', justifyContent:'center', marginBottom:12, marginTop: isBest ? 12 : 0 }}>
                         <div style={{ background:'var(--bg-subtle)', border:'1px solid var(--border)', borderRadius:10, width:100, height:100, position:'relative', overflow:'hidden' }}>
                           {p.images?.[0] ? (
-                            <Image src={p.images[0]} alt={p.name} fill sizes="120px" style={{ objectFit:'contain', padding:8 }}/>
+                            <Image src={p.images[0]} alt={p.name} fill sizes="100px" style={{ objectFit:'contain', padding:8 }}/>
                           ) : (
-                            <div style={{ width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                            <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
                               <ScooterIcon/>
                             </div>
                           )}
                         </div>
                       </div>
-                      <div style={{ fontSize:14, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em', marginBottom:6 }}>{p.name}</div>
-                      <div style={{ fontSize:22, fontWeight:800, color: isBest ? 'var(--yellow-dark)' : 'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em', marginBottom:6 }}>
+                        {p.name}
+                      </div>
+                      <div style={{ fontSize:18, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>
                         ₴{p.price.toLocaleString('uk-UA')}
                       </div>
                       {p.old_price && (
@@ -154,7 +163,7 @@ export default function ComparePage() {
                           ₴{p.old_price.toLocaleString('uk-UA')}
                         </div>
                       )}
-                      <button onClick={() => toggle(p.slug)} style={{
+                      <button onClick={() => toggle(p.slug)} aria-label="Прибрати з порівняння" style={{
                         position:'absolute', top:10, right:10,
                         width:24, height:24, display:'flex', alignItems:'center', justifyContent:'center',
                         background:'var(--bg)', border:'1px solid var(--border)', borderRadius:6,

@@ -11,7 +11,7 @@ export default function CartPage() {
     return (
       <div style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', gap:20, padding:24 }}>
         <ShoppingBag size={72} style={{ color:'var(--border-md)', strokeWidth:1 }}/>
-        <h1 style={{ fontSize:40, fontWeight:800, letterSpacing:'-.03em', color:'var(--text)' }}>Кошик порожній</h1>
+        <h1 style={{ fontSize:'clamp(28px,5vw,40px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)' }}>Кошик порожній</h1>
         <p style={{ fontSize:15, color:'var(--text-3)', maxWidth:320 }}>Додай самокати з каталогу, щоб оформити замовлення</p>
         <Link href="/catalog" className="btn btn-black" style={{ marginTop:8 }}>Перейти до каталогу</Link>
       </div>
@@ -22,25 +22,23 @@ export default function CartPage() {
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
       <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'32px 0' }}>
         <div className="w-container">
-          <h1 style={{ fontSize:'clamp(28px,4vw,48px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)' }}>
+          <h1 style={{ fontSize:'clamp(24px,4vw,48px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)' }}>
             Кошик <span style={{ color:'var(--yellow-dark)' }}>({count})</span>
           </h1>
         </div>
       </div>
 
-      <div className="w-container" style={{ padding:'32px 40px' }}>
-        <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:13, fontWeight:500, color:'var(--text-3)', textDecoration:'none', marginBottom:28 }}>
+      <div className="w-container cart-inner">
+        <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:13, fontWeight:500, color:'var(--text-3)', textDecoration:'none', marginBottom:20 }}>
           <ArrowLeft size={14}/> Продовжити покупки
         </Link>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 360px', gap:32, alignItems:'start' }}>
+        <div className="cart-layout">
 
           {/* Items */}
           <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
             {items.map(({ product: p, quantity }) => (
-              <div key={p.id} style={{
-                display:'grid', gridTemplateColumns:'88px 1fr auto',
-                gap:20, alignItems:'center',
+              <div key={p.id} className="cart-item-row" style={{
                 background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:12, padding:20,
                 transition:'border-color .15s',
               }}>
@@ -53,7 +51,7 @@ export default function CartPage() {
                     <rect x="28" y="4" width="16" height="8" rx="2" fill="#F5C200"/>
                   </svg>
                 </div>
-                <div>
+                <div style={{ minWidth:0 }}>
                   <Link href={`/product/${p.slug}`} style={{ fontSize:15, fontWeight:700, color:'var(--text)', textDecoration:'none', letterSpacing:'-.01em', display:'block', marginBottom:6 }}>
                     {p.name}
                   </Link>
@@ -64,26 +62,26 @@ export default function CartPage() {
                   </div>
                   <div style={{ display:'flex', alignItems:'center', gap:8 }}>
                     <div style={{ display:'flex', alignItems:'center', background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:8, overflow:'hidden' }}>
-                      <button onClick={() => updateQty(p.id, quantity-1)} style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><Minus size={12}/></button>
+                      <button onClick={() => updateQty(p.id, quantity-1)} aria-label="Зменшити" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><Minus size={12}/></button>
                       <span style={{ width:36, textAlign:'center', fontSize:13, fontWeight:700, color:'var(--text)', borderLeft:'1px solid var(--border)', borderRight:'1px solid var(--border)' }}>{quantity}</span>
-                      <button onClick={() => updateQty(p.id, quantity+1)} style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><Plus size={12}/></button>
+                      <button onClick={() => updateQty(p.id, quantity+1)} aria-label="Збільшити" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><Plus size={12}/></button>
                     </div>
-                    <button onClick={() => removeItem(p.id)} style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-4)', padding:6 }}><Trash2 size={14}/></button>
+                    <button onClick={() => removeItem(p.id)} aria-label="Видалити" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-4)', padding:6 }}><Trash2 size={14}/></button>
                   </div>
                 </div>
                 <div style={{ textAlign:'right' }}>
-                  <div style={{ fontSize:22, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>₴{(p.price*quantity).toLocaleString('uk-UA')}</div>
+                  <div style={{ fontSize:'clamp(18px,3vw,22px)', fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>₴{(p.price*quantity).toLocaleString('uk-UA')}</div>
                   {p.old_price && <div style={{ fontSize:12, color:'var(--text-4)', textDecoration:'line-through' }}>₴{(p.old_price*quantity).toLocaleString('uk-UA')}</div>}
                 </div>
               </div>
             ))}
-            <button onClick={clearCart} style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, fontWeight:500, color:'var(--text-4)', background:'none', border:'none', cursor:'pointer', padding:'4px 0' }}>
+            <button onClick={clearCart} style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:12, fontWeight:500, color:'var(--text-4)', background:'none', border:'none', cursor:'pointer', padding:'4px 0', alignSelf:'flex-start' }}>
               <Trash2 size={13}/> Очистити кошик
             </button>
           </div>
 
           {/* Summary */}
-          <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:24, position:'sticky', top:84, display:'flex', flexDirection:'column', gap:18 }}>
+          <div className="cart-summary" style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:24, position:'sticky', top:84, display:'flex', flexDirection:'column', gap:18 }}>
             <h2 style={{ fontSize:20, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>Ваше замовлення</h2>
 
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
@@ -99,11 +97,11 @@ export default function CartPage() {
 
             <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
               <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>Разом</span>
-              <span style={{ fontSize:28, fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>₴{total.toLocaleString('uk-UA')}</span>
+              <span style={{ fontSize:'clamp(22px,4vw,28px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>₴{total.toLocaleString('uk-UA')}</span>
             </div>
 
             <div style={{ display:'flex', gap:8 }}>
-              <input placeholder="Промокод" style={{ flex:1, padding:'10px 14px', background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, fontSize:12, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const, color:'var(--text)', outline:'none', fontFamily:'Inter,sans-serif' }}/>
+              <input placeholder="Промокод" aria-label="Промокод" style={{ flex:1, minWidth:0, padding:'10px 14px', background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, fontSize:12, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const, color:'var(--text)', outline:'none', fontFamily:'Inter,sans-serif' }}/>
               <button className="btn btn-white btn-sm">OK</button>
             </div>
 
@@ -111,7 +109,7 @@ export default function CartPage() {
             <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Безпечна оплата · Гарантія 2 роки</p>
 
             <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, display:'flex', flexDirection:'column', gap:10 }}>
-              {[[Truck,'Безкоштовна доставка'],[RotateCcw,'14 днів повернення'],[Shield,'Гарантія 2 роки']].map(([Icon, text]: any) => (
+              {([[Truck,'Безкоштовна доставка'],[RotateCcw,'14 днів повернення'],[Shield,'Гарантія 2 роки']] as const).map(([Icon, text]) => (
                 <div key={text} style={{ display:'flex', alignItems:'center', gap:10, fontSize:12, color:'var(--text-3)' }}>
                   <div style={{ width:28, height:28, background:'#F5C200', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                     <Icon size={13} color="#111"/>

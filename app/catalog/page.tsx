@@ -38,6 +38,7 @@ export default function CatalogPage() {
     cursor: 'pointer' as const, transition: 'all .15s',
     background: active ? '#111' : 'transparent',
     color: active ? '#fff' : 'var(--text-3)',
+    whiteSpace: 'nowrap' as const,
   })
 
   const btnFilterYellow = (active: boolean) => ({
@@ -58,17 +59,22 @@ export default function CatalogPage() {
             <span style={{ color:'var(--text)', fontWeight:500 }}>Каталог</span>
           </div>
           <div className="s-label">Каталог 2026</div>
-          <h1 style={{ fontSize:'clamp(32px,4vw,52px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1.05 }}>
+          <h1 style={{ fontSize:'clamp(28px,4vw,52px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1.05 }}>
             Всі <span style={{ color:'var(--yellow-dark)' }}>самокати</span>
           </h1>
           <p style={{ fontSize:14, color:'var(--text-3)', marginTop:8 }}>{list.length} моделей</p>
         </div>
       </div>
 
-      <div className="w-container" style={{ padding:'32px 40px' }}>
+      <div className="w-container catalog-inner">
 
-        {/* Filters */}
-        <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:10, padding:'12px 16px', marginBottom:24, display:'flex', flexWrap:'wrap', alignItems:'center', gap:8 }}>
+        {/* Filters — horizontally scrollable on mobile via .catalog-filters */}
+        <div
+          className="catalog-filters"
+          style={{
+            background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:10,
+            padding:'12px 16px', marginBottom:20,
+          }}>
           <SlidersHorizontal size={14} style={{ color:'var(--text-3)', flexShrink:0 }}/>
 
           <div style={{ display:'flex', gap:4, background:'var(--bg)', border:'1px solid var(--border)', borderRadius:8, padding:3 }}>
@@ -77,7 +83,7 @@ export default function CatalogPage() {
             ))}
           </div>
 
-          <div style={{ width:1, height:20, background:'var(--border)' }}/>
+          <div className="catalog-filters-divider" style={{ width:1, height:20, background:'var(--border)' }}/>
 
           <div style={{ display:'flex', gap:4, background:'var(--bg)', border:'1px solid var(--border)', borderRadius:8, padding:3 }}>
             {VOLTS.map(v => (
@@ -85,7 +91,7 @@ export default function CatalogPage() {
             ))}
           </div>
 
-          <div style={{ width:1, height:20, background:'var(--border)' }}/>
+          <div className="catalog-filters-divider" style={{ width:1, height:20, background:'var(--border)' }}/>
 
           <div style={{ display:'flex', gap:4, background:'var(--bg)', border:'1px solid var(--border)', borderRadius:8, padding:3 }}>
             {MOTORS.map(m => (
@@ -93,19 +99,19 @@ export default function CatalogPage() {
             ))}
           </div>
 
-          <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8 }}>
-            <select value={sort} onChange={e => setSort(e.target.value)} style={{
+          <div className="catalog-filters-right" style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:8 }}>
+            <select value={sort} onChange={e => setSort(e.target.value)} aria-label="Сортування" style={{
               background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6,
               padding:'7px 14px', fontSize:12, fontWeight:500, color:'var(--text-2)',
               outline:'none', cursor:'pointer', fontFamily:'Inter,sans-serif',
             }}>
               {SORTS.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
             </select>
-            <div style={{ display:'flex', gap:4 }}>
-              <button onClick={() => setGrid(true)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background: grid ? '#111' : 'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, cursor:'pointer', color: grid ? '#fff' : 'var(--text-3)' }}>
+            <div className="catalog-view-toggle" style={{ display:'flex', gap:4 }}>
+              <button onClick={() => setGrid(true)} aria-label="Сітка" style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background: grid ? '#111' : 'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, cursor:'pointer', color: grid ? '#fff' : 'var(--text-3)' }}>
                 <LayoutGrid size={14}/>
               </button>
-              <button onClick={() => setGrid(false)} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background: !grid ? '#111' : 'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, cursor:'pointer', color: !grid ? '#fff' : 'var(--text-3)' }}>
+              <button onClick={() => setGrid(false)} aria-label="Список" style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background: !grid ? '#111' : 'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, cursor:'pointer', color: !grid ? '#fff' : 'var(--text-3)' }}>
                 <List size={14}/>
               </button>
             </div>
@@ -115,9 +121,9 @@ export default function CatalogPage() {
         {/* Active filters */}
         {hasFilters && (
           <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap', marginBottom:20 }}>
-            {cat  !== 'all' && <span style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#FFF3CC', border:'1px solid #F5C200', color:'#8B6800', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20 }}>{CATS.find(c=>c.id===cat)?.label}<button onClick={() => setCat('all')} style={{ background:'none', border:'none', cursor:'pointer', color:'inherit', display:'flex' }}><X size={10}/></button></span>}
-            {volt !== 'Всі' && <span style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#FFF3CC', border:'1px solid #F5C200', color:'#8B6800', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20 }}>{volt}<button onClick={() => setVolt('Всі')} style={{ background:'none', border:'none', cursor:'pointer', color:'inherit', display:'flex' }}><X size={10}/></button></span>}
-            {mot  !== 'all' && <span style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#FFF3CC', border:'1px solid #F5C200', color:'#8B6800', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20 }}>{MOTORS.find(m=>m.id===mot)?.label}<button onClick={() => setMot('all')} style={{ background:'none', border:'none', cursor:'pointer', color:'inherit', display:'flex' }}><X size={10}/></button></span>}
+            {cat  !== 'all' && <span style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#FFF3CC', border:'1px solid #F5C200', color:'#8B6800', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20 }}>{CATS.find(c=>c.id===cat)?.label}<button onClick={() => setCat('all')} aria-label="Зняти фільтр" style={{ background:'none', border:'none', cursor:'pointer', color:'inherit', display:'flex' }}><X size={10}/></button></span>}
+            {volt !== 'Всі' && <span style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#FFF3CC', border:'1px solid #F5C200', color:'#8B6800', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20 }}>{volt}<button onClick={() => setVolt('Всі')} aria-label="Зняти фільтр" style={{ background:'none', border:'none', cursor:'pointer', color:'inherit', display:'flex' }}><X size={10}/></button></span>}
+            {mot  !== 'all' && <span style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#FFF3CC', border:'1px solid #F5C200', color:'#8B6800', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20 }}>{MOTORS.find(m=>m.id===mot)?.label}<button onClick={() => setMot('all')} aria-label="Зняти фільтр" style={{ background:'none', border:'none', cursor:'pointer', color:'inherit', display:'flex' }}><X size={10}/></button></span>}
             <button onClick={reset} style={{ fontSize:11, fontWeight:600, color:'var(--text-3)', background:'none', border:'none', cursor:'pointer', padding:'4px 8px' }}>Скинути все</button>
           </div>
         )}
@@ -127,13 +133,15 @@ export default function CatalogPage() {
         </p>
 
         {list.length > 0 ? (
-          <div style={{ display:'grid', gridTemplateColumns: grid ? 'repeat(4,1fr)' : '1fr', gap:20 }}>
+          <div
+            className={grid ? 'catalog-grid' : ''}
+            style={grid ? undefined : { display:'grid', gridTemplateColumns:'1fr', gap:20 }}>
             {list.map(p => <ProductCard key={p.id} product={p} featured={p.slug==='dt2-pro'}/>)}
           </div>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 0', textAlign:'center', gap:16 }}>
             <span style={{ fontSize:48, opacity:.3 }}>🛴</span>
-            <h2 style={{ fontSize:28, fontWeight:800, color:'var(--text)' }}>Нічого не знайдено</h2>
+            <h2 style={{ fontSize:'clamp(22px,3vw,28px)', fontWeight:800, color:'var(--text)' }}>Нічого не знайдено</h2>
             <p style={{ fontSize:14, color:'var(--text-3)' }}>Спробуй змінити або скинути фільтри</p>
             <button onClick={reset} className="btn btn-black btn-sm" style={{ marginTop:8 }}>Скинути фільтри</button>
           </div>

@@ -30,10 +30,10 @@ const COLS = {
 export default function Footer() {
   return (
     <footer style={{ background:'#F9F9F9', borderTop:'1px solid var(--border)' }}>
-      <div className="w-container" style={{ padding:'64px 40px 40px' }}>
+      <div className="w-container footer-inner">
 
         {/* Top: brand + nav columns */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr 1fr 1fr', gap:48, paddingBottom:48, borderBottom:'1px solid var(--border)' }}>
+        <div className="footer-top-grid">
 
           {/* Brand */}
           <div>
@@ -45,11 +45,11 @@ export default function Footer() {
               <sup style={{ fontFamily:'Inter,sans-serif', fontWeight:700, fontSize:8, color:'#D4A800', marginTop:-6 }}>UA</sup>
             </Link>
             <p style={{ fontSize:13, color:'#888', lineHeight:1.7, maxWidth:240, marginBottom:24 }}>
-              Офіційний дистриб'ютор Ausom в Україні. Найкращі електросамокати для міста та бездоріжжя.
+              Офіційний дистриб&apos;ютор Ausom в Україні. Найкращі електросамокати для міста та бездоріжжя.
             </p>
             <div style={{ display:'flex', gap:8 }}>
               {['X','FB','IG','TK','YT'].map(s => (
-                <a key={s} href="#" style={{
+                <a key={s} href="#" aria-label={s} style={{
                   width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:10, fontWeight:700, color:'#888',
                   background:'#fff', border:'1px solid #E8E8E8', borderRadius:6,
@@ -83,13 +83,13 @@ export default function Footer() {
         </div>
 
         {/* Newsletter */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:32, padding:'36px 0', borderBottom:'1px solid var(--border)', flexWrap:'wrap' }}>
+        <div className="footer-newsletter-row">
           <div>
             <p style={{ fontSize:18, fontWeight:800, letterSpacing:'-.015em', color:'#111', marginBottom:4 }}>Розсилка</p>
             <p style={{ fontSize:13, color:'#888' }}>Ексклюзивні знижки та нові моделі — першим.</p>
           </div>
-          <form style={{ display:'flex', gap:8 }} onSubmit={e=>e.preventDefault()}>
-            <input type="email" required placeholder="твій@email.com" style={{
+          <form className="footer-newsletter-form" style={{ display:'flex', gap:8 }} onSubmit={e=>e.preventDefault()}>
+            <input type="email" required placeholder="твій@email.com" aria-label="Email для розсилки" style={{
               width:240, padding:'11px 16px',
               background:'#fff', border:'1.5px solid #E8E8E8', borderRadius:6,
               fontSize:13, color:'#111', outline:'none', fontFamily:'Inter,sans-serif',
@@ -102,7 +102,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16, paddingTop:28 }}>
+        <div className="footer-bottom-bar">
           <p style={{ fontSize:12, color:'#BBBBBB' }}>© 2026 Ausom Ukraine. Всі права захищені.</p>
           <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
             {['VISA','Mastercard','Privat24','Monobank','PayPal'].map(p => (

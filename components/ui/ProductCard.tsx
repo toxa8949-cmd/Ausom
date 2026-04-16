@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import { ShoppingBag, Check, Battery, Gauge, Zap } from 'lucide-react'
+import { ShoppingBag, Check } from 'lucide-react'
 import { Product } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
@@ -13,7 +13,7 @@ export default function ProductCard({ product: p, featured }: { product: Product
   const [wish,     setWish]     = useState(false)
   const [hovered,  setHovered]  = useState(false)
 
-  const disc      = p.old_price ? Math.round((p.old_price - p.price) / p.old_price * 100) : 0
+  const disc       = p.old_price ? Math.round((p.old_price - p.price) / p.old_price * 100) : 0
   const imgDefault = p.images?.[0]   // product shot (white/transparent bg)
   const imgHover   = p.images?.[1]   // lifestyle shot shown on hover
 
@@ -65,7 +65,7 @@ export default function ProductCard({ product: p, featured }: { product: Product
                 src={imgDefault}
                 alt={p.name}
                 fill
-                sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
+                sizes="(max-width:480px) 100vw, (max-width:768px) 50vw, (max-width:1024px) 33vw, 25vw"
                 style={{ objectFit:'contain', padding:'12px' }}
               />
             </div>
@@ -82,7 +82,7 @@ export default function ProductCard({ product: p, featured }: { product: Product
                 src={imgHover}
                 alt={`${p.name} в дії`}
                 fill
-                sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
+                sizes="(max-width:480px) 100vw, (max-width:768px) 50vw, (max-width:1024px) 33vw, 25vw"
                 style={{ objectFit:'cover', objectPosition:'center top' }}
               />
             </div>
@@ -108,37 +108,43 @@ export default function ProductCard({ product: p, featured }: { product: Product
             {p.tag && !p.is_new && <span style={{ background:'#111', color:'#fff', fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:3 }}>{p.tag}</span>}
           </div>
 
-          {/* Wishlist */}
-          <button onClick={e => { e.preventDefault(); setWish(!wish) }} style={{
-            position:'absolute', top:12, right:12, zIndex:2,
-            width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center',
-            background:'rgba(255,255,255,.92)', border:'1px solid #E8E8E8',
-            borderRadius:8, cursor:'pointer', fontSize:17,
-            color: wish ? '#EF4444' : '#AAA',
-            boxShadow:'0 1px 4px rgba(0,0,0,.1)',
-            opacity: hovered ? 1 : 0,
-            transition:'opacity .2s, color .15s',
-          }}>
+          {/* Wishlist — on mobile visible always (.pc-wishlist opacity:1) */}
+          <button
+            className="pc-wishlist"
+            aria-label={wish ? 'Видалити з обраного' : 'Додати в обране'}
+            onClick={e => { e.preventDefault(); setWish(!wish) }}
+            style={{
+              position:'absolute', top:12, right:12, zIndex:2,
+              width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center',
+              background:'rgba(255,255,255,.92)', border:'1px solid #E8E8E8',
+              borderRadius:8, cursor:'pointer', fontSize:17,
+              color: wish ? '#EF4444' : '#AAA',
+              boxShadow:'0 1px 4px rgba(0,0,0,.1)',
+              opacity: hovered ? 1 : 0,
+              transition:'opacity .2s, color .15s',
+            }}>
             {wish ? '♥' : '♡'}
           </button>
 
-          {/* Hover label */}
+          {/* Hover label — hidden on mobile */}
           {imgHover && imgHover !== imgDefault && (
-            <div style={{
-              position:'absolute', bottom:10, left:'50%', transform:'translateX(-50%)',
-              background:'rgba(0,0,0,.55)', color:'#fff',
-              fontSize:10, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const,
-              padding:'4px 10px', borderRadius:20,
-              opacity: hovered ? 1 : 0, transition:'opacity .25s',
-              whiteSpace:'nowrap' as const, zIndex:2,
-            }}>
+            <div
+              className="pc-hover-label"
+              style={{
+                position:'absolute', bottom:10, left:'50%', transform:'translateX(-50%)',
+                background:'rgba(0,0,0,.55)', color:'#fff',
+                fontSize:10, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const,
+                padding:'4px 10px', borderRadius:20,
+                opacity: hovered ? 1 : 0, transition:'opacity .25s',
+                whiteSpace:'nowrap' as const, zIndex:2,
+              }}>
               В дії →
             </div>
           )}
         </div>
 
         {/* Body */}
-        <div style={{ padding:'16px 16px 10px' }}>
+        <div className="pc-body" style={{ padding:'16px 16px 10px' }}>
           <div style={{ display:'flex', flexWrap:'wrap', gap:5, marginBottom:10 }}>
             {[
               { v: p.voltage.toUpperCase(), accent:false },
@@ -155,11 +161,11 @@ export default function ProductCard({ product: p, featured }: { product: Product
               }}>{v}</span>
             ))}
           </div>
-          <h3 style={{ fontSize:15, fontWeight:700, color:'var(--text)', lineHeight:1.3, letterSpacing:'-.01em', marginBottom:10 }}>
+          <h3 className="pc-name" style={{ fontSize:15, fontWeight:700, color:'var(--text)', lineHeight:1.3, letterSpacing:'-.01em', marginBottom:10 }}>
             {p.name}
           </h3>
-          <div style={{ display:'flex', alignItems:'baseline', gap:8 }}>
-            <span style={{ fontSize:22, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em', lineHeight:1 }}>
+          <div style={{ display:'flex', alignItems:'baseline', gap:8, flexWrap:'wrap' }}>
+            <span className="pc-price" style={{ fontSize:22, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em', lineHeight:1 }}>
               ₴{p.price.toLocaleString('uk-UA')}
             </span>
             {p.old_price && (
@@ -171,14 +177,17 @@ export default function ProductCard({ product: p, featured }: { product: Product
         </div>
       </Link>
 
-      <button onClick={handleAdd} style={{
-        display:'flex', alignItems:'center', justifyContent:'center', gap:7,
-        width:'100%', padding:'13px',
-        background: added ? '#22C55E' : '#111',
-        color: '#fff', fontSize:12, fontWeight:700,
-        letterSpacing:'.06em', textTransform:'uppercase' as const,
-        border:'none', cursor:'pointer', transition:'background .15s',
-      }}>
+      <button
+        className="pc-cta"
+        onClick={handleAdd}
+        style={{
+          display:'flex', alignItems:'center', justifyContent:'center', gap:7,
+          width:'100%', padding:'13px',
+          background: added ? '#22C55E' : '#111',
+          color: '#fff', fontSize:12, fontWeight:700,
+          letterSpacing:'.06em', textTransform:'uppercase' as const,
+          border:'none', cursor:'pointer', transition:'background .15s',
+        }}>
         {added ? <><Check size={13}/> Додано</> : <><ShoppingBag size={13}/> До кошика</>}
       </button>
     </article>
