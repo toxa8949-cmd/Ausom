@@ -8,7 +8,6 @@ const POSTS: Record<string, {
 }> = {
   'best-scooters-heavy-adults-2026': {
     banner: 'https://pl.ausomstore.com/cdn/shop/files/DT2_Pro.jpg?v=1767606498',
-    banner: 'https://pl.ausomstore.com/cdn/shop/files/DT2_Pro.jpg?v=1767606498',
     title: 'Найкращі електросамокати для важких дорослих у 2026',
     cat: 'Огляди', date: '30 берез. 2026', read: 6,
     content: [
@@ -20,7 +19,6 @@ const POSTS: Record<string, {
     ],
   },
   '10-features-buying-scooter': {
-    banner: 'https://pl.ausomstore.com/cdn/shop/files/l2-max-dual-detail-page-mobile.jpg?v=1765511614',
     banner: 'https://pl.ausomstore.com/cdn/shop/files/l2-max-dual-detail-page-mobile.jpg?v=1765511614',
     title: '10 ключових характеристик при виборі електросамоката',
     cat: 'Гід покупця', date: '30 берез. 2026', read: 8,
@@ -40,7 +38,6 @@ const POSTS: Record<string, {
   },
   'best-adult-scooter-2026-guide': {
     banner: 'https://pl.ausomstore.com/cdn/shop/files/dt2-pro-detail-page-mobile.jpg?v=1765510548',
-    banner: 'https://pl.ausomstore.com/cdn/shop/files/800_1200-wuzi.jpg?v=1772768149',
     title: 'Найкращий електросамокат для дорослих 2026: повний гід',
     cat: 'Порівняння', date: '30 берез. 2026', read: 10,
     content: [
@@ -53,7 +50,6 @@ const POSTS: Record<string, {
     ],
   },
   'dt2-pro-review': {
-    banner: 'https://pl.ausomstore.com/cdn/shop/files/DT2_Pro.jpg?v=1767606498',
     banner: 'https://pl.ausomstore.com/cdn/shop/files/DT2_Pro.jpg?v=1767606498',
     title: 'DT2 Pro: детальний огляд позашляхового самоката',
     cat: 'Огляди', date: '15 берез. 2026', read: 12,
@@ -69,7 +65,6 @@ const POSTS: Record<string, {
   },
   'city-commuter-guide': {
     banner: 'https://pl.ausomstore.com/cdn/shop/files/l1-max-page-mobile.jpg?v=1765511227',
-    banner: 'https://pl.ausomstore.com/cdn/shop/files/k20_pro_listing_800_1000_m.jpg?v=1774004078',
     title: 'Як обрати міський самокат для щоденних поїздок',
     cat: 'Поради', date: '10 берез. 2026', read: 7,
     content: [
@@ -82,7 +77,6 @@ const POSTS: Record<string, {
   },
   'e-scooter-maintenance-tips': {
     banner: 'https://pl.ausomstore.com/cdn/shop/files/l2-max-dual-detail-page-mobile.jpg?v=1765511614',
-    banner: 'https://pl.ausomstore.com/cdn/shop/files/l1-max-page-mobile.jpg?v=1765511227',
     title: 'Догляд за електросамокатом: 8 важливих порад',
     cat: 'Поради', date: '5 берез. 2026', read: 5,
     content: [
