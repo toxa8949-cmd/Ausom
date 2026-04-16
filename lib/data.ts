@@ -8,11 +8,14 @@ const CDN = 'https://pl.ausomstore.com/cdn/shop/files'
  * Supabase is unreachable. Frontend components should prefer the async
  * `fetch*` helpers below — but keeping this array means a deploy with a
  * broken DB connection still renders *something* instead of an empty site.
+ *
+ * All fallback products are Ausom-branded by design (Kukirin comes from DB).
  */
 export const PRODUCTS: Product[] = [
   {
     id: '1', name: 'Ausom L1', slug: 'l1',
     price: 27050, old_price: 33800,
+    brand: 'ausom',
     category: 'commuter', voltage: '48v', motor: 'single',
     range_km: 50, max_speed: 45, weight_kg: 20, max_load_kg: 100, battery_wh: 468,
     description: 'Ausom L1 — ідеальний старт у світ електросамокатів. Легкий, надійний та доступний міський самокат для щоденних поїздок по місту.',
@@ -26,6 +29,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '2', name: 'Ausom L2 Dual Motor', slug: 'l2-dual',
     price: 32200, old_price: 40250,
+    brand: 'ausom',
     category: 'commuter', voltage: '48v', motor: 'dual',
     range_km: 70, max_speed: 55, weight_kg: 28, max_load_kg: 120, battery_wh: 768,
     description: 'Ausom L2 Dual Motor — потужний міський самокат з подвійним мотором.',
@@ -39,6 +43,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '3', name: 'Ausom L2 Max Dual Motor', slug: 'l2-max-dual',
     price: 40800, old_price: 51000,
+    brand: 'ausom',
     category: 'commuter', voltage: '48v', motor: 'dual',
     range_km: 85, max_speed: 55, weight_kg: 30, max_load_kg: 120, battery_wh: 960,
     description: 'Ausom L2 Max Dual Motor — найпотужніша модель серії L. Збільшений акумулятор та подвійний мотор для максимального запасу ходу та тяги.',
@@ -52,6 +57,7 @@ export const PRODUCTS: Product[] = [
   {
     id: '4', name: 'Ausom DT2 Pro', slug: 'dt2-pro',
     price: 44250, old_price: 55300,
+    brand: 'ausom',
     category: 'offroad', voltage: '52v', motor: 'dual',
     range_km: 70, max_speed: 65, weight_kg: 34, max_load_kg: 150, battery_wh: 1066,
     description: 'Ausom DT2 Pro — позашляховий самокат преміум класу. Розроблений для бездоріжжя та екстремальних умов.',
@@ -78,9 +84,6 @@ export function getProductsByCategory(category: string) {
 }
 
 // ─── Supabase-first async fetchers with static fallback ─────────────────
-// These are the ones new code should call. If the DB request fails
-// (network, misconfigured env, RLS), the UI falls back to PRODUCTS above.
-
 export async function fetchAllProducts(): Promise<Product[]> {
   try {
     const list = await getAllProductsDB()
@@ -95,7 +98,6 @@ export async function fetchProductBySlug(slug: string): Promise<Product | null> 
   try {
     const p = await getProductBySlugDB(slug)
     if (p) return p
-    // slug exists in seed but not yet in DB? fall back
     return PRODUCTS.find(x => x.slug === slug) ?? null
   } catch (err) {
     console.warn('[data] fetchProductBySlug: DB failed, using static fallback', err)
