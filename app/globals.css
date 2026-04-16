@@ -221,3 +221,144 @@ body {
 @media (max-width: 768px) {
   .hero-main-grid { padding: 40px 0 24px; }
 }
+
+/* в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+   RESPONSIVE вЂ” РґРѕРґР°С‚Рё РІ РљР†РќР•Р¦Р¬ globals.css
+   в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ */
+
+/* Responsive grids вЂ” override inline styles */
+@media (max-width: 1024px) {
+  .grid-product-detail {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .grid-2-1 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-stats-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .grid-about {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .grid-checkout {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-features-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .w-container {
+    padding: 0 16px !important;
+  }
+  .grid-4 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  .grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  .grid-stats-4 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .grid-quick-specs {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .grid-steps-4 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+  .grid-steps-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Product page mobile */
+  .product-price-block {
+    padding: 20px !important;
+  }
+  .product-title {
+    font-size: 28px !important;
+  }
+
+  /* Hide on mobile */
+  .hide-mobile {
+    display: none !important;
+  }
+
+  /* Stack flex on mobile */
+  .flex-col-mobile {
+    flex-direction: column !important;
+  }
+
+  /* Full width buttons on mobile */
+  .btn-full-mobile {
+    width: 100% !important;
+  }
+
+  /* Section padding mobile */
+  .section-py {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+
+  /* Typography mobile */
+  .t-hero {
+    font-size: 36px !important;
+  }
+  .t-h1 {
+    font-size: 28px !important;
+  }
+  .t-h2 {
+    font-size: 24px !important;
+  }
+
+  /* Catalog filters scroll */
+  .filters-bar {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filters-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Sale hero */
+  .sale-hero {
+    padding: 32px 20px !important;
+  }
+
+  /* FAQ */
+  .faq-question {
+    font-size: 13px !important;
+  }
+
+  /* Table responsive */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Admin responsive */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    display: none !important;
+  }
+  .admin-grid-form {
+    grid-template-columns: 1fr !important;
+  }
+}
