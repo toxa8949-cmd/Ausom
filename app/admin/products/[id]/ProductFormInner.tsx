@@ -11,7 +11,7 @@ import AdminShell from '../../AdminShell'
 interface F {
   name:string;slug:string;price:string;old_price:string
   brand:'ausom'|'kukirin'
-  category:'offroad'|'commuter';voltage:'48v'|'52v'|'60v';motor:'single'|'dual'
+  category:'offroad'|'commuter';voltage:'36v'|'48v'|'52v'|'60v'|'72v';motor:'single'|'dual'
   range_km:string;max_speed:string;weight_kg:string;max_load_kg:string;battery_wh:string;description:string;tag:string
   in_stock:boolean;is_new:boolean;is_featured:boolean;features:string[];images:string[]
 }
@@ -27,6 +27,22 @@ const EMPTY: F = {
 const B = '1.5px solid #EEEEEE'
 const inp: React.CSSProperties = { width:'100%',padding:'11px 14px',background:'#F9F9F9',border:B,borderRadius:8,fontSize:14,color:'#111',outline:'none',fontFamily:'Inter,sans-serif',transition:'border-color .15s' }
 const lbl: React.CSSProperties = { display:'block',fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#888',marginBottom:8 }
+
+// ─────────────────────────────────────────────────────────────
+// CRITICAL: This component MUST be defined at module scope, not inside
+// ProductFormInner. Defining it inside the parent causes React to treat
+// <Card> as a NEW component type on every parent re-render — which
+// re-mounts all children (including <input>), and the input loses focus
+// after every single keystroke.
+// ─────────────────────────────────────────────────────────────
+function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background:'#fff',border:B,borderRadius:12,overflow:'hidden',marginBottom:16 }}>
+      <div style={{ padding:'14px 20px',borderBottom:B,fontSize:13,fontWeight:700,color:'#111' }}>{title}</div>
+      <div style={{ padding:'20px' }}>{children}</div>
+    </div>
+  )
+}
 
 export default function ProductFormInner({ id }: { id: string }) {
   const router = useRouter()
@@ -45,7 +61,6 @@ export default function ProductFormInner({ id }: { id: string }) {
         const p = ps.find(x => x.id === id)
         if (p) setForm({
           name:p.name,slug:p.slug,price:String(p.price),old_price:String(p.old_price||''),
-          // Fall back to 'ausom' for products created before the brand column existed
           brand: (p.brand === 'kukirin' ? 'kukirin' : 'ausom'),
           category:p.category,voltage:p.voltage,motor:p.motor,range_km:String(p.range_km),
           max_speed:String(p.max_speed),weight_kg:String(p.weight_kg),max_load_kg:String(p.max_load_kg),
@@ -115,13 +130,6 @@ export default function ProductFormInner({ id }: { id: string }) {
     color:      v ? '#111'    : '#444',
     borderColor:v ? '#F5C200' : '#EEEEEE',
   })
-
-  const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div style={{ background:'#fff',border:B,borderRadius:12,overflow:'hidden',marginBottom:16 }}>
-      <div style={{ padding:'14px 20px',borderBottom:B,fontSize:13,fontWeight:700,color:'#111' }}>{title}</div>
-      <div style={{ padding:'20px' }}>{children}</div>
-    </div>
-  )
 
   if (loading) return (
     <div style={{ minHeight:'100vh',background:'#F9F9F9',display:'flex',alignItems:'center',justifyContent:'center' }}>
@@ -196,7 +204,6 @@ export default function ProductFormInner({ id }: { id: string }) {
           </div>
 
           <div>
-            {/* Brand — NEW card */}
             <Card title="Бренд">
               <div style={{ display:'flex',gap:8 }}>
                 <button type="button" onClick={() => set('brand','ausom')} style={brandToggle(form.brand==='ausom')}>Ausom</button>
@@ -215,8 +222,8 @@ export default function ProductFormInner({ id }: { id: string }) {
             </Card>
             <Card title="Параметри">
               <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
-                <div><div style={lbl}>Категорія</div><select value={form.category} onChange={e => set('category',e.target.value)} style={{...inp,cursor:'pointer'}}><option value="commuter">Міський</option><option value="offroad">Позашляховий</option></select></div>
-                <div><div style={lbl}>Напруга</div><select value={form.voltage} onChange={e => set('voltage',e.target.value)} style={{...inp,cursor:'pointer'}}><option value="48v">48V</option><option value="52v">52V</option><option value="60v">60V</option></select></div>
+                <div><div style={lbl}>Категорія</div><select value={form.category} onChange={e => set('category',e.target.value as F['category'])} style={{...inp,cursor:'pointer'}}><option value="commuter">Міський</option><option value="offroad">Позашляховий</option></select></div>
+                <div><div style={lbl}>Напруга</div><select value={form.voltage} onChange={e => set('voltage',e.target.value as F['voltage'])} style={{...inp,cursor:'pointer'}}><option value="36v">36V</option><option value="48v">48V</option><option value="52v">52V</option><option value="60v">60V</option><option value="72v">72V</option></select></div>
                 <div>
                   <div style={lbl}>Мотор</div>
                   <div style={{ display:'flex',gap:8 }}>
