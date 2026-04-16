@@ -94,12 +94,25 @@ export async function deletePost(id: string): Promise<void> {
 }
 
 // ─── BANNERS ─────────────────────────────────────────────
+// Extended to match the Hero slider contract:
+//   - title/subtitle: big headline + descriptive line on the banner
+//   - eyebrow: small yellow label above the title ("Флагман 2026")
+//   - image + banner_position: the full-bleed background photo + object-position
+//   - link + cta_label: where the primary CTA goes and what it says
+//   - product_slug: OPTIONAL — when set, Hero renders a strip below the
+//     banner with this product's thumbnail, specs and price (fetched live)
+//   - position: display order (0-based)
+//   - active: hide a banner without deleting it
 export interface Banner {
   id: string
   title: string
   subtitle: string
   link: string
   image: string
+  eyebrow: string            // NEW
+  product_slug: string | null // NEW — slug FK by convention, not enforced
+  banner_position: string    // NEW — e.g. "center 30%"
+  cta_label: string          // NEW
   position: number
   active: boolean
   created_at: string
@@ -109,7 +122,15 @@ export async function getAllBanners(): Promise<Banner[]> {
   const { data, error } = await supabase
     .from('banners').select('*').order('position', { ascending: true })
   if (error) throw error
-  return data as Banner[]
+  return (data ?? []) as Banner[]
+}
+
+/** Active banners only — for the public Hero on the homepage. */
+export async function getActiveBanners(): Promise<Banner[]> {
+  const { data, error } = await supabase
+    .from('banners').select('*').eq('active', true).order('position', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as Banner[]
 }
 
 export async function createBanner(banner: Omit<Banner, 'id' | 'created_at'>): Promise<Banner> {

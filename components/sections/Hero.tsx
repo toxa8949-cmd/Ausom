@@ -5,88 +5,126 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, ChevronLeft, ChevronRight, Zap, Gauge, Battery, Weight } from 'lucide-react'
 import { fetchAllProducts } from '@/lib/data'
+import { getActiveBanners, Banner } from '@/lib/queries'
 import { Product } from '@/lib/types'
 
-const CDN = 'https://pl.ausomstore.com/cdn/shop/files'
-
-// Slide banners are static (editorial content), but the product data linked
-// to each slide is pulled live from Supabase by slug.
-const SLIDES = [
+// Fallback slides if the banners table is empty or unreachable.
+// Same shape as DB rows so the render code stays uniform.
+const FALLBACK_SLIDES: Banner[] = [
   {
-    slug:     'dt2-pro',
+    id: 'fallback-1',
+    title:    'Ausom DT2 Pro',
+    subtitle: 'Подвійний мотор 2×800W, 70 км, 65 км/год. Для міста та бездоріжжя.',
+    link:     '/product/dt2-pro',
+    image:    'https://pl.ausomstore.com/cdn/shop/files/Ausom_K20_Pro_Dual_banner.jpg?v=1774515143',
     eyebrow:  'Флагман 2026',
-    headline: 'Ausom DT2 Pro',
-    sub:      'Подвійний мотор 2×800W, 70 км, 65 км/год. Для міста та бездоріжжя.',
-    banner:   `${CDN}/Ausom_K20_Pro_Dual_banner.jpg?v=1774515143`,
-    position: 'center 30%',
-    cta:      '/product/dt2-pro',
+    product_slug:    'dt2-pro',
+    banner_position: 'center 30%',
+    cta_label:       'Купити зараз',
+    position: 0, active: true, created_at: '',
   },
   {
-    slug:     'l2-max-dual',
+    id: 'fallback-2',
+    title:    'Ausom L2 Max',
+    subtitle: '85 км на одному заряді. Dual Motor, 960 Wh.',
+    link:     '/product/l2-max-dual',
+    image:    'https://pl.ausomstore.com/cdn/shop/files/800_1200-wuzi.jpg?v=1772768149',
     eyebrow:  'Хіт продажів',
-    headline: 'Ausom L2 Max',
-    sub:      '85 км на одному заряді. Dual Motor, 960 Wh.',
-    banner:   `${CDN}/800_1200-wuzi.jpg?v=1772768149`,
-    position: 'center 40%',
-    cta:      '/product/l2-max-dual',
+    product_slug:    'l2-max-dual',
+    banner_position: 'center 40%',
+    cta_label:       'Купити зараз',
+    position: 1, active: true, created_at: '',
   },
   {
-    slug:     'l2-dual',
+    id: 'fallback-3',
+    title:    'Ausom L2 Dual',
+    subtitle: 'Баланс потужності та автономності для щоденних поїздок.',
+    link:     '/product/l2-dual',
+    image:    'https://pl.ausomstore.com/cdn/shop/files/new-arrival-mobile.jpg?v=1773298436',
     eyebrow:  'Популярний вибір',
-    headline: 'Ausom L2 Dual',
-    sub:      'Баланс потужності та автономності для щоденних поїздок.',
-    banner:   `${CDN}/new-arrival-mobile.jpg?v=1773298436`,
-    position: 'center 35%',
-    cta:      '/product/l2-dual',
+    product_slug:    'l2-dual',
+    banner_position: 'center 35%',
+    cta_label:       'Купити зараз',
+    position: 2, active: true, created_at: '',
   },
 ]
 
 export default function Hero() {
+  const [slides,   setSlides]   = useState<Banner[]>(FALLBACK_SLIDES)
   const [products, setProducts] = useState<Product[]>([])
-  const [cur,  setCur]  = useState(0)
-  const [anim, setAnim] = useState(false)
+  const [cur,      setCur]      = useState(0)
+  const [anim,     setAnim]     = useState(false)
 
+  // Load both in parallel on mount. If banners fetch fails or returns empty,
+  // FALLBACK_SLIDES stays in state so the Hero still renders something.
   useEffect(() => {
-    fetchAllProducts().then(setProducts).catch(() => {})
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [bannerList, productList] = await Promise.all([
+          getActiveBanners(),
+          fetchAllProducts(),
+        ])
+        if (cancelled) return
+        if (bannerList && bannerList.length > 0) setSlides(bannerList)
+        setProducts(productList)
+      } catch (err) {
+        console.warn('[Hero] load failed, using fallback', err)
+      }
+    })()
+    return () => { cancelled = true }
   }, [])
 
   const go = useCallback((n: number) => {
     if (anim) return
     setAnim(true)
-    setTimeout(() => { setCur((n + SLIDES.length) % SLIDES.length); setAnim(false) }, 250)
-  }, [anim])
+    setTimeout(() => { setCur((n + slides.length) % slides.length); setAnim(false) }, 250)
+  }, [anim, slides.length])
 
+  // Autoplay — reset whenever slides or current index changes so the timer
+  // is always synced to the actual shown slide.
   useEffect(() => {
+    if (slides.length <= 1) return
     const t = setInterval(() => go(cur + 1), 6000)
     return () => clearInterval(t)
-  }, [cur, go])
+  }, [cur, go, slides.length])
 
-  const slide   = SLIDES[cur]
-  // Match the current slide to a DB product by slug. May be undefined on first
-  // paint (before fetch resolves) — render with defensive fallbacks below.
-  const product = products.find(p => p.slug === slide.slug)
-  const disc    = product?.old_price ? Math.round((product.old_price - product.price) / product.old_price * 100) : 0
+  // Clamp current index whenever slides change length (e.g. admin toggles off
+  // a slide while the Hero is open in another tab).
+  useEffect(() => {
+    if (cur >= slides.length) setCur(0)
+  }, [slides.length, cur])
+
+  if (slides.length === 0) return null
+
+  const slide   = slides[cur]
+  const product = slide.product_slug ? products.find(p => p.slug === slide.product_slug) : undefined
+  const disc    = product?.old_price
+    ? Math.round((product.old_price - product.price) / product.old_price * 100)
+    : 0
 
   return (
     <section style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
 
       {/* Full-width banner */}
       <div className="hero-banner" style={{ position:'relative', width:'100%', overflow:'hidden' }}>
-        {SLIDES.map((s, i) => (
-          <div key={i} style={{
+        {slides.map((s, i) => (
+          <div key={s.id} style={{
             position:'absolute', inset:0,
             opacity: i === cur ? 1 : 0,
             transition:'opacity .6s ease',
             pointerEvents: i === cur ? 'auto' : 'none',
           }}>
-            <Image
-              src={s.banner}
-              alt={s.headline}
-              fill
-              priority={i === 0}
-              sizes="100vw"
-              style={{ objectFit:'cover', objectPosition: s.position }}
-            />
+            {s.image && (
+              <Image
+                src={s.image}
+                alt={s.title}
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                style={{ objectFit:'cover', objectPosition: s.banner_position || 'center center' }}
+              />
+            )}
             <div style={{
               position:'absolute', inset:0,
               background:'linear-gradient(105deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.1) 100%)',
@@ -100,24 +138,30 @@ export default function Hero() {
               transform: i === cur && !anim ? 'translateX(0)' : 'translateX(-24px)',
               transition:'opacity .5s .15s ease, transform .5s .15s ease',
             }}>
-              <span style={{ fontSize:'clamp(10px,2vw,12px)', fontWeight:700, letterSpacing:'.14em', textTransform:'uppercase' as const, color:'#F5C200', marginBottom:14, display:'block' }}>
-                {s.eyebrow}
-              </span>
+              {s.eyebrow && (
+                <span style={{ fontSize:'clamp(10px,2vw,12px)', fontWeight:700, letterSpacing:'.14em', textTransform:'uppercase' as const, color:'#F5C200', marginBottom:14, display:'block' }}>
+                  {s.eyebrow}
+                </span>
+              )}
               <h1 style={{ fontSize:'clamp(32px,5.5vw,76px)', fontWeight:800, color:'#fff', letterSpacing:'-.03em', lineHeight:1.0, marginBottom:14, textShadow:'0 2px 12px rgba(0,0,0,.3)' }}>
-                {s.headline}
+                {s.title}
               </h1>
-              <p style={{ fontSize:'clamp(13px,1.6vw,17px)', color:'rgba(255,255,255,.82)', maxWidth:440, lineHeight:1.65, marginBottom:24 }}>
-                {s.sub}
-              </p>
+              {s.subtitle && (
+                <p style={{ fontSize:'clamp(13px,1.6vw,17px)', color:'rgba(255,255,255,.82)', maxWidth:440, lineHeight:1.65, marginBottom:24 }}>
+                  {s.subtitle}
+                </p>
+              )}
               <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-                <Link href={s.cta} style={{
-                  display:'inline-flex', alignItems:'center', gap:8,
-                  background:'#F5C200', color:'#111',
-                  fontSize:'clamp(12px,1.3vw,13px)', fontWeight:800, letterSpacing:'.06em', textTransform:'uppercase' as const,
-                  padding:'13px 24px', borderRadius:7, textDecoration:'none',
-                }}>
-                  Купити зараз <ArrowRight size={15}/>
-                </Link>
+                {s.link && (
+                  <Link href={s.link} style={{
+                    display:'inline-flex', alignItems:'center', gap:8,
+                    background:'#F5C200', color:'#111',
+                    fontSize:'clamp(12px,1.3vw,13px)', fontWeight:800, letterSpacing:'.06em', textTransform:'uppercase' as const,
+                    padding:'13px 24px', borderRadius:7, textDecoration:'none',
+                  }}>
+                    {s.cta_label || 'Купити зараз'} <ArrowRight size={15}/>
+                  </Link>
+                )}
                 <Link href="/catalog" style={{
                   display:'inline-flex', alignItems:'center',
                   background:'rgba(255,255,255,.12)', color:'#fff',
@@ -133,20 +177,23 @@ export default function Hero() {
         ))}
 
         {/* Slider controls */}
-        <div style={{ position:'absolute', bottom:16, left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', gap:8, zIndex:10 }}>
-          <button onClick={() => go(cur-1)} aria-label="Попередній слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
-            <ChevronLeft size={14}/>
-          </button>
-          {SLIDES.map((_,i) => (
-            <button key={i} onClick={() => go(i)} aria-label={`Слайд ${i+1}`} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===cur ? 28 : 8, background: i===cur ? '#F5C200' : 'rgba(255,255,255,.5)' }}/>
-          ))}
-          <button onClick={() => go(cur+1)} aria-label="Наступний слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
-            <ChevronRight size={14}/>
-          </button>
-        </div>
+        {slides.length > 1 && (
+          <div style={{ position:'absolute', bottom:16, left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', gap:8, zIndex:10 }}>
+            <button onClick={() => go(cur-1)} aria-label="Попередній слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
+              <ChevronLeft size={14}/>
+            </button>
+            {slides.map((_,i) => (
+              <button key={i} onClick={() => go(i)} aria-label={`Слайд ${i+1}`} style={{ height:3, borderRadius:2, border:'none', cursor:'pointer', transition:'all .3s', width: i===cur ? 28 : 8, background: i===cur ? '#F5C200' : 'rgba(255,255,255,.5)' }}/>
+            ))}
+            <button onClick={() => go(cur+1)} aria-label="Наступний слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
+              <ChevronRight size={14}/>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Product strip */}
+      {/* Product strip — rendered only when this slide is linked to a product
+          AND that product was found in the catalog. */}
       {product && (
         <div className="w-container hero-strip-wrap">
           <div className="hero-product-strip" style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:32, alignItems:'center' }}>
@@ -185,7 +232,7 @@ export default function Hero() {
                 {product.old_price && <span className="price-old" style={{ fontSize:14, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
               </div>
               <div className="hero-product-cta-row" style={{ display:'flex', gap:8, justifyContent:'flex-end', flexWrap:'wrap' }}>
-                <Link href={slide.cta} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
+                <Link href={slide.link || `/product/${product.slug}`} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
                   <ArrowRight size={14}/> Купити
                 </Link>
                 <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'var(--text)', fontSize:12, fontWeight:600, padding:'11px 18px', borderRadius:6, textDecoration:'none', border:'1.5px solid var(--border-md)' }}>
