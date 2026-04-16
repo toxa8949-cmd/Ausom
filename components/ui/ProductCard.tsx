@@ -53,11 +53,12 @@ export default function ProductCard({ product: p, featured }: { product: Product
         {/* Image area — default shows product, hover shows lifestyle */}
         <div style={{ background:'#F8F8F8', aspectRatio:'1', position:'relative', overflow:'hidden' }}>
 
-          {/* Default product image — visible when NOT hovered */}
+          {/* Default — product shot: contain + white bg */}
           {imgDefault && (
             <div style={{
               position:'absolute', inset:0,
-              opacity: (imgHover && hovered) ? 0 : 1,
+              background:'#fff',
+              opacity: (imgHover && imgHover !== imgDefault && hovered) ? 0 : 1,
               transition: 'opacity .35s ease',
             }}>
               <Image
@@ -65,12 +66,12 @@ export default function ProductCard({ product: p, featured }: { product: Product
                 alt={p.name}
                 fill
                 sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
-                style={{ objectFit:'contain', padding:16 }}
+                style={{ objectFit:'contain', padding:'12px' }}
               />
             </div>
           )}
 
-          {/* Lifestyle hover image */}
+          {/* Hover — lifestyle shot: cover, full bleed */}
           {imgHover && imgHover !== imgDefault && (
             <div style={{
               position:'absolute', inset:0,
@@ -79,10 +80,10 @@ export default function ProductCard({ product: p, featured }: { product: Product
             }}>
               <Image
                 src={imgHover}
-                alt={`${p.name} — в дії`}
+                alt={`${p.name} в дії`}
                 fill
                 sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
-                style={{ objectFit:'cover' }}
+                style={{ objectFit:'cover', objectPosition:'center top' }}
               />
             </div>
           )}
