@@ -346,27 +346,15 @@ body {
   gap: 32px;
   align-items: center;
 }
+/* Hero product strip — desktop keeps 3-col grid; tablet shrinks thumb & gaps */
 @media (max-width: 900px) {
   .hero-product-strip {
-    grid-template-columns: 80px 1fr;
-    gap: 16px;
-    row-gap: 18px;
+    grid-template-columns: 80px 1fr auto !important;
+    gap: 16px !important;
   }
-  /* Price block moves to a new row spanning both columns */
-  .hero-product-strip > :nth-child(3) {
-    grid-column: 1 / -1;
-    text-align: left !important;
-  }
-  .hero-product-strip > :nth-child(3) > div:first-child {
-    justify-content: flex-start !important;
-  }
-  .hero-product-strip > :nth-child(3) > div:last-child {
-    justify-content: flex-start !important;
-  }
-}
-@media (max-width: 640px) {
-  .hero-product-strip > :first-child {
-    width: 72px !important; height: 72px !important;
+  .hero-product-strip .hero-product-thumb {
+    width: 80px !important;
+    height: 80px !important;
   }
 }
 /* Hero section inner padding */
@@ -597,8 +585,94 @@ body {
 @media (max-width: 1024px) { .home-blog-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px)  { .home-blog-grid { grid-template-columns: 1fr; } }
 
-/* Generic section vertical padding shrink on mobile (applied via .section-py already,
-   but sections here don't use it yet — we rely on clamp() font + this rule below) */
+/* Generic section vertical padding shrink on mobile */
 @media (max-width: 640px) {
   .home-section { padding-top: 48px !important; padding-bottom: 48px !important; }
+}
+
+/* ═══════════════════════════════════════════
+   NAV VISIBILITY — replaces Tailwind "hidden lg:flex" / "lg:hidden"
+   because Tailwind v4 + PostCSS setup in this repo doesn't reliably
+   apply those utilities.
+═══════════════════════════════════════════ */
+.nav-desktop { display: flex; }
+.nav-burger  { display: none; }
+@media (max-width: 1024px) {
+  .nav-desktop { display: none !important; }
+  .nav-burger  { display: flex !important; }
+}
+
+/* ═══════════════════════════════════════════
+   ANNOUNCEMENT BAR — shrink on mobile
+═══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .announce-bar { height: 30px !important; }
+  .announce-bar span { font-size: 10px !important; letter-spacing: .06em !important; }
+}
+
+/* ═══════════════════════════════════════════
+   HERO PRODUCT STRIP — aggressive mobile restack.
+   On desktop: thumbnail | specs | price-cta (auto|1fr|auto)
+   On ≤640px: fully vertical card layout, specs in 2×2 grid,
+              price row + CTAs become their own blocks.
+═══════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .hero-product-strip {
+    display: block !important;
+    padding: 0 !important;
+  }
+  /* Top block: thumbnail + name (horizontal) */
+  .hero-product-strip-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .hero-product-strip-top .hero-product-thumb {
+    width: 64px !important;
+    height: 64px !important;
+    flex-shrink: 0;
+  }
+  .hero-product-strip-top .hero-product-name {
+    font-size: 18px !important;
+  }
+  /* Specs: 2x2 grid */
+  .hero-product-specs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px 20px !important;
+    margin-bottom: 18px;
+    padding: 14px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-product-specs > div > :first-child {
+    font-size: 16px !important;
+  }
+  /* Price row: left align, no flex-end */
+  .hero-product-price {
+    text-align: left !important;
+    margin-bottom: 14px;
+  }
+  .hero-product-price > div:first-child {
+    justify-content: flex-start !important;
+  }
+  .hero-product-price .price-amount {
+    font-size: 26px !important;
+  }
+  .hero-product-price .price-old {
+    font-size: 13px !important;
+  }
+  /* CTAs full width */
+  .hero-product-cta-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    justify-content: stretch !important;
+  }
+  .hero-product-cta-row > a {
+    justify-content: center !important;
+    padding: 13px 12px !important;
+    width: 100%;
+  }
 }

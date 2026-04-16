@@ -69,8 +69,9 @@ export default function Header() {
             <sup style={{ fontFamily:'Inter,sans-serif', fontWeight:700, fontSize:9, color:'var(--yellow-dark)', marginTop:-8, letterSpacing:'.04em' }}>UA</sup>
           </Link>
 
-          {/* Desktop nav */}
-          <nav style={{ display:'flex', alignItems:'center', gap:4, flex:1 }} className="hidden lg:flex">
+          {/* Desktop nav — .nav-desktop hides below 1024px via globals.css
+             (replaces unreliable Tailwind v4 "hidden lg:flex") */}
+          <nav className="nav-desktop" style={{ alignItems:'center', gap:4, flex:1 }}>
             {NAV.map(item => (
               <div key={item.label} style={{ position:'relative' }}
                 onMouseEnter={() => item.sub && setDrop(item.label)}
@@ -148,14 +149,14 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Burger */}
+            {/* Burger — .nav-burger visible only below 1024px */}
             <button
-              className="lg:hidden"
+              className="nav-burger"
               aria-label={open ? 'Закрити меню' : 'Відкрити меню'}
               aria-expanded={open}
               onClick={() => setOpen(!open)}
               style={{
-                width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
+                width:36, height:36, alignItems:'center', justifyContent:'center',
                 background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
                 color:'var(--text-2)', cursor:'pointer',
               }}>

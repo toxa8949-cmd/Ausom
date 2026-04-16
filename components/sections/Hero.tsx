@@ -140,41 +140,47 @@ export default function Hero() {
 
       {/* Product strip — .hero-product-strip restacks for mobile */}
       <div className="w-container hero-strip-wrap">
-        <div className="hero-product-strip">
-          {/* Thumbnail */}
-          <div style={{ width:100, height:100, background:'#F8F8F8', borderRadius:12, border:'1.5px solid var(--border)', position:'relative', overflow:'hidden', flexShrink:0 }}>
-            {product.images?.[0] && (
-              <Image src={product.images[0]} alt={product.name} fill sizes="100px" style={{ objectFit:'contain', padding:8 }}/>
-            )}
-          </div>
-          {/* Specs */}
-          <div style={{ minWidth:0 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10, flexWrap:'wrap' }}>
-              <span style={{ fontSize:17, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>{product.name}</span>
-              {product.tag && <span style={{ fontSize:10, fontWeight:800, background:'#F5C200', color:'#111', padding:'3px 8px', borderRadius:4, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>{product.tag}</span>}
+        <div className="hero-product-strip" style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:32, alignItems:'center' }}>
+
+          {/* Top block on mobile: thumbnail + name.
+              On desktop these are just the first two cells of the grid. */}
+          <div className="hero-product-strip-top" style={{ display:'contents' }}>
+            {/* Thumbnail */}
+            <div className="hero-product-thumb" style={{ width:100, height:100, background:'#F8F8F8', borderRadius:12, border:'1.5px solid var(--border)', position:'relative', overflow:'hidden', flexShrink:0 }}>
+              {product.images?.[0] && (
+                <Image src={product.images[0]} alt={product.name} fill sizes="100px" style={{ objectFit:'contain', padding:8 }}/>
+              )}
             </div>
-            <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
-              {[
-                { Icon:Gauge,   v:`${product.max_speed} км/год`, l:'Швидкість' },
-                { Icon:Zap,     v:`${product.range_km} км`,       l:'Запас ходу' },
-                { Icon:Battery, v:`${product.battery_wh} Wh`,     l:'Акумулятор' },
-                { Icon:Weight,  v:`${product.weight_kg} кг`,      l:'Вага' },
-              ].map(({ v, l }) => (
-                <div key={l}>
-                  <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{v}</div>
-                  <div style={{ fontSize:10, fontWeight:600, letterSpacing:'.07em', textTransform:'uppercase' as const, color:'var(--text-4)' }}>{l}</div>
-                </div>
-              ))}
+            {/* Specs (name + 4 metrics) */}
+            <div style={{ minWidth:0 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10, flexWrap:'wrap' }}>
+                <span className="hero-product-name" style={{ fontSize:17, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>{product.name}</span>
+                {product.tag && <span style={{ fontSize:10, fontWeight:800, background:'#F5C200', color:'#111', padding:'3px 8px', borderRadius:4, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>{product.tag}</span>}
+              </div>
+              <div className="hero-product-specs" style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
+                {[
+                  { Icon:Gauge,   v:`${product.max_speed} км/год`, l:'Швидкість' },
+                  { Icon:Zap,     v:`${product.range_km} км`,       l:'Запас ходу' },
+                  { Icon:Battery, v:`${product.battery_wh} Wh`,     l:'Акумулятор' },
+                  { Icon:Weight,  v:`${product.weight_kg} кг`,      l:'Вага' },
+                ].map(({ v, l }) => (
+                  <div key={l}>
+                    <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{v}</div>
+                    <div style={{ fontSize:10, fontWeight:600, letterSpacing:'.07em', textTransform:'uppercase' as const, color:'var(--text-4)' }}>{l}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-          {/* Price + CTA */}
-          <div style={{ textAlign:'right', flexShrink:0 }}>
+
+          {/* Price + CTA — its own grid cell on desktop, own block on mobile */}
+          <div className="hero-product-price" style={{ textAlign:'right', flexShrink:0 }}>
             <div style={{ display:'flex', alignItems:'center', gap:10, justifyContent:'flex-end', marginBottom:10, flexWrap:'wrap' }}>
               {disc > 0 && <span style={{ background:'#F5C200', color:'#111', fontSize:11, fontWeight:800, padding:'3px 8px', borderRadius:4 }}>−{disc}%</span>}
-              <span style={{ fontSize:28, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>₴{product.price.toLocaleString('uk-UA')}</span>
-              {product.old_price && <span style={{ fontSize:14, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
+              <span className="price-amount" style={{ fontSize:28, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>₴{product.price.toLocaleString('uk-UA')}</span>
+              {product.old_price && <span className="price-old" style={{ fontSize:14, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
             </div>
-            <div style={{ display:'flex', gap:8, justifyContent:'flex-end', flexWrap:'wrap' }}>
+            <div className="hero-product-cta-row" style={{ display:'flex', gap:8, justifyContent:'flex-end', flexWrap:'wrap' }}>
               <Link href={slide.cta} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
                 <ArrowRight size={14}/> Купити
               </Link>
