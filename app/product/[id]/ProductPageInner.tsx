@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
-import { ChevronRight } from 'lucide-react'
-import { PRODUCTS, getProductBySlug } from '@/lib/data'
+import { ChevronRight, Loader2 } from 'lucide-react'
+import { fetchProductBySlug, fetchAllProducts } from '@/lib/data'
+import { Product } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
 const specsMap: Record<string, { wheels:string; charging:string; brakes:string; suspension:string; waterproof:string; display:string }> = {
@@ -14,17 +15,47 @@ const specsMap: Record<string, { wheels:string; charging:string; brakes:string; 
   'l2-max-dual':{ wheels:'11"', charging:'8-9 год', brakes:'Гідравлічні', suspension:'Подвійна', waterproof:'IP54', display:'LCD' },
   'dt2-pro':    { wheels:'11"', charging:'9-10 год', brakes:'Гідравлічні Zoom', suspension:'Подвійна регульована', waterproof:'IP55', display:'LCD кольоровий' },
 }
+const defaultSpecs = { wheels:'10"', charging:'7-8 год', brakes:'Дискові', suspension:'Передня + задня', waterproof:'IP54', display:'LCD' }
 
 export default function ProductPageInner({ id }: { id: string }) {
-  const product = getProductBySlug(id)
+  const [product,   setProduct]   = useState<Product | null>(null)
+  const [related,   setRelated]   = useState<Product[]>([])
+  const [loading,   setLoading]   = useState(true)
+  const [notFoundFlag, setNotFoundFlag] = useState(false)
   const [activeImg, setActiveImg] = useState(0)
-  const [tab, setTab] = useState<'features'|'specs'>('features')
+  const [tab,       setTab]       = useState<'features'|'specs'>('features')
   const { addItem } = useCart()
 
-  if (!product) notFound()
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const p = await fetchProductBySlug(id)
+        if (cancelled) return
+        if (!p) { setNotFoundFlag(true); setLoading(false); return }
+        setProduct(p)
+        const all = await fetchAllProducts()
+        if (cancelled) return
+        setRelated(all.filter(x => x.slug !== p.slug).slice(0, 3))
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [id])
 
-  const extra = specsMap[product.slug] || specsMap['l1']
-  const others = PRODUCTS.filter(p => p.slug !== product.slug).slice(0, 3)
+  if (notFoundFlag) notFound()
+
+  if (loading || !product) {
+    return (
+      <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-3)' }}>
+        <Loader2 size={22} style={{ animation:'spin 1s linear infinite' }}/>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      </div>
+    )
+  }
+
+  const extra    = specsMap[product.slug] || defaultSpecs
   const discount = product.old_price ? product.old_price - product.price : 0
 
   const specs = [
@@ -49,6 +80,11 @@ export default function ProductPageInner({ id }: { id: string }) {
     color: active ? '#fff' : 'var(--text-3)',
   })
 
+  // Be defensive: a DB row may have an empty images[] and the renderer
+  // would crash on images[0]. Show a colored placeholder instead.
+  const hasImages = product.images && product.images.length > 0
+  const mainImage = hasImages ? product.images[activeImg] : null
+
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
       <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
@@ -71,15 +107,20 @@ export default function ProductPageInner({ id }: { id: string }) {
               <div style={{ position:'relative', aspectRatio:'1', borderRadius:'var(--radius-lg)', overflow:'hidden', border:'1.5px solid var(--border)', background:'var(--bg-soft)', marginBottom:12 }}>
                 {product.tag && <span style={{ position:'absolute', top:16, left:16, zIndex:2, background:'#F5C200', color:'#111', fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:4 }}>{product.tag}</span>}
                 {discount > 0 && <span style={{ position:'absolute', top:16, right:16, zIndex:2, background:'#EF4444', color:'#fff', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:4 }}>−{Math.round(discount / (product.old_price || 1) * 100)}%</span>}
-                <Image src={product.images[activeImg]} alt={product.name} fill style={{ objectFit:'cover' }} priority />
+                {mainImage
+                  ? <Image src={mainImage} alt={product.name} fill sizes="(max-width:768px) 100vw, 50vw" style={{ objectFit:'cover' }} priority />
+                  : <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-4)', fontSize:48 }}>🛴</div>
+                }
               </div>
-              <div style={{ display:'flex', gap:8 }}>
-                {product.images.map((img, i) => (
-                  <button key={i} onClick={() => setActiveImg(i)} style={{ position:'relative', width:72, height:72, borderRadius:8, overflow:'hidden', cursor:'pointer', border: activeImg===i ? '2px solid #F5C200' : '2px solid var(--border)', background:'var(--bg-soft)', padding:0 }}>
-                    <Image src={img} alt="" fill style={{ objectFit:'cover' }} />
-                  </button>
-                ))}
-              </div>
+              {hasImages && product.images.length > 1 && (
+                <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
+                  {product.images.map((img, i) => (
+                    <button key={i} onClick={() => setActiveImg(i)} aria-label={`Фото ${i+1}`} style={{ position:'relative', width:72, height:72, borderRadius:8, overflow:'hidden', cursor:'pointer', border: activeImg===i ? '2px solid #F5C200' : '2px solid var(--border)', background:'var(--bg-soft)', padding:0 }}>
+                      <Image src={img} alt="" fill sizes="72px" style={{ objectFit:'cover' }} />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info */}
@@ -109,12 +150,16 @@ export default function ProductPageInner({ id }: { id: string }) {
                   {product.old_price && <span style={{ fontSize:18, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
                   {discount > 0 && <span style={{ background:'rgba(239,68,68,.12)', color:'#EF4444', fontSize:13, fontWeight:700, padding:'3px 10px', borderRadius:6 }}>−₴{discount.toLocaleString('uk-UA')}</span>}
                 </div>
-                <button onClick={() => addItem(product)} className="btn btn-yellow btn-lg" style={{ width:'100%' }}>Додати до кошика</button>
+                {product.in_stock ? (
+                  <button onClick={() => addItem(product)} className="btn btn-yellow btn-lg" style={{ width:'100%' }}>Додати до кошика</button>
+                ) : (
+                  <button disabled className="btn btn-lg" style={{ width:'100%', background:'var(--bg-subtle)', color:'var(--text-4)', border:'1.5px solid var(--border)', cursor:'not-allowed' }}>Немає в наявності</button>
+                )}
                 <div className="flex-col-mobile" style={{ display:'flex', gap:20, marginTop:16, fontSize:13, color:'var(--text-3)', flexWrap:'wrap' }}>
                   <span>✓ Безкоштовна доставка</span><span>✓ Гарантія 2 роки</span><span>✓ 14 днів повернення</span>
                 </div>
               </div>
-              <Link href="/checkout" className="btn btn-black btn-lg" style={{ width:'100%', textAlign:'center', justifyContent:'center' }}>Купити зараз</Link>
+              {product.in_stock && <Link href="/checkout" className="btn btn-black btn-lg" style={{ width:'100%', textAlign:'center', justifyContent:'center' }}>Купити зараз</Link>}
             </div>
           </div>
         </div>
@@ -151,31 +196,36 @@ export default function ProductPageInner({ id }: { id: string }) {
       </div>
 
       {/* Related */}
-      <div className="section-py" style={{ padding:'56px 0 72px', borderTop:'1px solid var(--border)' }}>
-        <div className="w-container">
-          <h2 style={{ fontSize:'clamp(22px,3vw,36px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)', marginBottom:28 }}>Інші моделі</h2>
-          <div className="grid-3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
-            {others.map(p => (
-              <Link key={p.slug} href={`/product/${p.slug}`} style={{ textDecoration:'none' }}>
-                <div className="card" style={{ overflow:'hidden' }}>
-                  <div style={{ position:'relative', aspectRatio:'1' }}>
-                    <Image src={p.images[0]} alt={p.name} fill style={{ objectFit:'cover' }} />
-                    {p.old_price && <span style={{ position:'absolute', top:12, right:12, background:'#EF4444', color:'#fff', fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:4 }}>−{Math.round((p.old_price-p.price)/p.old_price*100)}%</span>}
-                  </div>
-                  <div style={{ padding:'20px 18px' }}>
-                    <h3 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:8 }}>{p.name}</h3>
-                    <div className="hide-mobile" style={{ display:'flex', gap:8, fontSize:12, color:'var(--text-3)', marginBottom:12 }}><span>{p.max_speed} км/г</span><span>•</span><span>{p.range_km} км</span><span>•</span><span>{p.battery_wh} Wh</span></div>
-                    <div style={{ display:'flex', alignItems:'baseline', gap:8 }}>
-                      <span style={{ fontSize:20, fontWeight:800, color:'var(--text)' }}>₴{p.price.toLocaleString('uk-UA')}</span>
-                      {p.old_price && <span style={{ fontSize:13, color:'var(--text-4)', textDecoration:'line-through' }}>₴{p.old_price.toLocaleString('uk-UA')}</span>}
+      {related.length > 0 && (
+        <div className="section-py" style={{ padding:'56px 0 72px', borderTop:'1px solid var(--border)' }}>
+          <div className="w-container">
+            <h2 style={{ fontSize:'clamp(22px,3vw,36px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)', marginBottom:28 }}>Інші моделі</h2>
+            <div className="grid-3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
+              {related.map(p => (
+                <Link key={p.slug} href={`/product/${p.slug}`} style={{ textDecoration:'none' }}>
+                  <div className="card" style={{ overflow:'hidden' }}>
+                    <div style={{ position:'relative', aspectRatio:'1' }}>
+                      {p.images?.[0]
+                        ? <Image src={p.images[0]} alt={p.name} fill sizes="(max-width:640px) 100vw, 33vw" style={{ objectFit:'cover' }} />
+                        : <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-4)', fontSize:40 }}>🛴</div>
+                      }
+                      {p.old_price && <span style={{ position:'absolute', top:12, right:12, background:'#EF4444', color:'#fff', fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:4 }}>−{Math.round((p.old_price-p.price)/p.old_price*100)}%</span>}
+                    </div>
+                    <div style={{ padding:'20px 18px' }}>
+                      <h3 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:8 }}>{p.name}</h3>
+                      <div className="hide-mobile" style={{ display:'flex', gap:8, fontSize:12, color:'var(--text-3)', marginBottom:12 }}><span>{p.max_speed} км/г</span><span>•</span><span>{p.range_km} км</span><span>•</span><span>{p.battery_wh} Wh</span></div>
+                      <div style={{ display:'flex', alignItems:'baseline', gap:8 }}>
+                        <span style={{ fontSize:20, fontWeight:800, color:'var(--text)' }}>₴{p.price.toLocaleString('uk-UA')}</span>
+                        {p.old_price && <span style={{ fontSize:13, color:'var(--text-4)', textDecoration:'line-through' }}>₴{p.old_price.toLocaleString('uk-UA')}</span>}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

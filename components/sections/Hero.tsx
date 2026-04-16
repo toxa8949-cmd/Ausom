@@ -4,10 +4,13 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ArrowRight, ChevronLeft, ChevronRight, Zap, Gauge, Battery, Weight } from 'lucide-react'
-import { PRODUCTS } from '@/lib/data'
+import { fetchAllProducts } from '@/lib/data'
+import { Product } from '@/lib/types'
 
 const CDN = 'https://pl.ausomstore.com/cdn/shop/files'
 
+// Slide banners are static (editorial content), but the product data linked
+// to each slide is pulled live from Supabase by slug.
 const SLIDES = [
   {
     slug:     'dt2-pro',
@@ -39,8 +42,13 @@ const SLIDES = [
 ]
 
 export default function Hero() {
+  const [products, setProducts] = useState<Product[]>([])
   const [cur,  setCur]  = useState(0)
   const [anim, setAnim] = useState(false)
+
+  useEffect(() => {
+    fetchAllProducts().then(setProducts).catch(() => {})
+  }, [])
 
   const go = useCallback((n: number) => {
     if (anim) return
@@ -54,13 +62,15 @@ export default function Hero() {
   }, [cur, go])
 
   const slide   = SLIDES[cur]
-  const product = PRODUCTS.find(p => p.slug === slide.slug)!
-  const disc    = product.old_price ? Math.round((product.old_price - product.price) / product.old_price * 100) : 0
+  // Match the current slide to a DB product by slug. May be undefined on first
+  // paint (before fetch resolves) — render with defensive fallbacks below.
+  const product = products.find(p => p.slug === slide.slug)
+  const disc    = product?.old_price ? Math.round((product.old_price - product.price) / product.old_price * 100) : 0
 
   return (
     <section style={{ background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
 
-      {/* Full-width banner — responsive height via .hero-banner */}
+      {/* Full-width banner */}
       <div className="hero-banner" style={{ position:'relative', width:'100%', overflow:'hidden' }}>
         {SLIDES.map((s, i) => (
           <div key={i} style={{
@@ -77,13 +87,11 @@ export default function Hero() {
               sizes="100vw"
               style={{ objectFit:'cover', objectPosition: s.position }}
             />
-            {/* Dark gradient — stronger on left for text readability */}
             <div style={{
               position:'absolute', inset:0,
               background:'linear-gradient(105deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,.1) 100%)',
             }}/>
 
-            {/* Text */}
             <div style={{
               position:'absolute', inset:0, display:'flex', flexDirection:'column',
               justifyContent:'center', padding:'0 clamp(20px,6%,80px)',
@@ -124,7 +132,7 @@ export default function Hero() {
           </div>
         ))}
 
-        {/* Slider dots */}
+        {/* Slider controls */}
         <div style={{ position:'absolute', bottom:16, left:'50%', transform:'translateX(-50%)', display:'flex', alignItems:'center', gap:8, zIndex:10 }}>
           <button onClick={() => go(cur-1)} aria-label="Попередній слайд" style={{ width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(0,0,0,.35)', backdropFilter:'blur(8px)', border:'1px solid rgba(255,255,255,.2)', borderRadius:7, cursor:'pointer', color:'#fff' }}>
             <ChevronLeft size={14}/>
@@ -138,61 +146,58 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Product strip — .hero-product-strip restacks for mobile */}
-      <div className="w-container hero-strip-wrap">
-        <div className="hero-product-strip" style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:32, alignItems:'center' }}>
+      {/* Product strip */}
+      {product && (
+        <div className="w-container hero-strip-wrap">
+          <div className="hero-product-strip" style={{ display:'grid', gridTemplateColumns:'auto 1fr auto', gap:32, alignItems:'center' }}>
 
-          {/* Top block on mobile: thumbnail + name.
-              On desktop these are just the first two cells of the grid. */}
-          <div className="hero-product-strip-top" style={{ display:'contents' }}>
-            {/* Thumbnail */}
-            <div className="hero-product-thumb" style={{ width:100, height:100, background:'#F8F8F8', borderRadius:12, border:'1.5px solid var(--border)', position:'relative', overflow:'hidden', flexShrink:0 }}>
-              {product.images?.[0] && (
-                <Image src={product.images[0]} alt={product.name} fill sizes="100px" style={{ objectFit:'contain', padding:8 }}/>
-              )}
-            </div>
-            {/* Specs (name + 4 metrics) */}
-            <div style={{ minWidth:0 }}>
-              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10, flexWrap:'wrap' }}>
-                <span className="hero-product-name" style={{ fontSize:17, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>{product.name}</span>
-                {product.tag && <span style={{ fontSize:10, fontWeight:800, background:'#F5C200', color:'#111', padding:'3px 8px', borderRadius:4, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>{product.tag}</span>}
+            <div className="hero-product-strip-top" style={{ display:'contents' }}>
+              <div className="hero-product-thumb" style={{ width:100, height:100, background:'#F8F8F8', borderRadius:12, border:'1.5px solid var(--border)', position:'relative', overflow:'hidden', flexShrink:0 }}>
+                {product.images?.[0] && (
+                  <Image src={product.images[0]} alt={product.name} fill sizes="100px" style={{ objectFit:'contain', padding:8 }}/>
+                )}
               </div>
-              <div className="hero-product-specs" style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
-                {[
-                  { Icon:Gauge,   v:`${product.max_speed} км/год`, l:'Швидкість' },
-                  { Icon:Zap,     v:`${product.range_km} км`,       l:'Запас ходу' },
-                  { Icon:Battery, v:`${product.battery_wh} Wh`,     l:'Акумулятор' },
-                  { Icon:Weight,  v:`${product.weight_kg} кг`,      l:'Вага' },
-                ].map(({ v, l }) => (
-                  <div key={l}>
-                    <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{v}</div>
-                    <div style={{ fontSize:10, fontWeight:600, letterSpacing:'.07em', textTransform:'uppercase' as const, color:'var(--text-4)' }}>{l}</div>
-                  </div>
-                ))}
+              <div style={{ minWidth:0 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:10, flexWrap:'wrap' }}>
+                  <span className="hero-product-name" style={{ fontSize:17, fontWeight:800, color:'var(--text)', letterSpacing:'-.02em' }}>{product.name}</span>
+                  {product.tag && <span style={{ fontSize:10, fontWeight:800, background:'#F5C200', color:'#111', padding:'3px 8px', borderRadius:4, textTransform:'uppercase' as const, letterSpacing:'.06em' }}>{product.tag}</span>}
+                </div>
+                <div className="hero-product-specs" style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
+                  {[
+                    { Icon:Gauge,   v:`${product.max_speed} км/год`, l:'Швидкість' },
+                    { Icon:Zap,     v:`${product.range_km} км`,       l:'Запас ходу' },
+                    { Icon:Battery, v:`${product.battery_wh} Wh`,     l:'Акумулятор' },
+                    { Icon:Weight,  v:`${product.weight_kg} кг`,      l:'Вага' },
+                  ].map(({ v, l }) => (
+                    <div key={l}>
+                      <div style={{ fontSize:15, fontWeight:700, color:'var(--text)', letterSpacing:'-.01em' }}>{v}</div>
+                      <div style={{ fontSize:10, fontWeight:600, letterSpacing:'.07em', textTransform:'uppercase' as const, color:'var(--text-4)' }}>{l}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Price + CTA — its own grid cell on desktop, own block on mobile */}
-          <div className="hero-product-price" style={{ textAlign:'right', flexShrink:0 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:10, justifyContent:'flex-end', marginBottom:10, flexWrap:'wrap' }}>
-              {disc > 0 && <span style={{ background:'#F5C200', color:'#111', fontSize:11, fontWeight:800, padding:'3px 8px', borderRadius:4 }}>−{disc}%</span>}
-              <span className="price-amount" style={{ fontSize:28, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>₴{product.price.toLocaleString('uk-UA')}</span>
-              {product.old_price && <span className="price-old" style={{ fontSize:14, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
-            </div>
-            <div className="hero-product-cta-row" style={{ display:'flex', gap:8, justifyContent:'flex-end', flexWrap:'wrap' }}>
-              <Link href={slide.cta} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
-                <ArrowRight size={14}/> Купити
-              </Link>
-              <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'var(--text)', fontSize:12, fontWeight:600, padding:'11px 18px', borderRadius:6, textDecoration:'none', border:'1.5px solid var(--border-md)' }}>
-                Каталог
-              </Link>
+            <div className="hero-product-price" style={{ textAlign:'right', flexShrink:0 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, justifyContent:'flex-end', marginBottom:10, flexWrap:'wrap' }}>
+                {disc > 0 && <span style={{ background:'#F5C200', color:'#111', fontSize:11, fontWeight:800, padding:'3px 8px', borderRadius:4 }}>−{disc}%</span>}
+                <span className="price-amount" style={{ fontSize:28, fontWeight:800, color:'var(--text)', letterSpacing:'-.025em', lineHeight:1 }}>₴{product.price.toLocaleString('uk-UA')}</span>
+                {product.old_price && <span className="price-old" style={{ fontSize:14, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
+              </div>
+              <div className="hero-product-cta-row" style={{ display:'flex', gap:8, justifyContent:'flex-end', flexWrap:'wrap' }}>
+                <Link href={slide.cta} style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.05em', textTransform:'uppercase' as const, padding:'11px 22px', borderRadius:6, textDecoration:'none' }}>
+                  <ArrowRight size={14}/> Купити
+                </Link>
+                <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'transparent', color:'var(--text)', fontSize:12, fontWeight:600, padding:'11px 18px', borderRadius:6, textDecoration:'none', border:'1.5px solid var(--border-md)' }}>
+                  Каталог
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Stats — .hero-stats collapses 4→2 on mobile with proper borders */}
+      {/* Stats */}
       <div style={{ borderTop:'1px solid var(--border)', background:'var(--bg-soft)' }}>
         <div className="w-container hero-stats">
           {[['50K+','Задоволених клієнтів'],['#1','Бренд для дорослих'],['2Y','Офіційна гарантія'],['4.9★','Середній рейтинг']].map(([v,l],i) => (

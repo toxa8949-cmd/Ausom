@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/ui/ProductCard'
-import { PRODUCTS } from '@/lib/data'
-import { SlidersHorizontal, LayoutGrid, List, X, ChevronRight } from 'lucide-react'
+import { fetchAllProducts } from '@/lib/data'
+import { Product } from '@/lib/types'
+import { SlidersHorizontal, LayoutGrid, List, X, ChevronRight, Loader2 } from 'lucide-react'
 
 const CATS   = [{ id:'all',label:'Всі' }, { id:'commuter',label:'Міські' }, { id:'offroad',label:'Позашляхові' }]
 const VOLTS  = ['Всі','48V','52V','60V']
@@ -12,13 +13,27 @@ const MOTORS = [{ id:'all',label:'Всі' }, { id:'dual',label:'Подвійни
 const SORTS  = [{ id:'default',label:'За замовчуванням' }, { id:'price_asc',label:'Ціна ↑' }, { id:'price_desc',label:'Ціна ↓' }, { id:'new',label:'Новинки' }]
 
 export default function CatalogPage() {
+  // DB state
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading,  setLoading]  = useState(true)
+
+  // Filter state
   const [cat,  setCat]  = useState('all')
   const [volt, setVolt] = useState('Всі')
   const [mot,  setMot]  = useState('all')
   const [sort, setSort] = useState('default')
   const [grid, setGrid] = useState(true)
 
-  let list = PRODUCTS.filter(p => {
+  // Load from Supabase (falls back to static data inside fetchAllProducts)
+  useEffect(() => {
+    let cancelled = false
+    fetchAllProducts()
+      .then(list => { if (!cancelled) setProducts(list) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  let list = products.filter(p => {
     if (cat  !== 'all' && p.category !== cat) return false
     if (volt !== 'Всі' && p.voltage  !== volt.toLowerCase()) return false
     if (mot  === 'dual'   && p.motor !== 'dual')   return false
@@ -40,7 +55,6 @@ export default function CatalogPage() {
     color: active ? '#fff' : 'var(--text-3)',
     whiteSpace: 'nowrap' as const,
   })
-
   const btnFilterYellow = (active: boolean) => ({
     ...btnFilter(active),
     background: active ? '#F5C200' : 'transparent',
@@ -62,13 +76,15 @@ export default function CatalogPage() {
           <h1 style={{ fontSize:'clamp(28px,4vw,52px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1.05 }}>
             Всі <span style={{ color:'var(--yellow-dark)' }}>самокати</span>
           </h1>
-          <p style={{ fontSize:14, color:'var(--text-3)', marginTop:8 }}>{list.length} моделей</p>
+          <p style={{ fontSize:14, color:'var(--text-3)', marginTop:8 }}>
+            {loading ? 'Завантаження…' : `${list.length} моделей`}
+          </p>
         </div>
       </div>
 
       <div className="w-container catalog-inner">
 
-        {/* Filters — horizontally scrollable on mobile via .catalog-filters */}
+        {/* Filters */}
         <div
           className="catalog-filters"
           style={{
@@ -128,23 +144,39 @@ export default function CatalogPage() {
           </div>
         )}
 
-        <p style={{ fontSize:13, color:'var(--text-3)', marginBottom:20 }}>
-          Знайдено <strong style={{ color:'var(--text)', fontWeight:700 }}>{list.length}</strong> моделей
-        </p>
+        {/* Loading state */}
+        {loading && (
+          <div style={{ display:'flex', justifyContent:'center', alignItems:'center', padding:'80px 0', color:'var(--text-3)' }}>
+            <Loader2 size={22} style={{ animation:'spin 1s linear infinite' }}/>
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          </div>
+        )}
 
-        {list.length > 0 ? (
-          <div
-            className={grid ? 'catalog-grid' : ''}
-            style={grid ? undefined : { display:'grid', gridTemplateColumns:'1fr', gap:20 }}>
-            {list.map(p => <ProductCard key={p.id} product={p} featured={p.slug==='dt2-pro'}/>)}
-          </div>
-        ) : (
-          <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 0', textAlign:'center', gap:16 }}>
-            <span style={{ fontSize:48, opacity:.3 }}>🛴</span>
-            <h2 style={{ fontSize:'clamp(22px,3vw,28px)', fontWeight:800, color:'var(--text)' }}>Нічого не знайдено</h2>
-            <p style={{ fontSize:14, color:'var(--text-3)' }}>Спробуй змінити або скинути фільтри</p>
-            <button onClick={reset} className="btn btn-black btn-sm" style={{ marginTop:8 }}>Скинути фільтри</button>
-          </div>
+        {!loading && (
+          <>
+            <p style={{ fontSize:13, color:'var(--text-3)', marginBottom:20 }}>
+              Знайдено <strong style={{ color:'var(--text)', fontWeight:700 }}>{list.length}</strong> моделей
+            </p>
+
+            {list.length > 0 ? (
+              <div
+                className={grid ? 'catalog-grid' : ''}
+                style={grid ? undefined : { display:'grid', gridTemplateColumns:'1fr', gap:20 }}>
+                {list.map(p => <ProductCard key={p.id} product={p} featured={p.slug==='dt2-pro'}/>)}
+              </div>
+            ) : (
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 0', textAlign:'center', gap:16 }}>
+                <span style={{ fontSize:48, opacity:.3 }}>🛴</span>
+                <h2 style={{ fontSize:'clamp(22px,3vw,28px)', fontWeight:800, color:'var(--text)' }}>
+                  {products.length === 0 ? 'Каталог порожній' : 'Нічого не знайдено'}
+                </h2>
+                <p style={{ fontSize:14, color:'var(--text-3)' }}>
+                  {products.length === 0 ? 'Товари з\'являться найближчим часом' : 'Спробуй змінити або скинути фільтри'}
+                </p>
+                {hasFilters && <button onClick={reset} className="btn btn-black btn-sm" style={{ marginTop:8 }}>Скинути фільтри</button>}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

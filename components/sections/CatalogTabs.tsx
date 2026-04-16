@@ -1,9 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/ui/ProductCard'
-import { getProductsByCategory } from '@/lib/data'
-import { ArrowRight } from 'lucide-react'
+import { fetchAllProducts } from '@/lib/data'
+import { Product } from '@/lib/types'
+import { ArrowRight, Loader2 } from 'lucide-react'
 
 const TABS = [
   { id:'new',      label:'Новинки' },
@@ -14,7 +15,23 @@ const TABS = [
 
 export default function CatalogTabs() {
   const [active, setActive] = useState('all')
-  const products = getProductsByCategory(active)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchAllProducts()
+      .then(setProducts)
+      .finally(() => setLoading(false))
+  }, [])
+
+  // Filter on client — no separate DB round-trip per tab
+  const filtered = (() => {
+    if (active === 'all')      return products
+    if (active === 'new')      return products.filter(p => p.is_new)
+    if (active === 'offroad')  return products.filter(p => p.category === 'offroad')
+    if (active === 'commuter') return products.filter(p => p.category === 'commuter')
+    return products
+  })().slice(0, 4)
 
   return (
     <section className="home-section" style={{ padding:'88px 0', background:'var(--bg)', borderTop:'1px solid var(--border)' }}>
@@ -33,7 +50,6 @@ export default function CatalogTabs() {
           </Link>
         </div>
 
-        {/* Tabs — horizontally scrollable on mobile via .home-tabs */}
         <div className="home-tabs">
           {TABS.map(t => (
             <button key={t.id} onClick={()=>setActive(t.id)} style={{
@@ -49,11 +65,22 @@ export default function CatalogTabs() {
           ))}
         </div>
 
-        <div className="home-products-grid">
-          {products.slice(0,4).map(p => (
-            <ProductCard key={p.id} product={p} featured={p.slug==='dt2-pro'}/>
-          ))}
-        </div>
+        {loading ? (
+          <div style={{ display:'flex', justifyContent:'center', padding:'60px 0', color:'var(--text-3)' }}>
+            <Loader2 size={22} style={{ animation:'spin 1s linear infinite' }}/>
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+          </div>
+        ) : filtered.length > 0 ? (
+          <div className="home-products-grid">
+            {filtered.map(p => (
+              <ProductCard key={p.id} product={p} featured={p.slug==='dt2-pro'}/>
+            ))}
+          </div>
+        ) : (
+          <div style={{ padding:'48px 0', textAlign:'center', color:'var(--text-3)', fontSize:14 }}>
+            У цій категорії поки немає товарів
+          </div>
+        )}
       </div>
     </section>
   )
