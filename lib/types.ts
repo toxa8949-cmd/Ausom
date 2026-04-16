@@ -5,10 +5,12 @@ export interface Product {
   price: number
   old_price: number | null
   category: 'offroad' | 'commuter'
-  /** Brand — Ausom is our own, Kukirin is a partner-resold line.
-      Defaults to 'ausom' on existing rows via the SQL migration. */
+  /** Brand — Ausom is our own, Kukirin is a partner-resold line. */
   brand: 'ausom' | 'kukirin'
-  voltage: '48v' | '52v' | '60v'
+  /** Voltage — expanded to include 36V (small commuters like Kukirin S1 Max)
+      and 72V (flagships like Kukirin G4 Max). The DB CHECK constraint
+      matches this union via seed-kukirin.sql migration. */
+  voltage: '36v' | '48v' | '52v' | '60v' | '72v'
   motor: 'single' | 'dual'
   range_km: number
   max_speed: number
