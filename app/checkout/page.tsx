@@ -1,156 +1,349 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { useCart } from '@/lib/cart'
-import { createOrder } from '@/lib/queries'
-import { ArrowLeft, Check, CreditCard, Smartphone, Building } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
-const inp = {
-  width:'100%', padding:'12px 16px',
-  background:'var(--bg)', border:'1.5px solid var(--border)',
-  borderRadius:8, fontSize:14, color:'var(--text)',
-  outline:'none', fontFamily:'Inter,sans-serif',
-  transition:'border-color .15s',
-} as React.CSSProperties
+interface CartItem {
+  slug: string;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
 
 export default function CheckoutPage() {
-  const { items, total, count, clearCart } = useCart()
-  const router = useRouter()
-  const [saving,  setSaving]  = useState(false)
-  const [done,    setDone]    = useState(false)
-  const [payment, setPayment] = useState('card')
-  const [form, setForm] = useState({ name:'', email:'', phone:'', city:'', address:'', notes:'' })
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    phone: '',
+    email: '',
+    city: '',
+    address: '',
+    delivery: 'nova-poshta',
+    payment: 'card',
+    comment: '',
+  });
+  const [submitted, setSubmitted] = useState(false);
 
-  if (count === 0 && !done) { router.replace('/cart'); return null }
-
-  const set = (k: keyof typeof form, v: string) => setForm(p => ({ ...p, [k]: v }))
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
+  useEffect(() => {
     try {
-      await createOrder({ items: items as any, total, ...form, status:'pending' })
-      clearCart(); setDone(true)
-    } catch { alert('Помилка. Спробуй ще раз.') }
-    finally { setSaving(false) }
+      const stored = JSON.parse(localStorage.getItem('ausom-cart') || '[]');
+      setCart(stored);
+    } catch { setCart([]); }
+  }, []);
+
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+    localStorage.removeItem('ausom-cart');
+    window.dispatchEvent(new Event('cart-updated'));
+  };
+
+  if (submitted) {
+    return (
+      <section className="bg-neutral-950 min-h-screen py-20">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-10">
+            <div className="w-20 h-20 bg-lime-400/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-lime-400 text-4xl">✓</span>
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-4">Замовлення оформлено!</h1>
+            <p className="text-neutral-400 mb-2">Дякуємо за покупку! Ми зв&apos;яжемось з вами найближчим часом.</p>
+            <p className="text-neutral-500 text-sm mb-8">Номер замовлення: #AU-{Math.floor(Math.random() * 90000 + 10000)}</p>
+            <Link
+              href="/"
+              className="inline-block bg-lime-400 hover:bg-lime-300 text-black font-bold py-3 px-8 rounded-xl transition-all"
+            >
+              На головну
+            </Link>
+          </div>
+        </div>
+      </section>
+    );
   }
 
-  if (done) return (
-    <div style={{ minHeight:'100vh', background:'var(--bg)', display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}>
-      <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:20, padding:56, textAlign:'center', maxWidth:420, width:'100%' }}>
-        <div style={{ width:72, height:72, background:'#DCFCE7', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 24px' }}>
-          <Check size={32} color="#22C55E" strokeWidth={2.5}/>
+  if (cart.length === 0) {
+    return (
+      <section className="bg-neutral-950 min-h-screen py-20">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <h1 className="text-3xl font-bold text-white mb-4">Кошик порожній</h1>
+          <p className="text-neutral-400 mb-8">Додайте товари до кошика, щоб оформити замовлення.</p>
+          <Link
+            href="/catalog"
+            className="inline-block bg-lime-400 hover:bg-lime-300 text-black font-bold py-3 px-8 rounded-xl transition-all"
+          >
+            До каталогу
+          </Link>
         </div>
-        <h1 style={{ fontSize:36, fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', marginBottom:12 }}>Замовлення прийнято!</h1>
-        <p style={{ fontSize:14, color:'var(--text-3)', lineHeight:1.7, marginBottom:32 }}>Ми зв'яжемось з вами найближчим часом для підтвердження.</p>
-        <Link href="/catalog" className="btn btn-black btn-full" style={{ justifyContent:'center' }}>Продовжити покупки</Link>
-      </div>
-    </div>
-  )
+      </section>
+    );
+  }
 
   return (
-    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
-      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'32px 0' }}>
-        <div className="w-container">
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
-            {[['1','Кошик'],[' ','·'],['2','Оформлення'],[' ','·'],['3','Підтвердження']].map(([n,l],i) => (
-              <span key={i} style={{ fontSize:13, fontWeight: n==='2' ? 700 : 400, color: n==='2' ? 'var(--text)' : 'var(--text-3)' }}>
-                {n==='1'||n==='2'||n==='3' ? <><span style={{ background: n==='2'?'#F5C200':'var(--bg-subtle)', color: n==='2'?'#111':'var(--text-3)', width:20, height:20, borderRadius:'50%', display:'inline-flex', alignItems:'center', justifyContent:'center', fontSize:11, fontWeight:800, marginRight:6 }}>{n}</span>{l}</> : l}
+    <section className="bg-neutral-950 min-h-screen py-8 md:py-16">
+      <div className="max-w-7xl mx-auto px-4">
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-8">
+          <Link href="/" className="hover:text-white transition-colors">Головна</Link>
+          <span>/</span>
+          <Link href="/cart" className="hover:text-white transition-colors">Кошик</Link>
+          <span>/</span>
+          <span className="text-white">Оформлення</span>
+        </nav>
+
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-8">Оформлення замовлення</h1>
+
+        {/* Steps */}
+        <div className="flex items-center gap-2 mb-10">
+          {[
+            { n: 1, label: 'Контакти' },
+            { n: 2, label: 'Доставка' },
+            { n: 3, label: 'Оплата' },
+          ].map((s) => (
+            <div key={s.n} className="flex items-center gap-2">
+              <button
+                onClick={() => s.n < step && setStep(s.n)}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                  step >= s.n
+                    ? 'bg-lime-400 text-black'
+                    : 'bg-neutral-800 text-neutral-500'
+                }`}
+              >
+                {s.n}
+              </button>
+              <span className={`text-sm hidden sm:inline ${step >= s.n ? 'text-white' : 'text-neutral-500'}`}>
+                {s.label}
               </span>
-            ))}
-          </div>
-          <h1 style={{ fontSize:'clamp(28px,4vw,44px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)' }}>
-            Оформлення <span style={{ color:'var(--yellow-dark)' }}>замовлення</span>
-          </h1>
+              {s.n < 3 && <div className="w-8 sm:w-16 h-px bg-neutral-700 mx-1" />}
+            </div>
+          ))}
         </div>
-      </div>
 
-      <div className="w-container" style={{ padding:'32px 40px' }}>
-        <Link href="/cart" style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)', textDecoration:'none', marginBottom:28 }}>
-          <ArrowLeft size={14}/> Назад до кошика
-        </Link>
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 360px', gap:32, alignItems:'start' }}>
-            <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
-
-              {/* Contact */}
-              {[
-                { title:'Контактні дані', fields:[
-                  { label:"Ім'я та прізвище *", key:'name', type:'text', placeholder:'Іван Іванов', full:true },
-                  { label:'Email *', key:'email', type:'email', placeholder:'ivan@email.com', full:false },
-                  { label:'Телефон *', key:'phone', type:'tel', placeholder:'+38 (067) 000-00-00', full:false },
-                ]},
-                { title:'Адреса доставки', fields:[
-                  { label:'Місто *', key:'city', type:'text', placeholder:'Київ', full:false },
-                  { label:'Адреса *', key:'address', type:'text', placeholder:'вул. Хрещатик 1, кв. 10', full:true },
-                  { label:'Коментар', key:'notes', type:'textarea', placeholder:'Побажання...', full:true },
-                ]},
-              ].map(section => (
-                <div key={section.title} style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:'24px 24px' }}>
-                  <h2 style={{ fontSize:18, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)', marginBottom:20 }}>{section.title}</h2>
-                  <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
-                    {section.fields.map(f => (
-                      <div key={f.key} style={{ gridColumn: f.full ? '1/-1' : 'auto' }}>
-                        <label style={{ display:'block', fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'var(--text-3)', marginBottom:8 }}>{f.label}</label>
-                        {f.type === 'textarea'
-                          ? <textarea value={form[f.key as keyof typeof form]} onChange={e=>set(f.key as any,e.target.value)} placeholder={f.placeholder} rows={3} style={{ ...inp, resize:'vertical' as const }}
-                              onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='var(--border)')}/>
-                          : <input type={f.type} value={form[f.key as keyof typeof form]} onChange={e=>set(f.key as any,e.target.value)} required={f.label.includes('*')} placeholder={f.placeholder} style={inp}
-                              onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='var(--border)')}/>
-                        }
-                      </div>
-                    ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form */}
+          <div className="lg:col-span-2 space-y-6">
+            {step === 1 && (
+              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+                <h2 className="text-xl font-bold text-white mb-4">Контактні дані</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-neutral-400 mb-1">Ім&apos;я *</label>
+                    <input
+                      type="text" name="firstName" value={form.firstName} onChange={handleChange}
+                      className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors"
+                      placeholder="Олександр"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-neutral-400 mb-1">Прізвище *</label>
+                    <input
+                      type="text" name="lastName" value={form.lastName} onChange={handleChange}
+                      className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors"
+                      placeholder="Петренко"
+                    />
                   </div>
                 </div>
-              ))}
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Телефон *</label>
+                  <input
+                    type="tel" name="phone" value={form.phone} onChange={handleChange}
+                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors"
+                    placeholder="+38 (067) 000-00-00"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Email *</label>
+                  <input
+                    type="email" name="email" value={form.email} onChange={handleChange}
+                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors"
+                    placeholder="email@example.com"
+                  />
+                </div>
+                <button
+                  onClick={() => setStep(2)}
+                  className="w-full bg-lime-400 hover:bg-lime-300 text-black font-bold py-3 rounded-xl transition-all"
+                >
+                  Далі →
+                </button>
+              </div>
+            )}
 
-              {/* Payment */}
-              <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:'24px 24px' }}>
-                <h2 style={{ fontSize:18, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)', marginBottom:20 }}>Спосіб оплати</h2>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
-                  {[{id:'card',Icon:CreditCard,label:'Картка'},{id:'mono',Icon:Smartphone,label:'Monobank'},{id:'cash',Icon:Building,label:'При отриманні'}].map(({id,Icon,label}) => (
-                    <button key={id} type="button" onClick={()=>setPayment(id)} style={{
-                      display:'flex', flexDirection:'column', alignItems:'center', gap:8, padding:'16px 12px',
-                      borderRadius:10, border:'1.5px solid', cursor:'pointer', transition:'all .15s',
-                      background: payment===id ? '#FFF3CC' : 'var(--bg)',
-                      borderColor: payment===id ? '#F5C200' : 'var(--border)',
-                      color: payment===id ? '#8B6800' : 'var(--text-3)',
-                    }}>
-                      <Icon size={20}/><span style={{ fontSize:12, fontWeight:600 }}>{label}</span>
-                    </button>
+            {step === 2 && (
+              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+                <h2 className="text-xl font-bold text-white mb-4">Доставка</h2>
+                <div className="space-y-3">
+                  {[
+                    { id: 'nova-poshta', label: 'Нова Пошта', desc: 'Безкоштовна доставка, 1-3 дні', icon: '📦' },
+                    { id: 'ukrposhta', label: 'Укрпошта', desc: 'Безкоштовна доставка, 3-7 днів', icon: '✉️' },
+                    { id: 'courier', label: 'Кур\'єр (Київ)', desc: 'Безкоштовно, 1 день', icon: '🚚' },
+                  ].map((d) => (
+                    <label
+                      key={d.id}
+                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                        form.delivery === d.id
+                          ? 'border-lime-400 bg-lime-400/5'
+                          : 'border-neutral-700 hover:border-neutral-600'
+                      }`}
+                    >
+                      <input
+                        type="radio" name="delivery" value={d.id}
+                        checked={form.delivery === d.id}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-2xl">{d.icon}</span>
+                      <div>
+                        <p className="text-white font-semibold">{d.label}</p>
+                        <p className="text-neutral-400 text-sm">{d.desc}</p>
+                      </div>
+                      <div className={`ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        form.delivery === d.id ? 'border-lime-400' : 'border-neutral-600'
+                      }`}>
+                        {form.delivery === d.id && <div className="w-2.5 h-2.5 rounded-full bg-lime-400" />}
+                      </div>
+                    </label>
                   ))}
                 </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Місто *</label>
+                  <input
+                    type="text" name="city" value={form.city} onChange={handleChange}
+                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors"
+                    placeholder="Київ"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">
+                    {form.delivery === 'nova-poshta' ? 'Номер відділення / поштомат' : 'Адреса'} *
+                  </label>
+                  <input
+                    type="text" name="address" value={form.address} onChange={handleChange}
+                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors"
+                    placeholder={form.delivery === 'nova-poshta' ? 'Відділення №1' : 'вул. Хрещатик, 1'}
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(1)}
+                    className="px-6 py-3 bg-neutral-800 text-white rounded-xl hover:bg-neutral-700 transition-all font-semibold"
+                  >
+                    ← Назад
+                  </button>
+                  <button
+                    onClick={() => setStep(3)}
+                    className="flex-1 bg-lime-400 hover:bg-lime-300 text-black font-bold py-3 rounded-xl transition-all"
+                  >
+                    Далі →
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Summary */}
-            <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:24, position:'sticky', top:84, display:'flex', flexDirection:'column', gap:16 }}>
-              <h2 style={{ fontSize:18, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>Ваше замовлення</h2>
-              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-                {items.map(({product:p,quantity}) => (
-                  <div key={p.id} style={{ display:'flex', justifyContent:'space-between', fontSize:13 }}>
-                    <span style={{ color:'var(--text-3)', flex:1, marginRight:8, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' as const }}>{p.name} × {quantity}</span>
-                    <span style={{ fontWeight:600, color:'var(--text)', flexShrink:0 }}>₴{(p.price*quantity).toLocaleString('uk-UA')}</span>
+            {step === 3 && (
+              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+                <h2 className="text-xl font-bold text-white mb-4">Оплата</h2>
+                <div className="space-y-3">
+                  {[
+                    { id: 'card', label: 'Картка Visa/Mastercard', desc: 'Онлайн оплата', icon: '💳' },
+                    { id: 'privat24', label: 'Приват24', desc: 'Оплата через Приват24', icon: '🏦' },
+                    { id: 'mono', label: 'Monobank', desc: 'Оплата через Monobank', icon: '📱' },
+                    { id: 'cash', label: 'Накладений платіж', desc: 'Оплата при отриманні', icon: '💵' },
+                  ].map((p) => (
+                    <label
+                      key={p.id}
+                      className={`flex items-center gap-4 p-4 rounded-xl border cursor-pointer transition-all ${
+                        form.payment === p.id
+                          ? 'border-lime-400 bg-lime-400/5'
+                          : 'border-neutral-700 hover:border-neutral-600'
+                      }`}
+                    >
+                      <input
+                        type="radio" name="payment" value={p.id}
+                        checked={form.payment === p.id}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <span className="text-2xl">{p.icon}</span>
+                      <div>
+                        <p className="text-white font-semibold">{p.label}</p>
+                        <p className="text-neutral-400 text-sm">{p.desc}</p>
+                      </div>
+                      <div className={`ml-auto w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        form.payment === p.id ? 'border-lime-400' : 'border-neutral-600'
+                      }`}>
+                        {form.payment === p.id && <div className="w-2.5 h-2.5 rounded-full bg-lime-400" />}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-1">Коментар до замовлення</label>
+                  <textarea
+                    name="comment" value={form.comment} onChange={handleChange} rows={3}
+                    className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-white focus:border-lime-400 focus:outline-none transition-colors resize-none"
+                    placeholder="Додаткові побажання..."
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep(2)}
+                    className="px-6 py-3 bg-neutral-800 text-white rounded-xl hover:bg-neutral-700 transition-all font-semibold"
+                  >
+                    ← Назад
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    className="flex-1 bg-lime-400 hover:bg-lime-300 text-black font-bold py-3 rounded-xl transition-all text-lg"
+                  >
+                    Підтвердити замовлення
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 sticky top-24">
+              <h3 className="text-lg font-bold text-white mb-4">Ваше замовлення</h3>
+              <div className="space-y-4 mb-6">
+                {cart.map((item) => (
+                  <div key={item.slug} className="flex gap-3">
+                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-neutral-800 flex-shrink-0">
+                      <Image src={item.image} alt={item.name} fill className="object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-semibold truncate">{item.name}</p>
+                      <p className="text-neutral-400 text-sm">{item.quantity} × ₴{item.price.toLocaleString('uk-UA')}</p>
+                    </div>
+                    <p className="text-white font-semibold text-sm">
+                      ₴{(item.price * item.quantity).toLocaleString('uk-UA')}
+                    </p>
                   </div>
                 ))}
               </div>
-              <div style={{ borderTop:'1px solid var(--border)', paddingTop:14, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>Разом</span>
-                <span style={{ fontSize:26, fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>₴{total.toLocaleString('uk-UA')}</span>
+              <div className="border-t border-neutral-800 pt-4 space-y-2">
+                <div className="flex justify-between text-neutral-400 text-sm">
+                  <span>Доставка</span>
+                  <span className="text-lime-400">Безкоштовно</span>
+                </div>
+                <div className="flex justify-between text-white font-bold text-lg">
+                  <span>Разом</span>
+                  <span>₴{total.toLocaleString('uk-UA')}</span>
+                </div>
               </div>
-              <button type="submit" disabled={saving} className="btn btn-black btn-full" style={{ justifyContent:'center', opacity: saving ? .6 : 1 }}>
-                {saving ? <><span style={{ width:14, height:14, border:'2px solid rgba(255,255,255,.4)', borderTopColor:'#fff', borderRadius:'50%', display:'inline-block', animation:'spin .7s linear infinite' }}/>Оформлення...</> : 'Підтвердити замовлення'}
-              </button>
-              <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Менеджер підтвердить замовлення</p>
             </div>
           </div>
-        </form>
+        </div>
       </div>
-
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-    </div>
-  )
+    </section>
+  );
 }
