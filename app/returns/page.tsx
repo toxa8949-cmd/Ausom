@@ -1,94 +1,66 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 
 export default function ReturnsPage() {
   return (
-    <section className="bg-neutral-950 min-h-screen py-8 md:py-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-8">
-          <Link href="/" className="hover:text-white transition-colors">Головна</Link>
-          <span>/</span>
-          <span className="text-white">Повернення та обмін</span>
-        </nav>
-
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Повернення та обмін</h1>
-        <p className="text-neutral-400 text-lg mb-10">
-          14 днів на повернення без питань. Ми впевнені в якості наших самокатів.
-        </p>
-
-        <div className="space-y-6">
-          {/* 14 days return */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-3">
-              <span className="w-10 h-10 bg-lime-400/20 text-lime-400 rounded-xl flex items-center justify-center text-lg">↩️</span>
-              14 днів на повернення
-            </h2>
-            <p className="text-neutral-400 leading-relaxed mb-4">
-              Ви маєте право повернути товар належної якості протягом 14 днів з моменту отримання, 
-              якщо він не був у використанні, збережено товарний вигляд та упаковку.
-            </p>
-            <div className="bg-neutral-800 rounded-xl p-4">
-              <h3 className="text-white font-semibold mb-2">Умови повернення:</h3>
-              <ul className="space-y-1.5 text-neutral-400 text-sm">
-                <li>• Товар не був у використанні (без слідів експлуатації)</li>
-                <li>• Збережено оригінальну упаковку та всі комплектуючі</li>
-                <li>• Наявність чеку або документа, що підтверджує покупку</li>
-                <li>• Повернення протягом 14 календарних днів з моменту отримання</li>
-              </ul>
-            </div>
+    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
+      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
+        <div className="w-container">
+          <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)' }}>
+            <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
+            <ChevronRight size={13}/><span style={{ color:'var(--text)', fontWeight:500 }}>Повернення та обмін</span>
           </div>
+        </div>
+      </div>
+      <div style={{ padding:'48px 0 72px' }}>
+        <div className="w-container" style={{ maxWidth:800 }}>
+          <div className="s-label">Сервіс</div>
+          <h1 style={{ fontSize:'clamp(32px,4vw,48px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', marginBottom:12 }}>Повернення та <span style={{ color:'var(--yellow-dark)' }}>обмін</span></h1>
+          <p style={{ fontSize:15, color:'var(--text-2)', marginBottom:36 }}>14 днів на повернення без питань. Ми впевнені в якості наших самокатів.</p>
 
-          {/* Exchange */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-3">
-              <span className="w-10 h-10 bg-lime-400/20 text-lime-400 rounded-xl flex items-center justify-center text-lg">🔄</span>
-              Обмін товару
-            </h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Якщо вам не підійшла модель — ми допоможемо обміняти на іншу. Різницю в ціні 
-              можна доплатити або отримати повернення. Обмін здійснюється протягом 14 днів.
-            </p>
-          </div>
-
-          {/* Defect return */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-white mb-3 flex items-center gap-3">
-              <span className="w-10 h-10 bg-lime-400/20 text-lime-400 rounded-xl flex items-center justify-center text-lg">🛠️</span>
-              Повернення неякісного товару
-            </h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Якщо ви виявили заводський дефект — зв&apos;яжіться з нами. Ми організуємо безкоштовне 
-              повернення та заміну товару або повне відшкодування коштів.
-            </p>
-          </div>
-
-          {/* How to return */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
-            <h2 className="text-xl font-bold text-white mb-4">Як оформити повернення?</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { step: '1', title: 'Зв\'яжіться з нами', desc: 'Напишіть на support@ausom.ua або зателефонуйте' },
-                { step: '2', title: 'Отримайте інструкції', desc: 'Ми надішлемо ТТН для безкоштовного повернення' },
-                { step: '3', title: 'Отримайте кошти', desc: 'Повернення коштів протягом 3-5 робочих днів' },
-              ].map((s) => (
-                <div key={s.step} className="text-center">
-                  <div className="w-10 h-10 bg-lime-400 text-black rounded-full flex items-center justify-center font-bold mx-auto mb-3">
-                    {s.step}
+          <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+            {[
+              { icon:'↩️', title:'14 днів на повернення', text:'Ви маєте право повернути товар належної якості протягом 14 днів з моменту отримання, якщо він не був у використанні, збережено товарний вигляд та упаковку.', list:['Товар не був у використанні','Збережено оригінальну упаковку','Наявність чеку або підтвердження покупки','Повернення протягом 14 календарних днів'] },
+              { icon:'🔄', title:'Обмін товару', text:'Якщо вам не підійшла модель — допоможемо обміняти на іншу. Різницю в ціні можна доплатити або отримати повернення. Обмін протягом 14 днів.' },
+              { icon:'🛠️', title:'Повернення неякісного товару', text:'Якщо ви виявили заводський дефект — зв\'яжіться з нами. Ми організуємо безкоштовне повернення та заміну або повне відшкодування.' },
+            ].map(s => (
+              <div key={s.title} style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'24px 28px' }}>
+                <h2 style={{ fontSize:17, fontWeight:700, color:'var(--text)', marginBottom:10, display:'flex', alignItems:'center', gap:10 }}>
+                  <span style={{ width:36, height:36, background:'rgba(245,194,0,.15)', borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>{s.icon}</span>
+                  {s.title}
+                </h2>
+                <p style={{ fontSize:14, color:'var(--text-2)', lineHeight:1.7, marginBottom: s.list ? 14 : 0 }}>{s.text}</p>
+                {s.list && (
+                  <div style={{ background:'var(--bg)', borderRadius:8, padding:'14px 18px' }}>
+                    {s.list.map(l => <div key={l} style={{ fontSize:13, color:'var(--text-3)', lineHeight:2 }}>• {l}</div>)}
                   </div>
-                  <h3 className="text-white font-semibold mb-1">{s.title}</h3>
-                  <p className="text-neutral-400 text-sm">{s.desc}</p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'28px', marginTop:20 }}>
+            <h2 style={{ fontSize:17, fontWeight:700, color:'var(--text)', marginBottom:20 }}>Як оформити повернення?</h2>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+              {[
+                { n:'1', t:'Зв\'яжіться з нами', d:'Напишіть на support@ausom.ua або зателефонуйте' },
+                { n:'2', t:'Отримайте інструкції', d:'Ми надішлемо ТТН для безкоштовного повернення' },
+                { n:'3', t:'Отримайте кошти', d:'Повернення коштів протягом 3-5 робочих днів' },
+              ].map(s => (
+                <div key={s.n} style={{ textAlign:'center' }}>
+                  <div style={{ width:36, height:36, background:'#F5C200', color:'#111', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:14, margin:'0 auto 10px' }}>{s.n}</div>
+                  <div style={{ fontSize:14, fontWeight:600, color:'var(--text)', marginBottom:4 }}>{s.t}</div>
+                  <div style={{ fontSize:12, color:'var(--text-3)' }}>{s.d}</div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Contact CTA */}
-        <div className="mt-8 text-center">
-          <Link href="/contact" className="inline-block bg-lime-400 hover:bg-lime-300 text-black font-bold py-3 px-8 rounded-xl transition-all">
-            Зв&apos;язатися з підтримкою
-          </Link>
+          <div style={{ textAlign:'center', marginTop:28 }}>
+            <Link href="/contact" className="btn btn-yellow">Зв&apos;язатися з підтримкою</Link>
+          </div>
         </div>
       </div>
-    </section>
-  );
+    </div>
+  )
 }

@@ -1,98 +1,79 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 
 export default function AffiliatePage() {
   return (
-    <section className="bg-neutral-950 min-h-screen py-8 md:py-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-8">
-          <Link href="/" className="hover:text-white transition-colors">Головна</Link>
-          <span>/</span>
-          <span className="text-white">Партнерство</span>
-        </nav>
-
-        {/* Hero */}
-        <div className="bg-gradient-to-br from-lime-400/10 via-neutral-900 to-neutral-900 border border-lime-400/20 rounded-3xl p-8 md:p-12 text-center mb-12">
-          <span className="inline-block bg-lime-400/20 text-lime-400 text-sm font-bold px-4 py-1.5 rounded-full mb-4">
-            Партнерська програма
-          </span>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Заробляй з Ausom Ukraine
-          </h1>
-          <p className="text-neutral-300 text-lg max-w-2xl mx-auto">
-            Рекомендуй самокати Ausom та отримуй комісію з кожного продажу. 
-            Приєднуйся до нашої партнерської програми.
-          </p>
+    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
+      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
+        <div className="w-container">
+          <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)' }}>
+            <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
+            <ChevronRight size={13}/><span style={{ color:'var(--text)', fontWeight:500 }}>Партнерство</span>
+          </div>
         </div>
+      </div>
 
+      {/* Hero */}
+      <div style={{ background:'linear-gradient(135deg, rgba(245,194,0,.08), var(--bg))', padding:'56px 0', borderBottom:'1px solid var(--border)' }}>
+        <div className="w-container" style={{ textAlign:'center' }}>
+          <span style={{ display:'inline-block', background:'rgba(245,194,0,.12)', border:'1px solid rgba(245,194,0,.25)', color:'var(--yellow-dark)', fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, padding:'5px 14px', borderRadius:4, marginBottom:20 }}>Партнерська програма</span>
+          <h1 style={{ fontSize:'clamp(36px,5vw,56px)', fontWeight:800, letterSpacing:'-.03em', color:'var(--text)', lineHeight:1.05, marginBottom:16 }}>
+            Заробляй з <span style={{ color:'var(--yellow-dark)' }}>Ausom Ukraine</span>
+          </h1>
+          <p style={{ fontSize:16, color:'var(--text-2)', maxWidth:520, margin:'0 auto' }}>Рекомендуй самокати Ausom та отримуй комісію з кожного продажу.</p>
+        </div>
+      </div>
+
+      <div className="w-container" style={{ padding:'48px 40px' }}>
         {/* Benefits */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20, marginBottom:48 }}>
           {[
-            { icon: '💰', title: 'До 10% комісії', desc: 'Отримуй до 10% від кожного продажу, здійсненого за твоїм посиланням.' },
-            { icon: '🔗', title: 'Персональне посилання', desc: 'Унікальне реферальне посилання для відстеження всіх продажів.' },
-            { icon: '📊', title: 'Прозора аналітика', desc: 'Дашборд з повною статистикою кліків, продажів та виплат.' },
-          ].map((b) => (
-            <div key={b.title} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 text-center">
-              <span className="text-3xl mb-3 block">{b.icon}</span>
-              <h3 className="text-white font-bold text-lg mb-2">{b.title}</h3>
-              <p className="text-neutral-400 text-sm">{b.desc}</p>
+            { icon:'💰', title:'До 10% комісії', desc:'Отримуй до 10% від кожного продажу за твоїм посиланням.' },
+            { icon:'🔗', title:'Персональне посилання', desc:'Унікальне реферальне посилання для відстеження продажів.' },
+            { icon:'📊', title:'Прозора аналітика', desc:'Дашборд з повною статистикою кліків та виплат.' },
+          ].map(b => (
+            <div key={b.title} style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'28px 24px', textAlign:'center' }}>
+              <div style={{ fontSize:28, marginBottom:12 }}>{b.icon}</div>
+              <h3 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:8 }}>{b.title}</h3>
+              <p style={{ fontSize:13, color:'var(--text-3)' }}>{b.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* How it works */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">Як це працює</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        {/* Steps */}
+        <div style={{ marginBottom:48, textAlign:'center' }}>
+          <h2 style={{ fontSize:24, fontWeight:800, color:'var(--text)', marginBottom:24 }}>Як це працює</h2>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16 }}>
             {[
-              { step: '1', title: 'Реєстрація', desc: 'Заповни форму та отримай доступ' },
-              { step: '2', title: 'Посилання', desc: 'Отримай персональне реферальне посилання' },
-              { step: '3', title: 'Рекомендуй', desc: 'Ділись посиланням з аудиторією' },
-              { step: '4', title: 'Заробляй', desc: 'Отримуй комісію за кожен продаж' },
-            ].map((s) => (
-              <div key={s.step} className="text-center">
-                <div className="w-12 h-12 bg-lime-400 text-black rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-3">
-                  {s.step}
-                </div>
-                <h3 className="text-white font-semibold mb-1">{s.title}</h3>
-                <p className="text-neutral-400 text-sm">{s.desc}</p>
+              { n:'1', t:'Реєстрація', d:'Заповни форму' },
+              { n:'2', t:'Посилання', d:'Отримай реферальне посилання' },
+              { n:'3', t:'Рекомендуй', d:'Ділись з аудиторією' },
+              { n:'4', t:'Заробляй', d:'Комісія за кожен продаж' },
+            ].map(s => (
+              <div key={s.n} style={{ textAlign:'center' }}>
+                <div style={{ width:40, height:40, background:'#F5C200', color:'#111', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:16, margin:'0 auto 10px' }}>{s.n}</div>
+                <div style={{ fontSize:14, fontWeight:600, color:'var(--text)', marginBottom:4 }}>{s.t}</div>
+                <div style={{ fontSize:12, color:'var(--text-3)' }}>{s.d}</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Who is this for */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 md:p-8 mb-12">
-          <h2 className="text-xl font-bold text-white mb-4">Для кого ця програма?</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {[
-              '🎥 Блогери та контент-мейкери',
-              '📱 Власники соцмереж з аудиторією',
-              '🏪 Веломагазини та сервісні центри',
-              '🏢 Компанії з корпоративними потребами',
-              '👥 Спільноти електротранспорту',
-              '📰 Технологічні медіа та огляди',
-            ].map((who) => (
-              <div key={who} className="flex items-center gap-3 text-neutral-300">
-                <span className="text-lime-400">✓</span>
-                <span>{who}</span>
-              </div>
+        {/* Who */}
+        <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'28px 32px', marginBottom:40 }}>
+          <h2 style={{ fontSize:18, fontWeight:700, color:'var(--text)', marginBottom:16 }}>Для кого ця програма?</h2>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+            {['🎥 Блогери та контент-мейкери','📱 Власники соцмереж','🏪 Веломагазини та сервіси','🏢 Компанії з корпоративними потребами','👥 Спільноти електротранспорту','📰 Технологічні медіа'].map(w => (
+              <div key={w} style={{ fontSize:14, color:'var(--text-2)', display:'flex', alignItems:'center', gap:8 }}><span style={{ color:'var(--yellow-dark)' }}>✓</span>{w}</div>
             ))}
           </div>
         </div>
 
-        {/* CTA */}
-        <div className="text-center">
-          <Link
-            href="/contact"
-            className="inline-block bg-lime-400 hover:bg-lime-300 text-black font-bold py-4 px-10 rounded-xl transition-all text-lg"
-          >
-            Стати партнером
-          </Link>
-          <p className="text-neutral-500 text-sm mt-3">
-            Напишіть нам на <a href="mailto:partners@ausom.ua" className="text-lime-400 hover:underline">partners@ausom.ua</a>
-          </p>
+        <div style={{ textAlign:'center' }}>
+          <Link href="/contact" className="btn btn-yellow btn-lg">Стати партнером</Link>
+          <p style={{ fontSize:12, color:'var(--text-3)', marginTop:10 }}>Або напишіть на <a href="mailto:partners@ausom.ua" style={{ color:'var(--yellow-dark)' }}>partners@ausom.ua</a></p>
         </div>
       </div>
-    </section>
-  );
+    </div>
+  )
 }

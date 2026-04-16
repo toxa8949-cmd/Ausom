@@ -1,92 +1,41 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 
 export default function PrivacyPage() {
+  const sections = [
+    { t:'1. Загальні положення', p:'Ausom Ukraine поважає вашу конфіденційність і зобов\'язується захищати ваші персональні дані. Ця політика пояснює, які дані ми збираємо, як їх використовуємо та захищаємо.' },
+    { t:'2. Які дані ми збираємо', p:'Контактні дані (ім\'я, email, телефон), дані доставки (місто, адреса), дані замовлень (історія покупок), технічні дані (IP-адреса, тип браузера, cookies).' },
+    { t:'3. Як ми використовуємо дані', p:'Обробка замовлень, зв\'язок з клієнтами, надсилання акцій (за згодою), покращення сервісу, виконання юридичних зобов\'язань.' },
+    { t:'4. Захист даних', p:'SSL-шифрування, безпечне зберігання, обмежений доступ. Ми не передаємо дані третім особам, окрім служб доставки та відповідно до законодавства.' },
+    { t:'5. Cookies', p:'Сайт використовує cookies для коректної роботи та аналітики. Ви можете налаштувати cookies у браузері.' },
+    { t:'6. Ваші права', p:'Доступ до даних, виправлення, видалення, відкликання згоди, подача скарги до Уповноваженого ВР з прав людини.' },
+    { t:'7. Контакти', p:'support@ausom.ua • +38 (067) 000-00-00' },
+  ]
+
   return (
-    <section className="bg-neutral-950 min-h-screen py-8 md:py-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-8">
-          <Link href="/" className="hover:text-white transition-colors">Головна</Link>
-          <span>/</span>
-          <span className="text-white">Конфіденційність</span>
-        </nav>
-
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Політика конфіденційності</h1>
-        <p className="text-neutral-500 text-sm mb-10">Останнє оновлення: 1 січня 2026</p>
-
-        <div className="prose-invert space-y-8">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">1. Загальні положення</h2>
-              <p className="text-neutral-400 leading-relaxed">
-                Ausom Ukraine (далі — &quot;ми&quot;, &quot;нас&quot;) поважає вашу конфіденційність і зобов&apos;язується захищати 
-                ваші персональні дані. Ця політика конфіденційності пояснює, які дані ми збираємо, як їх 
-                використовуємо та захищаємо при використанні нашого веб-сайту ausom.vercel.app.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">2. Які дані ми збираємо</h2>
-              <p className="text-neutral-400 leading-relaxed mb-3">Ми можемо збирати наступні категорії даних:</p>
-              <ul className="space-y-1.5 text-neutral-400 text-sm">
-                <li>• <strong className="text-neutral-300">Контактні дані:</strong> ім&apos;я, прізвище, email, номер телефону</li>
-                <li>• <strong className="text-neutral-300">Дані доставки:</strong> місто, адреса, номер відділення пошти</li>
-                <li>• <strong className="text-neutral-300">Дані замовлень:</strong> історія покупок, обрані товари</li>
-                <li>• <strong className="text-neutral-300">Технічні дані:</strong> IP-адреса, тип браузера, дані cookies</li>
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">3. Як ми використовуємо дані</h2>
-              <ul className="space-y-1.5 text-neutral-400 text-sm">
-                <li>• Обробка та виконання замовлень</li>
-                <li>• Зв&apos;язок з клієнтами щодо замовлень та підтримки</li>
-                <li>• Надсилання інформації про акції та нові продукти (за згодою)</li>
-                <li>• Покращення роботи веб-сайту та сервісу</li>
-                <li>• Виконання юридичних зобов&apos;язань</li>
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">4. Захист даних</h2>
-              <p className="text-neutral-400 leading-relaxed">
-                Ми використовуємо сучасні технології захисту даних, включаючи SSL-шифрування, 
-                безпечне зберігання та обмежений доступ до персональної інформації. Ми не передаємо 
-                ваші дані третім особам, окрім випадків, необхідних для виконання замовлень (служби доставки) 
-                або відповідно до вимог законодавства.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">5. Cookies</h2>
-              <p className="text-neutral-400 leading-relaxed">
-                Наш сайт використовує cookies для забезпечення коректної роботи, аналітики та 
-                персоналізації. Ви можете налаштувати використання cookies у своєму браузері.
-              </p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">6. Ваші права</h2>
-              <p className="text-neutral-400 leading-relaxed mb-3">Відповідно до законодавства України, ви маєте право:</p>
-              <ul className="space-y-1.5 text-neutral-400 text-sm">
-                <li>• Отримати інформацію про ваші персональні дані</li>
-                <li>• Вимагати виправлення неточних даних</li>
-                <li>• Вимагати видалення ваших даних</li>
-                <li>• Відкликати згоду на обробку даних</li>
-                <li>• Подати скаргу до Уповноваженого ВР з прав людини</li>
-              </ul>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-bold text-white mb-3">7. Контакти</h2>
-              <p className="text-neutral-400 leading-relaxed">
-                З питань конфіденційності зв&apos;яжіться з нами: <br />
-                Email: <a href="mailto:support@ausom.ua" className="text-lime-400 hover:underline">support@ausom.ua</a><br />
-                Телефон: <a href="tel:+380670000000" className="text-lime-400 hover:underline">+38 (067) 000-00-00</a>
-              </p>
-            </div>
+    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
+      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
+        <div className="w-container">
+          <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)' }}>
+            <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
+            <ChevronRight size={13}/><span style={{ color:'var(--text)', fontWeight:500 }}>Конфіденційність</span>
           </div>
         </div>
       </div>
-    </section>
-  );
+      <div style={{ padding:'48px 0 72px' }}>
+        <div className="w-container" style={{ maxWidth:800 }}>
+          <h1 style={{ fontSize:'clamp(28px,3vw,40px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)', marginBottom:4 }}>Політика конфіденційності</h1>
+          <p style={{ fontSize:13, color:'var(--text-4)', marginBottom:32 }}>Останнє оновлення: 1 січня 2026</p>
+          <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'28px 32px', display:'flex', flexDirection:'column', gap:24 }}>
+            {sections.map(s => (
+              <div key={s.t}>
+                <h2 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:8 }}>{s.t}</h2>
+                <p style={{ fontSize:14, color:'var(--text-2)', lineHeight:1.7 }}>{s.p}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -1,102 +1,43 @@
-import Link from 'next/link';
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 
 export default function TermsPage() {
+  const sections = [
+    { t:'1. Загальні умови', p:'Використовуючи сайт ausom.vercel.app, ви погоджуєтесь з цими умовами. Сайт належить Ausom Ukraine — офіційному дистриб\'ютору Ausom в Україні.' },
+    { t:'2. Замовлення та покупки', p:'Оформлюючи замовлення, ви підтверджуєте, що вам є 18 років та ви надаєте достовірну інформацію. Ціни вказані в гривнях (₴) з ПДВ.' },
+    { t:'3. Ціни та знижки', p:'Ми забезпечуємо точність цін. У разі помилки — зв\'яжемось перед виконанням. Акції мають обмежений термін.' },
+    { t:'4. Доставка', p:'Терміни є орієнтовними. Ми не відповідаємо за затримки служб доставки або форс-мажор.' },
+    { t:'5. Повернення та обмін', p:'Відповідно до ЗУ «Про захист прав споживачів». Деталі — на сторінці Повернення та обмін.' },
+    { t:'6. Інтелектуальна власність', p:'Контент сайту є власністю Ausom Ukraine. Копіювання без дозволу заборонено.' },
+    { t:'7. Обмеження відповідальності', p:'Ми не відповідаємо за шкоду від неправильної експлуатації, недотримання інструкцій або модифікації товарів.' },
+    { t:'8. Зміни умов', p:'Ми можемо змінювати умови в будь-який час. Актуальна версія — на цій сторінці.' },
+    { t:'9. Контакти', p:'support@ausom.ua • +38 (067) 000-00-00' },
+  ]
+
   return (
-    <section className="bg-neutral-950 min-h-screen py-8 md:py-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <nav className="flex items-center gap-2 text-sm text-neutral-400 mb-8">
-          <Link href="/" className="hover:text-white transition-colors">Головна</Link>
-          <span>/</span>
-          <span className="text-white">Умови використання</span>
-        </nav>
-
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Умови використання</h1>
-        <p className="text-neutral-500 text-sm mb-10">Останнє оновлення: 1 січня 2026</p>
-
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-6">
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">1. Загальні умови</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Використовуючи веб-сайт ausom.vercel.app (далі — &quot;Сайт&quot;), ви погоджуєтесь з цими 
-              умовами використання. Сайт належить та управляється Ausom Ukraine — офіційним 
-              дистриб&apos;ютором бренду Ausom в Україні. Якщо ви не згодні з будь-яким пунктом, 
-              будь ласка, припиніть використання Сайту.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">2. Замовлення та покупки</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Оформлюючи замовлення, ви підтверджуєте, що вам виповнилось 18 років та ви надаєте 
-              достовірну інформацію. Ми залишаємо за собою право відмовити у виконанні замовлення 
-              у випадку надання недостовірних даних. Ціни на сайті вказані в українських гривнях (₴) 
-              та включають ПДВ.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">3. Ціни та знижки</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Ми докладаємо зусиль для забезпечення точності цін на Сайті. У разі виявлення помилки 
-              в ціні, ми зв&apos;яжемось з вами перед виконанням замовлення. Акційні пропозиції та знижки 
-              мають обмежений термін дії та можуть бути змінені без попередження.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">4. Доставка</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Терміни доставки є орієнтовними та залежать від обраного способу доставки та вашого 
-              місцезнаходження. Ми не несемо відповідальності за затримки, спричинені діями 
-              поштових служб або форс-мажорними обставинами.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">5. Повернення та обмін</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Повернення та обмін товарів здійснюється відповідно до Закону України &quot;Про захист 
-              прав споживачів&quot;. Детальні умови повернення описані на сторінці{' '}
-              <Link href="/returns" className="text-lime-400 hover:underline">Повернення та обмін</Link>.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">6. Інтелектуальна власність</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Весь контент на Сайті (тексти, зображення, логотипи, дизайн) є власністю Ausom Ukraine 
-              або використовується з дозволу правовласників. Копіювання, розповсюдження або інше 
-              використання матеріалів Сайту без письмового дозволу заборонено.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">7. Обмеження відповідальності</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Ausom Ukraine не несе відповідальності за шкоду, завдану внаслідок неправильної 
-              експлуатації продукції, недотримання інструкцій з використання або модифікації товарів.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">8. Зміни умов</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              Ми залишаємо за собою право змінювати ці умови в будь-який час. Актуальна версія 
-              завжди доступна на цій сторінці. Продовжуючи використання Сайту після внесення змін, 
-              ви погоджуєтесь з оновленими умовами.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold text-white mb-3">9. Контакти</h2>
-            <p className="text-neutral-400 leading-relaxed">
-              З питань щодо цих умов зв&apos;яжіться з нами:<br />
-              Email: <a href="mailto:support@ausom.ua" className="text-lime-400 hover:underline">support@ausom.ua</a><br />
-              Телефон: <a href="tel:+380670000000" className="text-lime-400 hover:underline">+38 (067) 000-00-00</a>
-            </p>
+    <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
+      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
+        <div className="w-container">
+          <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)' }}>
+            <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
+            <ChevronRight size={13}/><span style={{ color:'var(--text)', fontWeight:500 }}>Умови використання</span>
           </div>
         </div>
       </div>
-    </section>
-  );
+      <div style={{ padding:'48px 0 72px' }}>
+        <div className="w-container" style={{ maxWidth:800 }}>
+          <h1 style={{ fontSize:'clamp(28px,3vw,40px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)', marginBottom:4 }}>Умови використання</h1>
+          <p style={{ fontSize:13, color:'var(--text-4)', marginBottom:32 }}>Останнє оновлення: 1 січня 2026</p>
+          <div style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, padding:'28px 32px', display:'flex', flexDirection:'column', gap:24 }}>
+            {sections.map(s => (
+              <div key={s.t}>
+                <h2 style={{ fontSize:16, fontWeight:700, color:'var(--text)', marginBottom:8 }}>{s.t}</h2>
+                <p style={{ fontSize:14, color:'var(--text-2)', lineHeight:1.7 }}>{s.p}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
