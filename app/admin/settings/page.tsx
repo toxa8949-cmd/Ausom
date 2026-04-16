@@ -1,44 +1,62 @@
 'use client'
 
-import { useState } from 'react'
-import { Save, Store, Truck, CreditCard, Bell, Shield, Globe } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { Save, Store, Truck, Bell } from 'lucide-react'
 import AdminShell from '../AdminShell'
 
 const B = '1.5px solid #EEEEEE'
 const inp: React.CSSProperties = { width:'100%',padding:'11px 14px',background:'#F9F9F9',border:B,borderRadius:8,fontSize:14,color:'#111',outline:'none',fontFamily:'Inter,sans-serif',transition:'border-color .15s' }
 const lbl: React.CSSProperties = { display:'block',fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#888',marginBottom:8 }
 
+async function loadSetting(key: string, fallback: any) {
+  const { data } = await supabase.from('settings').select('value').eq('key', key).single()
+  return data?.value ?? fallback
+}
+
+async function saveSetting(key: string, value: any) {
+  await supabase.from('settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
+}
+
+const STORE_DEFAULT = { name:'Ausom Ukraine', email:'support@ausom.ua', phone:'+38 (067) 000-00-00', address:'м. Київ, вул. Хрещатик 1', currency:'UAH' }
+const DELIVERY_DEFAULT = { freeShipping:true, freeFrom:'0', novaPoshta:true, ukrPoshta:true, courier:true }
+const NOTIF_DEFAULT = { newOrder:true, orderStatus:true, lowStock:false, newsletter:true }
+
 export default function AdminSettings() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('store')
 
-  const [store, setStore] = useState({
-    name: 'Ausom Ukraine',
-    email: 'support@ausom.ua',
-    phone: '+38 (067) 000-00-00',
-    address: 'м. Київ, вул. Хрещатик 1',
-    currency: 'UAH',
-  })
+  const [store, setStore] = useState(STORE_DEFAULT)
+  const [delivery, setDelivery] = useState(DELIVERY_DEFAULT)
+  const [notifications, setNotifications] = useState(NOTIF_DEFAULT)
 
-  const [delivery, setDelivery] = useState({
-    freeShipping: true,
-    freeFrom: '0',
-    novaPoshta: true,
-    ukrPoshta: true,
-    courier: true,
-  })
+  useEffect(() => {
+    Promise.all([
+      loadSetting('store', STORE_DEFAULT),
+      loadSetting('delivery', DELIVERY_DEFAULT),
+      loadSetting('notifications', NOTIF_DEFAULT),
+    ]).then(([s, d, n]) => {
+      setStore(s); setDelivery(d); setNotifications(n)
+    }).catch(() => {}).finally(() => setLoading(false))
+  }, [])
 
-  const [notifications, setNotifications] = useState({
-    newOrder: true,
-    orderStatus: true,
-    lowStock: false,
-    newsletter: true,
-  })
-
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaving(true)
-    setTimeout(() => { setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000) }, 500)
+    try {
+      await Promise.all([
+        saveSetting('store', store),
+        saveSetting('delivery', delivery),
+        saveSetting('notifications', notifications),
+      ])
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (e: any) {
+      alert('Помилка збереження: ' + (e.message || ''))
+    } finally {
+      setSaving(false)
+    }
   }
 
   const Card = ({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) => (
@@ -66,6 +84,15 @@ export default function AdminSettings() {
     { id:'notifications', label:'Сповіщення', Icon: Bell },
   ]
 
+  if (loading) return (
+    <AdminShell title="Налаштування" breadcrumb="Налаштування">
+      <div style={{ padding:48,textAlign:'center' }}>
+        <div style={{ width:32,height:32,border:'2.5px solid #F5C200',borderTopColor:'transparent',borderRadius:'50%',animation:'spin .8s linear infinite',margin:'0 auto' }} />
+      </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </AdminShell>
+  )
+
   return (
     <AdminShell title="Налаштування" breadcrumb="Налаштування">
       <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20 }}>
@@ -79,7 +106,7 @@ export default function AdminSettings() {
           ))}
         </div>
         <button onClick={handleSave} disabled={saving}
-          style={{ display:'inline-flex',alignItems:'center',gap:6,background: saved?'#22C55E':'#111',color:'#fff',fontSize:12,fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase' as const,padding:'10px 20px',borderRadius:7,border:'none',cursor:'pointer',transition:'background .2s' }}>
+          style={{ display:'inline-flex',alignItems:'center',gap:6,background:saved?'#22C55E':'#111',color:'#fff',fontSize:12,fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase' as const,padding:'10px 20px',borderRadius:7,border:'none',cursor:'pointer',transition:'background .2s' }}>
           <Save size={13} />{saving ? 'Збереження...' : saved ? 'Збережено ✓' : 'Зберегти'}
         </button>
       </div>
@@ -151,12 +178,6 @@ export default function AdminSettings() {
           </div>
         </Card>
       )}
-
-      <div style={{ background:'rgba(245,194,0,.08)',border:'1.5px solid rgba(245,194,0,.25)',borderRadius:10,padding:'16px 20px',marginTop:8 }}>
-        <p style={{ fontSize:13,color:'#92600A' }}>
-          <strong>Примітка:</strong> Налаштування зберігаються локально. Для повноцінного збереження підключіть таблицю <code style={{ background:'rgba(0,0,0,.06)',padding:'2px 6px',borderRadius:4,fontSize:12 }}>settings</code> в Supabase.
-        </p>
-      </div>
     </AdminShell>
   )
 }
