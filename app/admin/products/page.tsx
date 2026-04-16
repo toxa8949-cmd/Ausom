@@ -5,136 +5,101 @@ import Link from 'next/link'
 import { getAllProducts, deleteProduct } from '@/lib/queries'
 import { Product } from '@/lib/types'
 import { Pencil, Trash2, Plus, Search } from 'lucide-react'
+import AdminShell from '../AdminShell'
+
+const B = '1.5px solid #EEEEEE'
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState('')
-  const [deleting, setDeleting] = useState<string | null>(null)
+  const [loading,  setLoading]  = useState(true)
+  const [search,   setSearch]   = useState('')
+  const [deleting, setDeleting] = useState<string|null>(null)
 
-  useEffect(() => {
-    getAllProducts().then(setProducts).finally(() => setLoading(false))
-  }, [])
+  useEffect(() => { getAllProducts().then(setProducts).finally(()=>setLoading(false)) }, [])
 
-  const handleDelete = async (id: string, name: string) => {
+  const handleDelete = async (id:string, name:string) => {
     if (!confirm(`Видалити "${name}"?`)) return
     setDeleting(id)
-    try {
-      await deleteProduct(id)
-      setProducts(prev => prev.filter(p => p.id !== id))
-    } catch (e) {
-      alert('Помилка видалення')
-    } finally {
-      setDeleting(null)
-    }
+    try { await deleteProduct(id); setProducts(p=>p.filter(x=>x.id!==id)) }
+    catch { alert('Помилка видалення') }
+    finally { setDeleting(null) }
   }
 
-  const filtered = products.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
 
   return (
-    <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Товари</h1>
-          <p className="text-[#666] text-sm mt-1">{products.length} моделей в каталозі</p>
+    <AdminShell title="Товари" subtitle={`${products.length} моделей в каталозі`} breadcrumb="Товари">
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:12 }}>
+        <div style={{ position:'relative', flex:1, maxWidth:360 }}>
+          <Search size={14} style={{ position:'absolute', left:12, top:'50%', transform:'translateY(-50%)', color:'#BBB', pointerEvents:'none' }}/>
+          <input type="text" placeholder="Пошук товарів..." value={search} onChange={e=>setSearch(e.target.value)}
+            style={{ width:'100%', padding:'10px 14px 10px 38px', background:'#fff', border:B, borderRadius:8, fontSize:13, color:'#111', outline:'none', fontFamily:'Inter,sans-serif' }}
+            onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')}/>
         </div>
-        <Link href="/admin/products/new" className="btn-primary">
-          <Plus size={16} />
-          Додати товар
+        <Link href="/admin/products/new" style={{ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.06em', textTransform:'uppercase' as const, padding:'10px 20px', borderRadius:7, textDecoration:'none' }}>
+          <Plus size={13}/> Додати товар
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="relative mb-6">
-        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#666]" />
-        <input
-          type="text"
-          placeholder="Пошук товарів..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full bg-white border border-[#2A2A2A] rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-[#F5C200] transition-colors"
-        />
-      </div>
-
-      {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#2A2A2A] overflow-hidden">
+      <div style={{ background:'#fff', border:B, borderRadius:12, overflow:'hidden' }}>
         {loading ? (
-          <div className="p-12 text-center text-[#666]">
-            <div className="w-8 h-8 border-2 border-[#F5C200] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            Завантаження...
+          <div style={{ padding:48, textAlign:'center' }}>
+            <div style={{ width:32, height:32, border:'2.5px solid #F5C200', borderTopColor:'transparent', borderRadius:'50%', animation:'spin .8s linear infinite', margin:'0 auto 12px' }}/>
+            <p style={{ color:'#888', fontSize:13 }}>Завантаження...</p>
           </div>
         ) : (
-          <table className="w-full">
+          <table style={{ width:'100%', borderCollapse:'collapse' }}>
             <thead>
-              <tr className="border-b border-[#2A2A2A]">
-                {['Назва', 'Ціна', 'Категорія', 'Наявність', 'Дії'].map(h => (
-                  <th key={h} className="text-left px-6 py-4 text-xs font-bold uppercase tracking-wider text-[#666]">
-                    {h}
-                  </th>
+              <tr style={{ background:'#FAFAFA', borderBottom:B }}>
+                {['Назва','Ціна','Категорія','Наявність',''].map(h=>(
+                  <th key={h} style={{ padding:'10px 16px', textAlign:'left', fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, color:'#AAA' }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filtered.map(p => (
-                <tr key={p.id} className="border-b border-[#f4f4f2] hover:bg-[#fafaf8] transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="font-semibold text-sm">{p.name}</div>
-                    <div className="text-xs text-[#666] mt-0.5">{p.slug}</div>
+              {filtered.map((p,i)=>(
+                <tr key={p.id} style={{ borderBottom:i<filtered.length-1?B:'none', transition:'background .1s' }}
+                  onMouseEnter={e=>(e.currentTarget as HTMLElement).style.background='#FAFAFA'}
+                  onMouseLeave={e=>(e.currentTarget as HTMLElement).style.background='#fff'}>
+                  <td style={{ padding:'14px 16px' }}>
+                    <div style={{ fontWeight:600, fontSize:14, color:'#111' }}>{p.name}</div>
+                    <div style={{ fontSize:11, color:'#888', marginTop:2, fontFamily:'monospace' }}>{p.slug}</div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-sm">€{p.price}</div>
-                    {p.old_price && (
-                      <div className="text-xs text-[#666] line-through">€{p.old_price}</div>
-                    )}
+                  <td style={{ padding:'14px 16px' }}>
+                    <div style={{ fontWeight:800, fontSize:15, color:'#111', letterSpacing:'-.01em' }}>₴{p.price.toLocaleString('uk-UA')}</div>
+                    {p.old_price&&<div style={{ fontSize:12, color:'#BBB', textDecoration:'line-through' }}>₴{p.old_price.toLocaleString('uk-UA')}</div>}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex text-xs font-semibold px-2.5 py-1 rounded-full
-                      ${p.category === 'offroad'
-                        ? 'bg-orange-50 text-orange-600'
-                        : 'bg-blue-50 text-blue-600'
-                      }`}>
-                      {p.category === 'offroad' ? 'Позашляховий' : 'Міський'}
+                  <td style={{ padding:'14px 16px' }}>
+                    <span style={{ fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20, background:p.category==='offroad'?'#FFF8E6':'#EFF6FF', color:p.category==='offroad'?'#92600A':'#1E40AF' }}>
+                      {p.category==='offroad'?'Позашляховий':'Міський'}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full
-                      ${p.in_stock ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${p.in_stock ? 'bg-green-500' : 'bg-red-500'}`} />
-                      {p.in_stock ? 'В наявності' : 'Немає'}
+                  <td style={{ padding:'14px 16px' }}>
+                    <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:20, background:p.in_stock?'#F0FDF4':'#FEF2F2', color:p.in_stock?'#166534':'#991B1B' }}>
+                      <span style={{ width:6, height:6, borderRadius:'50%', background:p.in_stock?'#22C55E':'#EF4444' }}/>
+                      {p.in_stock?'В наявності':'Немає'}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={`/admin/products/${p.id}`}
-                        className="w-8 h-8 flex items-center justify-center text-[#666] hover:text-[#F5F5F0] hover:bg-[#1A1A1A] rounded-lg transition-all"
-                      >
-                        <Pencil size={14} />
+                  <td style={{ padding:'14px 16px' }}>
+                    <div style={{ display:'flex', gap:4, justifyContent:'flex-end' }}>
+                      <Link href={`/admin/products/${p.id}`} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:B, borderRadius:7, color:'#666', textDecoration:'none' }}>
+                        <Pencil size={13}/>
                       </Link>
-                      <button
-                        onClick={() => handleDelete(p.id, p.name)}
-                        disabled={deleting === p.id}
-                        className="w-8 h-8 flex items-center justify-center text-[#666] hover:text-red-500 hover:bg-red-50 rounded-lg transition-all disabled:opacity-40"
-                      >
-                        <Trash2 size={14} />
+                      <button onClick={()=>handleDelete(p.id,p.name)} disabled={deleting===p.id} style={{ width:32, height:32, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:B, borderRadius:7, color:'#666', cursor:'pointer', opacity:deleting===p.id?.6:1 }}>
+                        <Trash2 size={13}/>
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
+              {filtered.length===0&&(
+                <tr><td colSpan={5} style={{ padding:32, textAlign:'center', fontSize:13, color:'#888' }}>Нічого не знайдено</td></tr>
+              )}
             </tbody>
           </table>
         )}
-
-        {!loading && filtered.length === 0 && (
-          <div className="p-12 text-center text-[#666] text-sm">
-            Нічого не знайдено
-          </div>
-        )}
       </div>
-    </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </AdminShell>
   )
 }

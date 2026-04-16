@@ -3,119 +3,111 @@
 import { useEffect, useState } from 'react'
 import { getAllOrders, updateOrderStatus } from '@/lib/queries'
 import { Order } from '@/lib/types'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import AdminShell from '../AdminShell'
 
-const STATUS_LABELS: Record<Order['status'], string> = {
-  pending: 'Очікує',
-  confirmed: 'Підтверджено',
-  shipped: 'Відправлено',
-  delivered: 'Доставлено',
-  cancelled: 'Скасовано',
+const STATUS: Record<Order['status'], { label:string; bg:string; color:string; dot:string }> = {
+  pending:   { label:'Очікує',       bg:'#FFF8E6', color:'#92600A', dot:'#F59E0B' },
+  confirmed: { label:'Підтверджено', bg:'#EFF6FF', color:'#1E40AF', dot:'#3B82F6' },
+  shipped:   { label:'Відправлено',  bg:'#F5F3FF', color:'#5B21B6', dot:'#8B5CF6' },
+  delivered: { label:'Доставлено',   bg:'#F0FDF4', color:'#166534', dot:'#22C55E' },
+  cancelled: { label:'Скасовано',    bg:'#FEF2F2', color:'#991B1B', dot:'#EF4444' },
 }
 
-const STATUS_COLORS: Record<Order['status'], string> = {
-  pending: 'bg-yellow-50 text-yellow-700',
-  confirmed: 'bg-blue-50 text-blue-700',
-  shipped: 'bg-purple-50 text-purple-700',
-  delivered: 'bg-green-50 text-green-700',
-  cancelled: 'bg-red-50 text-red-500',
-}
+const B = '1.5px solid #EEEEEE'
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState<string | null>(null)
+  const [orders,   setOrders]   = useState<Order[]>([])
+  const [loading,  setLoading]  = useState(true)
+  const [expanded, setExpanded] = useState<string|null>(null)
 
-  useEffect(() => {
-    getAllOrders().then(setOrders).finally(() => setLoading(false))
-  }, [])
+  useEffect(() => { getAllOrders().then(setOrders).finally(()=>setLoading(false)) }, [])
 
-  const handleStatus = async (id: string, status: Order['status']) => {
+  const changeStatus = async (id: string, status: Order['status']) => {
     await updateOrderStatus(id, status)
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o))
+    setOrders(prev => prev.map(o => o.id===id ? {...o, status} : o))
   }
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Замовлення</h1>
-        <p className="text-[#666] text-sm mt-1">{orders.length} замовлень всього</p>
-      </div>
-
+    <AdminShell title="Замовлення" subtitle={`${orders.length} замовлень всього`} breadcrumb="Замовлення">
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-2 border-[#F5C200] border-t-transparent rounded-full animate-spin" />
+        <div style={{ display:'flex', justifyContent:'center', padding:'80px 0' }}>
+          <div style={{ width:32, height:32, border:'2.5px solid #F5C200', borderTopColor:'transparent', borderRadius:'50%', animation:'spin .8s linear infinite' }}/>
+          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-[#2A2A2A] p-16 text-center text-[#666]">
+        <div style={{ background:'#fff', border:B, borderRadius:12, padding:48, textAlign:'center', color:'#888', fontSize:14 }}>
           Замовлень ще немає
         </div>
       ) : (
-        <div className="space-y-3">
-          {orders.map(order => (
-            <div key={order.id} className="bg-white rounded-2xl border border-[#2A2A2A] overflow-hidden">
-              {/* Row */}
-              <div
-                className="flex items-center gap-4 px-6 py-4 cursor-pointer hover:bg-[#fafaf8] transition-colors flex-wrap"
-                onClick={() => setExpanded(expanded === order.id ? null : order.id)}
-              >
-                <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm truncate">{order.name}</div>
-                  <div className="text-xs text-[#666] mt-0.5">{order.email} · {order.phone}</div>
+        <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+          {orders.map(order => {
+            const st = STATUS[order.status] || STATUS.pending
+            const isOpen = expanded === order.id
+            return (
+              <div key={order.id} style={{ background:'#fff', border:B, borderRadius:12, overflow:'hidden' }}>
+                <div onClick={() => setExpanded(isOpen ? null : order.id)}
+                  style={{ display:'flex', alignItems:'center', gap:16, padding:'14px 20px', cursor:'pointer', flexWrap:'wrap' as const, transition:'background .15s' }}
+                  onMouseEnter={e=>(e.currentTarget as HTMLElement).style.background='#FAFAFA'}
+                  onMouseLeave={e=>(e.currentTarget as HTMLElement).style.background='#fff'}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontWeight:600, fontSize:14, color:'#111' }}>{order.name}</div>
+                    <div style={{ fontSize:12, color:'#888', marginTop:2 }}>{order.email} · {order.phone}</div>
+                  </div>
+                  <div style={{ fontSize:15, fontWeight:800, color:'#111', letterSpacing:'-.01em' }}>
+                    ₴{order.total.toLocaleString('uk-UA')}
+                  </div>
+                  <div style={{ fontSize:12, color:'#888' }}>
+                    {new Date(order.created_at).toLocaleDateString('uk-UA')}
+                  </div>
+                  <span style={{ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, background:st.bg, color:st.color, padding:'4px 10px', borderRadius:20 }}>
+                    <span style={{ width:6, height:6, borderRadius:'50%', background:st.dot }}/>
+                    {st.label}
+                  </span>
+                  {isOpen ? <ChevronUp size={14} color="#888"/> : <ChevronDown size={14} color="#888"/>}
                 </div>
-                <div className="text-sm font-bold">€{order.total}</div>
-                <div className="text-xs text-[#666]">
-                  {new Date(order.created_at).toLocaleDateString('uk-UA')}
-                </div>
-                <span className={`text-xs font-semibold px-3 py-1 rounded-full ${STATUS_COLORS[order.status]}`}>
-                  {STATUS_LABELS[order.status]}
-                </span>
-                <span className="text-[#666] text-xs">{expanded === order.id ? '▲' : '▼'}</span>
+
+                {isOpen && (
+                  <div style={{ borderTop:B, padding:'20px', background:'#FAFAFA' }}>
+                    <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24, marginBottom:20 }}>
+                      <div>
+                        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, color:'#888', marginBottom:8 }}>Доставка</p>
+                        <p style={{ fontSize:13, color:'#111' }}>{order.city}, {order.address}</p>
+                        {order.notes && <p style={{ fontSize:12, color:'#888', marginTop:4 }}>{order.notes}</p>}
+                      </div>
+                      <div>
+                        <p style={{ fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, color:'#888', marginBottom:8 }}>Товари</p>
+                        {(order.items as any[]).map((item:any,i:number) => (
+                          <div key={i} style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'#111', marginBottom:4 }}>
+                            <span>{item.product?.name} × {item.quantity}</span>
+                            <span style={{ fontWeight:600 }}>₴{(item.product?.price*item.quantity).toLocaleString('uk-UA')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p style={{ fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase' as const, color:'#888', marginBottom:10 }}>Змінити статус</p>
+                      <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+                        {(Object.keys(STATUS) as Order['status'][]).map(s => (
+                          <button key={s} onClick={() => changeStatus(order.id, s)} style={{
+                            fontSize:12, fontWeight:600, padding:'7px 14px', borderRadius:7,
+                            border: order.status===s ? 'none' : B,
+                            background: order.status===s ? '#111' : '#fff',
+                            color: order.status===s ? '#fff' : '#444',
+                            cursor:'pointer', transition:'all .15s',
+                          }}>
+                            {STATUS[s].label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Expanded */}
-              {expanded === order.id && (
-                <div className="border-t border-[#f4f4f2] px-6 py-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                    <div>
-                      <div className="text-xs font-bold uppercase tracking-wider text-[#666] mb-2">Доставка</div>
-                      <p className="text-sm">{order.city}, {order.address}</p>
-                    </div>
-                    <div>
-                      <div className="text-xs font-bold uppercase tracking-wider text-[#666] mb-2">Товари</div>
-                      {(order.items as any[]).map((item: any, i: number) => (
-                        <div key={i} className="text-sm flex justify-between">
-                          <span>{item.product?.name} × {item.quantity}</span>
-                          <span className="font-medium">€{item.product?.price * item.quantity}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Status update */}
-                  <div>
-                    <div className="text-xs font-bold uppercase tracking-wider text-[#666] mb-3">Змінити статус</div>
-                    <div className="flex flex-wrap gap-2">
-                      {(Object.keys(STATUS_LABELS) as Order['status'][]).map(s => (
-                        <button
-                          key={s}
-                          onClick={() => handleStatus(order.id, s)}
-                          className={`text-xs font-semibold px-4 py-2 rounded-xl transition-all
-                            ${order.status === s
-                              ? 'bg-[#0A0A0A] text-white'
-                              : 'bg-[#1A1A1A] text-[#666] hover:text-[#F5F5F0]'
-                            }`}
-                        >
-                          {STATUS_LABELS[s]}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
-    </div>
+    </AdminShell>
   )
 }
