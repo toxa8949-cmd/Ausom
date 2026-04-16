@@ -6,44 +6,46 @@ import { getAllProducts, getAllOrders } from '@/lib/queries'
 import {
   LayoutDashboard, Package, ShoppingBag, Users, FileText,
   Settings, LogOut, Bell, Search, TrendingUp, TrendingDown,
-  Edit, Trash2, Eye, Plus, Zap, BarChart2, Tag,
+  Edit, Eye, Plus, Zap, BarChart2, Tag, ChevronRight,
 } from 'lucide-react'
 
-const STATUS: Record<string, { label: string; cls: string }> = {
-  pending:   { label: 'Очікує',     cls: 'bg-amber-500/12 text-amber-300 border-amber-500/20' },
-  paid:      { label: 'Оплачено',   cls: 'bg-green-500/12 text-green-300 border-green-500/20' },
-  shipped:   { label: 'Відправлено',cls: 'bg-blue-500/12  text-blue-300  border-blue-500/20'  },
-  delivered: { label: 'Доставлено', cls: 'bg-purple-500/12 text-purple-300 border-purple-500/20' },
-  cancelled: { label: 'Скасовано',  cls: 'bg-red-500/12   text-red-300   border-red-500/20'   },
+const NAV = [
+  { group:'Основне', items:[
+    { href:'/admin',            icon:LayoutDashboard, label:'Дашборд',    badge:null,  red:false },
+    { href:'/admin/orders',     icon:ShoppingBag,     label:'Замовлення', badge:12,    red:true  },
+    { href:'/admin/products',   icon:Package,         label:'Товари',     badge:null,  red:false },
+    { href:'/admin/customers',  icon:Users,           label:'Клієнти',    badge:null,  red:false },
+  ]},
+  { group:'Контент', items:[
+    { href:'/admin/blog',    icon:FileText, label:'Блог',   badge:null, red:false },
+    { href:'/admin/banners', icon:Tag,      label:'Банери', badge:null, red:false },
+  ]},
+  { group:'Система', items:[
+    { href:'/admin/analytics', icon:BarChart2, label:'Аналітика',    badge:null, red:false },
+    { href:'/admin/settings',  icon:Settings,  label:'Налаштування', badge:null, red:false },
+  ]},
+]
+
+const ORDERS = [
+  { id:'#AU-2061', customer:'Олексій Ткаченко',  product:'Ausom DT2 Pro',         total:'₴44 250', status:'paid',      date:'15.04.2026' },
+  { id:'#AU-2060', customer:'Марина Коваль',      product:'Ausom L2 Max Dual',     total:'₴40 800', status:'shipped',   date:'15.04.2026' },
+  { id:'#AU-2059', customer:'Дмитро Пилипенко',  product:'Ausom L2 Dual Motor',   total:'₴32 200', status:'pending',   date:'14.04.2026' },
+  { id:'#AU-2058', customer:'Анна Савченко',      product:'Ausom L1',               total:'₴27 050', status:'delivered', date:'14.04.2026' },
+  { id:'#AU-2057', customer:'Ігор Мельник',       product:'Ausom DT2 Pro',         total:'₴44 250', status:'cancelled', date:'13.04.2026' },
+]
+
+const STATUS: Record<string, { label:string; bg:string; color:string; dot:string }> = {
+  pending:   { label:'Очікує',      bg:'#FFF8E6', color:'#92600A', dot:'#F59E0B' },
+  paid:      { label:'Оплачено',    bg:'#F0FDF4', color:'#166534', dot:'#22C55E' },
+  shipped:   { label:'Відправлено', bg:'#EFF6FF', color:'#1E40AF', dot:'#3B82F6' },
+  delivered: { label:'Доставлено',  bg:'#F5F3FF', color:'#5B21B6', dot:'#8B5CF6' },
+  cancelled: { label:'Скасовано',   bg:'#FEF2F2', color:'#991B1B', dot:'#EF4444' },
 }
-
-const NAV_ITEMS = [
-  { group: 'Основне', items: [
-    { href: '/admin',           icon: LayoutDashboard, label: 'Дашборд',      badge: null },
-    { href: '/admin/orders',    icon: ShoppingBag,     label: 'Замовлення',   badge: 12, badgeRed: true },
-    { href: '/admin/products',  icon: Package,         label: 'Товари',       badge: null },
-    { href: '/admin/customers', icon: Users,           label: 'Клієнти',      badge: null },
-  ]},
-  { group: 'Контент', items: [
-    { href: '/admin/blog',    icon: FileText, label: 'Блог',    badge: null },
-    { href: '/admin/banners', icon: Tag,      label: 'Банери',  badge: null },
-  ]},
-  { group: 'Система', items: [
-    { href: '/admin/analytics', icon: BarChart2, label: 'Аналітика', badge: null },
-    { href: '/admin/settings',  icon: Settings,  label: 'Налаштування', badge: null },
-  ]},
-]
-
-const MOCK_ORDERS = [
-  { id:'#AU-2061', customer:'Олексій Ткаченко',  product:'Ausom DT2 Pro',     total:'₴44 250', status:'paid',      date:'15.04.2026' },
-  { id:'#AU-2060', customer:'Марина Коваль',      product:'Ausom L2 Max Dual', total:'₴40 800', status:'shipped',   date:'15.04.2026' },
-  { id:'#AU-2059', customer:'Дмитро Пилипенко',  product:'Ausom L2 Dual',     total:'₴32 200', status:'pending',   date:'14.04.2026' },
-  { id:'#AU-2058', customer:'Анна Савченко',      product:'Ausom L1',          total:'₴27 050', status:'delivered', date:'14.04.2026' },
-  { id:'#AU-2057', customer:'Ігор Мельник',       product:'Ausom DT2 Pro',     total:'₴44 250', status:'cancelled', date:'13.04.2026' },
-]
 
 const MONTHS = ['Жов','Лис','Гру','Січ','Лют','Бер','Квіт']
 const BARS   = [42,68,95,74,53,88,100]
+
+const s = (obj: React.CSSProperties) => obj
 
 export default function AdminDashboard() {
   const [prodCount, setProdCount] = useState(0)
@@ -64,110 +66,126 @@ export default function AdminDashboard() {
   }, [])
 
   const STATS = [
-    { label:'Продажі сьогодні', val: loading ? '...' : `₴${revenue.toLocaleString('uk-UA')}`, trend:'+18%', up:true,  iconCls:'bg-[var(--brand)]/10 text-[var(--brand)]',  Icon: TrendingUp  },
-    { label:'Нові замовлення',  val: loading ? '...' : String(ordCount),                       trend:'+5',   up:true,  iconCls:'bg-green-500/10 text-green-400',             Icon: ShoppingBag },
-    { label:'Товарів',          val: loading ? '...' : String(prodCount),                      trend:'',     up:true,  iconCls:'bg-blue-500/10  text-blue-400',              Icon: Package     },
-    { label:'Очікують',         val: loading ? '...' : String(pending),                        trend:'',     up:false, iconCls:'bg-red-500/10   text-red-400',               Icon: TrendingDown },
+    { label:'Продажі сьогодні', val: loading?'...': `₴${revenue.toLocaleString('uk-UA')}`, trend:'+18%', up:true,  color:'#F5C200', bg:'#FFF8E6', Icon:TrendingUp },
+    { label:'Нові замовлення',  val: loading?'...': String(ordCount),                       trend:'+5',   up:true,  color:'#22C55E', bg:'#F0FDF4', Icon:ShoppingBag },
+    { label:'Товарів',          val: loading?'...': String(prodCount),                      trend:'',     up:true,  color:'#3B82F6', bg:'#EFF6FF', Icon:Package },
+    { label:'Очікують',         val: loading?'...': String(pending),                        trend:'',     up:false, color:'#EF4444', bg:'#FEF2F2', Icon:TrendingDown },
   ]
 
-  const thCls = 'px-5 py-3 text-left text-[10px] font-bold uppercase tracking-[.08em] text-[#666] border-b border-[var(--border)] bg-[#1A1A1A]'
-  const tdCls = 'px-5 py-3.5 text-[13px] text-[var(--light)] border-b border-[var(--border)]'
+  const border = '1.5px solid #EEEEEE'
+  const radius = 12
 
   return (
-    <div className="flex min-h-screen bg-[#0A0A0A]">
+    <div style={s({ display:'flex', minHeight:'100vh', background:'#F9F9F9', fontFamily:'Inter,sans-serif' })}>
 
-      {/* Sidebar */}
-      <aside className="hidden lg:flex flex-col w-[240px] bg-[#111111] border-r border-[var(--border)] sticky top-0 h-screen overflow-y-auto shrink-0">
-        <Link href="/admin" className="flex items-center gap-2 px-5 py-4 border-b border-[var(--border)] font-display text-[20px] tracking-[.06em] text-white hover:text-[var(--brand)] transition-colors">
-          <Zap size={17} className="text-[var(--brand)]" strokeWidth={2.5}/> AUSOM UA
-          <span className="ml-auto text-[9px] font-bold font-sans bg-[var(--brand)] text-[#111] px-1.5 py-0.5 rounded">Admin</span>
+      {/* ── Sidebar ── */}
+      <aside style={s({ width:220, background:'#fff', borderRight:border, display:'flex', flexDirection:'column', position:'sticky', top:0, height:'100vh', flexShrink:0 })}>
+        <Link href="/admin" style={s({ display:'flex', alignItems:'center', gap:8, padding:'20px 20px 16px', borderBottom:border, textDecoration:'none' })}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="#F5C200"/>
+          </svg>
+          <span style={s({ fontWeight:800, fontSize:16, letterSpacing:'-.02em', color:'#111' })}>AUSOM</span>
+          <sup style={s({ fontSize:8, fontWeight:700, color:'#D4A800', marginTop:-6 })}>UA</sup>
+          <span style={s({ marginLeft:'auto', fontSize:9, fontWeight:800, background:'#111', color:'#fff', padding:'2px 7px', borderRadius:4, letterSpacing:'.04em' })}>ADMIN</span>
         </Link>
 
-        <nav className="flex-1 p-3">
-          {NAV_ITEMS.map(section => (
+        <nav style={s({ flex:1, padding:'12px 10px', overflowY:'auto' })}>
+          {NAV.map(section => (
             <div key={section.group}>
-              <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#666] px-3 pt-4 pb-1.5">{section.group}</p>
-              {section.items.map(item => (
-                <Link key={item.href} href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-all mb-0.5 ${item.href==='/admin' ? 'bg-[#F5C200]/8 text-white border-l-[3px] border-[var(--brand)]' : 'text-[#666] hover:text-white hover:bg-white/4'}`}>
-                  <item.icon size={15} className="shrink-0"/>
-                  {item.label}
-                  {item.badge && (
-                    <span className={`ml-auto text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[20px] text-center ${item.badgeRed ? 'bg-red-500/20 text-red-400' : 'bg-[var(--brand)]/20 text-[var(--brand)]'}`}>
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              ))}
+              <p style={s({ fontSize:9, fontWeight:700, letterSpacing:'.12em', textTransform:'uppercase', color:'#BBBBBB', padding:'12px 10px 6px' })}>{section.group}</p>
+              {section.items.map(item => {
+                const active = item.href === '/admin'
+                return (
+                  <Link key={item.href} href={item.href} style={s({
+                    display:'flex', alignItems:'center', gap:10,
+                    padding:'9px 10px', borderRadius:8, marginBottom:2,
+                    fontSize:13, fontWeight:500, textDecoration:'none',
+                    background: active ? '#FFF8E6' : 'transparent',
+                    color: active ? '#92600A' : '#444',
+                    borderLeft: active ? '3px solid #F5C200' : '3px solid transparent',
+                    transition:'background .15s',
+                  })}>
+                    <item.icon size={15} style={{ flexShrink:0, color: active ? '#D4A800' : '#888' }}/>
+                    {item.label}
+                    {item.badge && (
+                      <span style={s({ marginLeft:'auto', fontSize:10, fontWeight:800, background: item.red ? '#EF4444':'#F5C200', color: item.red?'#fff':'#111', padding:'1px 6px', borderRadius:10, minWidth:18, textAlign:'center' })}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+                )
+              })}
             </div>
           ))}
         </nav>
 
-        <div className="p-3 border-t border-[var(--border)]">
-          <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/4 cursor-pointer transition-colors">
-            <div className="w-8 h-8 rounded-full bg-[var(--brand)] flex items-center justify-center text-[#111] text-[12px] font-black shrink-0">А</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-white truncate">Адмін</p>
-              <p className="text-[11px] text-[#666] truncate">Головний адміністратор</p>
+        <div style={s({ padding:'12px 10px', borderTop:border })}>
+          <div style={s({ display:'flex', alignItems:'center', gap:10, padding:'8px 10px', borderRadius:8, cursor:'pointer' })}>
+            <div style={s({ width:32, height:32, borderRadius:'50%', background:'#F5C200', display:'flex', alignItems:'center', justifyContent:'center', fontSize:13, fontWeight:800, color:'#111', flexShrink:0 })}>А</div>
+            <div>
+              <p style={s({ fontSize:13, fontWeight:600, color:'#111' })}>Адмін</p>
+              <p style={s({ fontSize:11, color:'#888' })}>Адміністратор</p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* ── Main ── */}
+      <div style={s({ flex:1, display:'flex', flexDirection:'column', minWidth:0 })}>
 
         {/* Topbar */}
-        <header className="sticky top-0 z-50 h-[60px] bg-[#0A0A0A]/90 backdrop-blur-xl border-b border-[var(--border)] flex items-center justify-between px-6 gap-4">
-          <div className="flex items-center gap-4">
-            <span className="text-[13px] text-[#666]">Адмінка / <strong className="text-white font-medium">Дашборд</strong></span>
-            <div className="hidden sm:flex items-center gap-2 bg-[#111111] border border-[var(--border)] rounded-lg px-3 py-2 w-56 focus-within:border-[var(--brand)] transition-colors">
-              <Search size={13} className="text-[#666] shrink-0"/>
-              <input placeholder="Пошук…" className="bg-transparent text-[12px] text-white outline-none w-full placeholder:text-[#666]"/>
-            </div>
+        <header style={s({ height:60, background:'#fff', borderBottom:border, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 28px', position:'sticky', top:0, zIndex:40, gap:16 })}>
+          <div style={s({ display:'flex', alignItems:'center', gap:6, fontSize:13, color:'#888' })}>
+            <Link href="/admin" style={{ color:'#888', textDecoration:'none' }}>Адмінка</Link>
+            <ChevronRight size={12}/>
+            <strong style={{ color:'#111', fontWeight:600 }}>Дашборд</strong>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="relative w-8 h-8 flex items-center justify-center bg-[#111111] border border-[var(--border)] rounded-lg text-[#666] hover:text-white transition-colors">
-              <Bell size={14}/>
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-[#111]"/>
+          <div style={s({ display:'flex', alignItems:'center', gap:4, background:'#F9F9F9', border:'1.5px solid #EEE', borderRadius:8, padding:'8px 14px', width:240 })}>
+            <Search size={13} color="#BBB"/>
+            <input placeholder="Пошук…" style={s({ background:'none', border:'none', outline:'none', fontSize:13, color:'#111', width:'100%', fontFamily:'Inter,sans-serif' })}/>
+          </div>
+          <div style={s({ display:'flex', alignItems:'center', gap:8, marginLeft:'auto' })}>
+            <button style={s({ position:'relative', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:'1.5px solid #EEE', borderRadius:8, cursor:'pointer', color:'#666' })}>
+              <Bell size={15}/>
+              <span style={s({ position:'absolute', top:7, right:7, width:7, height:7, background:'#EF4444', borderRadius:'50%', border:'1.5px solid #fff' })}/>
             </button>
-            <Link href="/" target="_blank" className="w-8 h-8 flex items-center justify-center bg-[#111111] border border-[var(--border)] rounded-lg text-[#666] hover:text-white transition-colors">
-              <Eye size={14}/>
+            <Link href="/" target="_blank" style={s({ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:'1.5px solid #EEE', borderRadius:8, color:'#666', textDecoration:'none' })}>
+              <Eye size={15}/>
             </Link>
-            <button className="w-8 h-8 flex items-center justify-center bg-[#111111] border border-[var(--border)] rounded-lg text-[#666] hover:text-red-400 transition-colors">
-              <LogOut size={14}/>
+            <button style={s({ width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:'1.5px solid #EEE', borderRadius:8, cursor:'pointer', color:'#666' })}>
+              <LogOut size={15}/>
             </button>
           </div>
         </header>
 
         {/* Content */}
-        <main className="flex-1 p-6 lg:p-8">
+        <main style={s({ flex:1, padding:'28px 28px' })}>
 
           {/* Page header */}
-          <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+          <div style={s({ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:24, flexWrap:'wrap', gap:12 })}>
             <div>
-              <h1 className="font-display text-[36px] text-white tracking-wide leading-none mb-1">Дашборд</h1>
-              <p className="text-[13px] text-[#666]">Середа, 15 квітня 2026</p>
+              <h1 style={s({ fontSize:28, fontWeight:800, letterSpacing:'-.03em', color:'#111', marginBottom:4 })}>Дашборд</h1>
+              <p style={s({ fontSize:13, color:'#888' })}>Середа, 15 квітня 2026</p>
             </div>
-            <Link href="/admin/products/new" className="btn-primary btn-sm">
+            <Link href="/admin/products/new" style={s({ display:'inline-flex', alignItems:'center', gap:6, background:'#111', color:'#fff', fontSize:12, fontWeight:700, letterSpacing:'.06em', textTransform:'uppercase', padding:'10px 20px', borderRadius:7, textDecoration:'none' })}>
               <Plus size={13}/> Новий товар
             </Link>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {STATS.map((s, i) => (
-              <div key={i} className="bg-[#111111] border border-[var(--border)] rounded-xl p-5 flex flex-col gap-3 hover:border-[var(--brand)]/20 hover:-translate-y-0.5 transition-all">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-[.08em] text-[#666]">{s.label}</span>
-                  <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${s.iconCls}`}>
-                    <s.Icon size={14}/>
+          {/* Stats grid */}
+          <div style={s({ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:24 })}>
+            {STATS.map((stat, i) => (
+              <div key={i} style={s({ background:'#fff', border:border, borderRadius:radius, padding:'20px 20px', display:'flex', flexDirection:'column', gap:14 })}>
+                <div style={s({ display:'flex', alignItems:'center', justifyContent:'space-between' })}>
+                  <span style={s({ fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase', color:'#888' })}>{stat.label}</span>
+                  <div style={s({ width:34, height:34, borderRadius:8, background:stat.bg, display:'flex', alignItems:'center', justifyContent:'center', color:stat.color })}>
+                    <stat.Icon size={15}/>
                   </div>
                 </div>
-                <span className="font-display text-[32px] text-white tracking-wide leading-none">{s.val}</span>
-                {s.trend && (
-                  <div className={`flex items-center gap-1 text-[11px] font-semibold ${s.up ? 'text-green-400' : 'text-red-400'}`}>
-                    {s.up ? <TrendingUp size={11}/> : <TrendingDown size={11}/>} {s.trend} vs вчора
+                <span style={s({ fontSize:30, fontWeight:800, letterSpacing:'-.03em', color:'#111', lineHeight:1 })}>{stat.val}</span>
+                {stat.trend && (
+                  <div style={s({ display:'flex', alignItems:'center', gap:4, fontSize:12, fontWeight:600, color: stat.up ? '#22C55E':'#EF4444' })}>
+                    {stat.up ? <TrendingUp size={12}/> : <TrendingDown size={12}/>} {stat.trend} vs вчора
                   </div>
                 )}
               </div>
@@ -175,36 +193,30 @@ export default function AdminDashboard() {
           </div>
 
           {/* Charts row */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+          <div style={s({ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16, marginBottom:24 })}>
             {/* Bar chart */}
-            <div className="lg:col-span-2 bg-[#111111] border border-[var(--border)] rounded-xl p-6">
-              <p className="text-[14px] font-semibold text-white mb-6">Продажі за місяць</p>
-              <div className="flex items-end gap-2 h-[110px]">
-                {MONTHS.map((m, i) => (
-                  <div key={m} onClick={() => setActiveBar(i)}
-                    className={`flex-1 rounded-t-md cursor-pointer transition-all duration-200 relative group ${i===activeBar ? 'bg-[var(--brand)]' : 'bg-[var(--brand)]/15 hover:bg-[var(--brand)]/30'}`}
-                    style={{ height: `${BARS[i]}%` }}>
-                    <span className={`absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] whitespace-nowrap ${i===activeBar ? 'text-[var(--brand)]' : 'text-[#666]'}`}>{m}</span>
+            <div style={s({ background:'#fff', border:border, borderRadius:radius, padding:'20px 24px' })}>
+              <p style={s({ fontSize:14, fontWeight:700, color:'#111', marginBottom:24 })}>Продажі за місяць</p>
+              <div style={s({ display:'flex', alignItems:'flex-end', gap:8, height:100 })}>
+                {MONTHS.map((m,i) => (
+                  <div key={m} onClick={() => setActiveBar(i)} style={s({ flex:1, borderRadius:'4px 4px 0 0', cursor:'pointer', position:'relative', transition:'all .2s', background: i===activeBar ? '#111':'#F5F5F5', height:`${BARS[i]}%` })}>
+                    <span style={s({ position:'absolute', bottom:-18, left:'50%', transform:'translateX(-50%)', fontSize:9, fontWeight:600, color: i===activeBar?'#111':'#BBB', whiteSpace:'nowrap' })}>{m}</span>
                   </div>
                 ))}
               </div>
             </div>
             {/* Donut */}
-            <div className="bg-[#111111] border border-[var(--border)] rounded-xl p-6">
-              <p className="text-[14px] font-semibold text-white mb-4">Продажі по товарах</p>
-              <div className="flex items-center justify-center mb-4">
-                <div className="w-24 h-24 rounded-full flex items-center justify-center" style={{background:'conic-gradient(#F5C200 0% 29%,#3B82F6 29% 63%,#8B5CF6 63% 84%,#2A2A2A 84% 100%)'}}>
-                  <div className="w-14 h-14 rounded-full bg-[#111111] flex flex-col items-center justify-center">
-                    <span className="font-display text-[18px] text-white leading-none">101</span>
-                    <span className="text-[8px] text-[#666]">шт</span>
-                  </div>
-                </div>
+            <div style={s({ background:'#fff', border:border, borderRadius:radius, padding:'20px 24px' })}>
+              <p style={s({ fontSize:14, fontWeight:700, color:'#111', marginBottom:16 })}>По товарах</p>
+              <div style={s({ display:'flex', justifyContent:'center', marginBottom:16 })}>
+                <div style={s({ width:96, height:96, borderRadius:'50%', position:'relative' })} 
+                     dangerouslySetInnerHTML={{ __html:`<svg width="96" height="96" viewBox="0 0 96 96"><circle r="38" cx="48" cy="48" fill="none" stroke="#F5F5F5" stroke-width="16"/><circle r="38" cx="48" cy="48" fill="none" stroke="#F5C200" stroke-width="16" stroke-dasharray="${0.29*239} ${239}" stroke-dashoffset="0"/><circle r="38" cx="48" cy="48" fill="none" stroke="#3B82F6" stroke-width="16" stroke-dasharray="${0.34*239} ${239}" stroke-dashoffset="${-0.29*239}"/><circle r="38" cx="48" cy="48" fill="none" stroke="#8B5CF6" stroke-width="16" stroke-dasharray="${0.21*239} ${239}" stroke-dashoffset="${-(0.29+0.34)*239}"/><text x="48" y="52" text-anchor="middle" font-size="18" font-weight="800" font-family="Inter" fill="#111">101</text></svg>` }}/>
               </div>
-              <div className="flex flex-col gap-2">
-                {[['#F5C200','DT2 Pro','29'],['#3B82F6','L1','34'],['#8B5CF6','L2 Dual','21'],['#2A2A2A','L2 Max','17']].map(([col,name,val]) => (
-                  <div key={name} className="flex items-center justify-between text-[11px]">
-                    <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-sm" style={{background:col}}/><span className="text-[var(--light)]">{name}</span></div>
-                    <span className="font-mono font-medium text-white">{val} шт</span>
+              <div style={s({ display:'flex', flexDirection:'column', gap:8 })}>
+                {[['#F5C200','DT2 Pro','29'],['#3B82F6','L1','34'],['#8B5CF6','L2 Dual','21'],['#EEE','L2 Max','17']].map(([col,name,val]) => (
+                  <div key={name} style={s({ display:'flex', alignItems:'center', justifyContent:'space-between', fontSize:12 })}>
+                    <div style={s({ display:'flex', alignItems:'center', gap:8 })}><span style={s({ width:8, height:8, borderRadius:2, background:col, display:'inline-block' })}/><span style={{ color:'#555' }}>{name}</span></div>
+                    <span style={{ fontWeight:700, color:'#111', fontFamily:'monospace' }}>{val} шт</span>
                   </div>
                 ))}
               </div>
@@ -212,45 +224,46 @@ export default function AdminDashboard() {
           </div>
 
           {/* Orders table */}
-          <div className="bg-[#111111] border border-[var(--border)] rounded-xl overflow-hidden mb-6">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
-              <p className="text-[14px] font-semibold text-white">Останні замовлення</p>
-              <Link href="/admin/orders" className="btn-outline btn-sm">Всі замовлення</Link>
+          <div style={s({ background:'#fff', border:border, borderRadius:radius, overflow:'hidden' })}>
+            <div style={s({ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px', borderBottom:border })}>
+              <p style={s({ fontSize:14, fontWeight:700, color:'#111' })}>Останні замовлення</p>
+              <Link href="/admin/orders" style={s({ fontSize:12, fontWeight:600, color:'#111', textDecoration:'none', background:'#F9F9F9', border:'1.5px solid #EEE', padding:'7px 14px', borderRadius:6 })}>Всі замовлення</Link>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px]">
-                <thead>
-                  <tr>
-                    {['№','Клієнт','Товар','Сума','Статус','Дата',''].map(h => <th key={h} className={thCls}>{h}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {MOCK_ORDERS.map(o => {
-                    const st = STATUS[o.status] || STATUS.pending
-                    return (
-                      <tr key={o.id} className="hover:bg-white/[.015] transition-colors">
-                        <td className={tdCls}><span className="font-mono text-[12px] text-[var(--brand)]">{o.id}</span></td>
-                        <td className={tdCls}><span className="font-medium text-white text-[13px]">{o.customer}</span></td>
-                        <td className={tdCls}>{o.product}</td>
-                        <td className={tdCls}><span className="font-display text-[16px] text-white">{o.total}</span></td>
-                        <td className={tdCls}>
-                          <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide border px-2.5 py-1 rounded-full ${st.cls}`}>
-                            <span className="w-1.5 h-1.5 rounded-full bg-current opacity-70"/>{st.label}
-                          </span>
-                        </td>
-                        <td className={tdCls}>{o.date}</td>
-                        <td className={tdCls}>
-                          <div className="flex gap-1 justify-end">
-                            <Link href={`/admin/orders/${o.id}`} className="w-7 h-7 flex items-center justify-center bg-[#1A1A1A] border border-[var(--border)] rounded text-[#666] hover:text-[var(--brand)] hover:border-[var(--brand)]/30 transition-all"><Eye size={12}/></Link>
-                            <button className="w-7 h-7 flex items-center justify-center bg-[#1A1A1A] border border-[var(--border)] rounded text-[#666] hover:text-white transition-all"><Edit size={12}/></button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <table style={s({ width:'100%', borderCollapse:'collapse' })}>
+              <thead>
+                <tr style={{ background:'#FAFAFA' }}>
+                  {['№','Клієнт','Товар','Сума','Статус','Дата',''].map(h => (
+                    <th key={h} style={s({ padding:'10px 16px', textAlign:'left', fontSize:10, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'#AAA', borderBottom:border })}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {ORDERS.map((o, i) => {
+                  const st = STATUS[o.status] || STATUS.pending
+                  return (
+                    <tr key={o.id} style={{ borderBottom: i < ORDERS.length-1 ? border : 'none' }}>
+                      <td style={s({ padding:'14px 16px', fontSize:12, fontWeight:700, color:'#D4A800', fontFamily:'monospace' })}>{o.id}</td>
+                      <td style={s({ padding:'14px 16px', fontSize:13, fontWeight:600, color:'#111' })}>{o.customer}</td>
+                      <td style={s({ padding:'14px 16px', fontSize:13, color:'#555' })}>{o.product}</td>
+                      <td style={s({ padding:'14px 16px', fontSize:15, fontWeight:800, color:'#111', letterSpacing:'-.01em' })}>{o.total}</td>
+                      <td style={s({ padding:'14px 16px' })}>
+                        <span style={s({ display:'inline-flex', alignItems:'center', gap:6, fontSize:11, fontWeight:700, background:st.bg, color:st.color, padding:'4px 10px', borderRadius:20 })}>
+                          <span style={s({ width:6, height:6, borderRadius:'50%', background:st.dot, flexShrink:0 })}/>
+                          {st.label}
+                        </span>
+                      </td>
+                      <td style={s({ padding:'14px 16px', fontSize:12, color:'#888' })}>{o.date}</td>
+                      <td style={s({ padding:'14px 16px' })}>
+                        <div style={s({ display:'flex', gap:4, justifyContent:'flex-end' })}>
+                          <button style={s({ width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:'1.5px solid #EEE', borderRadius:6, cursor:'pointer', color:'#666' })}><Eye size={12}/></button>
+                          <button style={s({ width:30, height:30, display:'flex', alignItems:'center', justifyContent:'center', background:'#F9F9F9', border:'1.5px solid #EEE', borderRadius:6, cursor:'pointer', color:'#666' })}><Edit size={12}/></button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
 
         </main>

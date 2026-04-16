@@ -3,15 +3,15 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { Zap, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function AdminLogin() {
   const router = useRouter()
-  const [email,    setEmail]   = useState('')
+  const [email,    setEmail]    = useState('')
   const [password, setPassword] = useState('')
-  const [showPw,   setShowPw]  = useState(false)
-  const [loading,  setLoading] = useState(false)
-  const [error,    setError]   = useState('')
+  const [showPw,   setShowPw]   = useState(false)
+  const [loading,  setLoading]  = useState(false)
+  const [error,    setError]    = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,51 +21,66 @@ export default function AdminLogin() {
     else router.replace('/admin')
   }
 
+  const border = '1.5px solid #EEEEEE'
+  const inp: React.CSSProperties = {
+    width:'100%', padding:'12px 16px',
+    background:'#F9F9F9', border, borderRadius:8,
+    fontSize:14, color:'#111', outline:'none',
+    fontFamily:'Inter,sans-serif', transition:'border-color .15s',
+  }
+
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-6">
-      <div className="w-full max-w-[380px]">
+    <div style={{ minHeight:'100vh', background:'#F9F9F9', display:'flex', alignItems:'center', justifyContent:'center', padding:24, fontFamily:'Inter,sans-serif' }}>
+      <div style={{ width:'100%', maxWidth:380 }}>
 
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 mb-10">
-          <Zap size={20} className="text-[var(--brand)]" strokeWidth={2.5}/>
-          <span className="font-display text-[26px] tracking-[.08em] text-white">AUSOM UA</span>
-          <sup className="font-sans text-[10px] font-bold text-[var(--brand)] tracking-normal -mt-2">Admin</sup>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginBottom:36 }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="#F5C200"/>
+          </svg>
+          <span style={{ fontWeight:800, fontSize:20, letterSpacing:'-.02em', color:'#111' }}>AUSOM UA</span>
+          <span style={{ fontSize:9, fontWeight:800, background:'#111', color:'#fff', padding:'2px 7px', borderRadius:4, letterSpacing:'.04em' }}>ADMIN</span>
         </div>
 
-        <div className="bg-[#111111] border border-[var(--border)] rounded-2xl p-8">
-          <h1 className="font-display text-[28px] text-white tracking-wide mb-1">Вхід</h1>
-          <p className="text-[13px] text-[#666] mb-7">Адмін-панель Ausom Ukraine</p>
+        <div style={{ background:'#fff', border, borderRadius:14, padding:32 }}>
+          <h1 style={{ fontSize:24, fontWeight:800, letterSpacing:'-.02em', color:'#111', marginBottom:6 }}>Вхід</h1>
+          <p style={{ fontSize:13, color:'#888', marginBottom:24 }}>Адмін-панель Ausom Ukraine</p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} style={{ display:'flex', flexDirection:'column', gap:16 }}>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[#666] mb-2">Email</label>
-              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="admin@ausom.ua"
-                className="w-full bg-[#1A1A1A] border border-[var(--border)] rounded-lg px-4 py-3 text-[14px] text-white placeholder:text-[#666] outline-none focus:border-[var(--brand)] transition-colors"/>
+              <label style={{ display:'block', fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'#888', marginBottom:8 }}>Email</label>
+              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required placeholder="admin@ausom.ua" style={inp}
+                onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')}/>
             </div>
             <div>
-              <label className="block text-[10px] font-bold uppercase tracking-[.08em] text-[#666] mb-2">Пароль</label>
-              <div className="relative">
-                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} required placeholder="••••••••"
-                  className="w-full bg-[#1A1A1A] border border-[var(--border)] rounded-lg px-4 py-3 pr-11 text-[14px] text-white placeholder:text-[#666] outline-none focus:border-[var(--brand)] transition-colors"/>
-                <button type="button" onClick={()=>setShowPw(!showPw)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666] hover:text-white transition-colors">
-                  {showPw ? <EyeOff size={15}/> : <Eye size={15}/>}
+              <label style={{ display:'block', fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'#888', marginBottom:8 }}>Пароль</label>
+              <div style={{ position:'relative' }}>
+                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} required placeholder="••••••••" style={{ ...inp, paddingRight:44 }}
+                  onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')}/>
+                <button type="button" onClick={()=>setShowPw(!showPw)} style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#AAA', display:'flex' }}>
+                  {showPw ? <EyeOff size={16}/> : <Eye size={16}/>}
                 </button>
               </div>
             </div>
 
             {error && (
-              <p className="text-[12px] text-red-400 bg-red-500/10 border border-red-500/20 px-3 py-2 rounded-lg">{error}</p>
+              <p style={{ fontSize:13, color:'#DC2626', background:'#FEF2F2', border:'1px solid #FECACA', padding:'10px 14px', borderRadius:8 }}>{error}</p>
             )}
 
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-2 disabled:opacity-60">
-              {loading ? (
-                <><span className="w-4 h-4 border-2 border-[#111]/40 border-t-[var(--black)] rounded-full animate-spin"/>Вхід...</>
-              ) : 'Увійти'}
+            <button type="submit" disabled={loading} style={{
+              display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              background:'#111', color:'#fff', fontSize:13, fontWeight:700,
+              letterSpacing:'.06em', textTransform:'uppercase' as const,
+              padding:'13px', borderRadius:8, border:'none', cursor:'pointer',
+              opacity: loading ? .6 : 1, marginTop:4,
+              fontFamily:'Inter,sans-serif',
+            }}>
+              {loading ? <><span style={{ width:14, height:14, border:'2px solid rgba(255,255,255,.3)', borderTopColor:'#fff', borderRadius:'50%', display:'inline-block', animation:'spin .7s linear infinite' }}/> Вхід...</> : 'Увійти'}
             </button>
           </form>
         </div>
       </div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
