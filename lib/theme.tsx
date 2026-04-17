@@ -13,9 +13,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const saved     = localStorage.getItem('ausom-theme') as Theme | null
-    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    const initial   = saved ?? preferred
+    // Default: light. Dark only if user explicitly toggled it before.
+    // System preference (prefers-color-scheme) is ignored by design —
+    // we want a consistent light look for new visitors regardless of
+    // their OS settings.
+    const saved   = localStorage.getItem('ausom-theme') as Theme | null
+    const initial = saved === 'dark' ? 'dark' : 'light'
     setTheme(initial)
     document.documentElement.setAttribute('data-theme', initial)
     setMounted(true)
