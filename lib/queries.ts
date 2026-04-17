@@ -1,7 +1,8 @@
 import { supabase } from './supabase'
-import { Product, BlogPost, Order } from './types'
+import { Product, BlogPost, Order, ProductFAQ } from './types'
 
 // ─── PRODUCTS ────────────────────────────────────────────
+
 export async function getAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from('products').select('*').order('created_at', { ascending: false })
@@ -52,7 +53,57 @@ export async function deleteProduct(id: string): Promise<void> {
   if (error) throw error
 }
 
+// ─── PRODUCT FAQs ────────────────────────────────────────
+
+/** Повертає FAQ для товару в правильному порядку (за sort_order). */
+export async function getProductFAQs(productId: string): Promise<ProductFAQ[]> {
+  const { data, error } = await supabase
+    .from('product_faqs')
+    .select('*')
+    .eq('product_id', productId)
+    .order('sort_order', { ascending: true })
+  if (error) throw error
+  return (data ?? []) as ProductFAQ[]
+}
+
+export async function createProductFAQ(
+  faq: Omit<ProductFAQ, 'id' | 'created_at'>
+): Promise<ProductFAQ> {
+  const { data, error } = await supabase
+    .from('product_faqs').insert(faq).select().single()
+  if (error) throw error
+  return data as ProductFAQ
+}
+
+export async function updateProductFAQ(
+  id: string,
+  updates: Partial<ProductFAQ>
+): Promise<ProductFAQ> {
+  const { data, error } = await supabase
+    .from('product_faqs').update(updates).eq('id', id).select().single()
+  if (error) throw error
+  return data as ProductFAQ
+}
+
+export async function deleteProductFAQ(id: string): Promise<void> {
+  const { error } = await supabase.from('product_faqs').delete().eq('id', id)
+  if (error) throw error
+}
+
+/** Масове оновлення sort_order — використовується під час reorder у адмінці. */
+export async function reorderProductFAQs(
+  items: { id: string; sort_order: number }[]
+): Promise<void> {
+  // Робимо послідовні update — на 6-10 FAQ це швидко, немає сенсу в bulk
+  for (const { id, sort_order } of items) {
+    const { error } = await supabase
+      .from('product_faqs').update({ sort_order }).eq('id', id)
+    if (error) throw error
+  }
+}
+
 // ─── BLOG POSTS ──────────────────────────────────────────
+
 export async function getAllPosts(): Promise<BlogPost[]> {
   const { data, error } = await supabase
     .from('blog_posts').select('*').order('published_at', { ascending: false })
@@ -95,24 +146,24 @@ export async function deletePost(id: string): Promise<void> {
 
 // ─── BANNERS ─────────────────────────────────────────────
 // Extended to match the Hero slider contract:
-//   - title/subtitle: big headline + descriptive line on the banner
-//   - eyebrow: small yellow label above the title ("Флагман 2026")
-//   - image + banner_position: the full-bleed background photo + object-position
-//   - link + cta_label: where the primary CTA goes and what it says
-//   - product_slug: OPTIONAL — when set, Hero renders a strip below the
-//     banner with this product's thumbnail, specs and price (fetched live)
-//   - position: display order (0-based)
-//   - active: hide a banner without deleting it
+// - title/subtitle: big headline + descriptive line on the banner
+// - eyebrow: small yellow label above the title ("Флагман 2026")
+// - image + banner_position: the full-bleed background photo + object-position
+// - link + cta_label: where the primary CTA goes and what it says
+// - product_slug: OPTIONAL — when set, Hero renders a strip below the
+//   banner with this product's thumbnail, specs and price (fetched live)
+// - position: display order (0-based)
+// - active: hide a banner without deleting it
 export interface Banner {
   id: string
   title: string
   subtitle: string
   link: string
   image: string
-  eyebrow: string            // NEW
-  product_slug: string | null // NEW — slug FK by convention, not enforced
-  banner_position: string    // NEW — e.g. "center 30%"
-  cta_label: string          // NEW
+  eyebrow: string              // NEW
+  product_slug: string | null  // NEW — slug FK by convention, not enforced
+  banner_position: string      // NEW — e.g. "center 30%"
+  cta_label: string            // NEW
   position: number
   active: boolean
   created_at: string
@@ -153,6 +204,7 @@ export async function deleteBanner(id: string): Promise<void> {
 }
 
 // ─── ORDERS ──────────────────────────────────────────────
+
 export async function createOrder(order: Omit<Order, 'id' | 'created_at'>): Promise<Order> {
   const { data, error } = await supabase
     .from('orders').insert(order).select().single()
@@ -173,16 +225,14 @@ export async function updateOrderStatus(id: string, status: Order['status']): Pr
 }
 
 // ─── IMAGE UPLOAD ────────────────────────────────────────
+
 export async function uploadImage(file: File, folder: string = 'images'): Promise<string> {
   const ext = file.name.split('.').pop()
   const name = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`
-
   const { error } = await supabase.storage
     .from('media')
     .upload(name, file, { cacheControl: '3600', upsert: false })
-
   if (error) throw error
-
   const { data } = supabase.storage.from('media').getPublicUrl(name)
   return data.publicUrl
 }

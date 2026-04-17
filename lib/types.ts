@@ -57,3 +57,13 @@ export interface Order {
   notes?: string
   created_at: string
 }
+
+/** FAQ для сторінки товару. Один товар → багато FAQ, сортуються через sort_order. */
+export interface ProductFAQ {
+  id: string
+  product_id: string
+  question: string
+  answer: string
+  sort_order: number
+  created_at: string
+}
