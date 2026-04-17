@@ -3,49 +3,32 @@ import ProductPageInner from './ProductPageInner'
 import { fetchProductBySlug } from '@/lib/data'
 import { Product } from '@/lib/types'
 
-// ════════════════════════════════════════════════════════════════
-// SEO: dynamic metadata per product page
-// ════════════════════════════════════════════════════════════════
-// Reads the product from Supabase, then auto-generates:
-//   - <title>        ← e.g. "Ausom DT2 Pro — позашляховий електросамокат | Ausom UA"
-//   - <meta description>  ← trimmed product description + key specs
-//   - <meta keywords>     ← name, brand, category, general terms
-//   - Open Graph tags   ← for sharing on Facebook, Telegram, etc
-//   - Twitter cards     ← for sharing on X
-//
-// Google prefers description around 150-160 chars.
-// ════════════════════════════════════════════════════════════════
-
 const CATEGORY_UA: Record<string, string> = {
   offroad:  'позашляховий',
   commuter: 'міський',
 }
-
 const BRAND_UA: Record<string, string> = {
   ausom:   'Ausom',
   kukirin: 'Kukirin',
 }
 
-function buildTitle(p: Product): string {
+function autoTitle(p: Product): string {
   const cat   = CATEGORY_UA[p.category] ?? ''
   const brand = BRAND_UA[p.brand] ?? 'Ausom'
   return `${p.name} — ${cat} електросамокат | ${brand} UA`
 }
 
-function buildDescription(p: Product): string {
-  // Google shows ~155 chars; we build concise spec-rich summary
+function autoDescription(p: Product): string {
   const cat   = CATEGORY_UA[p.category] ?? 'електричний'
   const motor = p.motor === 'dual' ? 'подвійний мотор' : 'одиночний мотор'
   const price = p.price > 0 ? `Ціна ₴${p.price.toLocaleString('uk-UA')}.` : ''
 
-  // Start with product name + concise spec line
   const head = `${p.name} — ${cat} самокат. ${motor}, запас ${p.range_km} км, швидкість до ${p.max_speed} км/год.`
   const tail = `${price} Купити в Україні з гарантією.`.trim()
 
   const full = `${head} ${tail}`.trim()
   if (full.length <= 160) return full
 
-  // If too long, prefer the first sentence of the original description + specs
   const firstSentence = p.description.split(/[.!?]/)[0]
   return `${firstSentence}. ${motor}, ${p.range_km} км, ${p.max_speed} км/год.`.substring(0, 160)
 }
@@ -61,15 +44,18 @@ function buildKeywords(p: Product): string[] {
     `${cat} електросамокат`,
     'електросамокат україна',
     'купити самокат',
-    'електричний самокат для дорослих',
   ]
+}
+
+// Перевіряє чи є ручний SEO-текст. Порожній рядок/whitespace = немає.
+function hasManual(s?: string | null): boolean {
+  return typeof s === 'string' && s.trim().length > 0
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
   const product = await fetchProductBySlug(id)
 
-  // Fallback meta if product isn't found — still valid, just generic.
   if (!product) {
     return {
       title: 'Товар не знайдено | Ausom UA',
@@ -78,10 +64,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     }
   }
 
-  const title       = buildTitle(product)
-  const description = buildDescription(product)
+  // Manual first, auto-fallback
+  const title       = hasManual(product.meta_title)       ? product.meta_title!       : autoTitle(product)
+  const description = hasManual(product.meta_description) ? product.meta_description! : autoDescription(product)
   const keywords    = buildKeywords(product)
-  const imageUrl    = product.images?.[0] // OG image — first product photo
+  const imageUrl    = product.images?.[0]
 
   return {
     title,
@@ -103,20 +90,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       description,
       images: imageUrl ? [imageUrl] : undefined,
     },
-    robots: { index: product.in_stock, follow: true }, // don't index out-of-stock products
+    robots: { index: product.in_stock, follow: true },
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-// JSON-LD structured data: Product schema for rich Google results
-// ════════════════════════════════════════════════════════════════
-// When Google crawls the page it parses this as a Product, showing:
-//   - Price, availability, brand in search results
-//   - "In stock / out of stock" badge
-//   - Ratings (if we ever add review data)
-// Invisible to users, critical for SEO.
-// ════════════════════════════════════════════════════════════════
-
+// Product JSON-LD (without manual overrides — описує сам товар)
 function ProductJsonLd({ product }: { product: Product }) {
   const brand = BRAND_UA[product.brand] ?? 'Ausom'
   const jsonLd = {
@@ -136,9 +114,6 @@ function ProductJsonLd({ product }: { product: Product }) {
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
       url: `/product/${product.slug}`,
-      ...(product.old_price && {
-        priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      }),
     },
     ...(product.weight_kg && {
       weight: { '@type': 'QuantitativeValue', value: product.weight_kg, unitCode: 'KGM' },
@@ -151,10 +126,6 @@ function ProductJsonLd({ product }: { product: Product }) {
     />
   )
 }
-
-// ════════════════════════════════════════════════════════════════
-// Server Component wrapper — runs generateMetadata + renders Client UI
-// ════════════════════════════════════════════════════════════════
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

@@ -14,6 +14,7 @@ interface F {
   category:'offroad'|'commuter';voltage:'36v'|'48v'|'52v'|'60v'|'72v';motor:'single'|'dual'
   range_km:string;max_speed:string;weight_kg:string;max_load_kg:string;battery_wh:string;description:string;tag:string
   in_stock:boolean;is_new:boolean;is_featured:boolean;features:string[];images:string[]
+  meta_title:string;meta_description:string
 }
 
 const EMPTY: F = {
@@ -21,20 +22,15 @@ const EMPTY: F = {
   brand:'ausom',
   category:'commuter',voltage:'48v',motor:'single',
   range_km:'',max_speed:'',weight_kg:'',max_load_kg:'',battery_wh:'',description:'',tag:'',
-  in_stock:true,is_new:false,is_featured:false,features:[''],images:[]
+  in_stock:true,is_new:false,is_featured:false,features:[''],images:[],
+  meta_title:'',meta_description:''
 }
 
 const B = '1.5px solid #EEEEEE'
 const inp: React.CSSProperties = { width:'100%',padding:'11px 14px',background:'#F9F9F9',border:B,borderRadius:8,fontSize:14,color:'#111',outline:'none',fontFamily:'Inter,sans-serif',transition:'border-color .15s' }
 const lbl: React.CSSProperties = { display:'block',fontSize:11,fontWeight:700,letterSpacing:'.08em',textTransform:'uppercase',color:'#888',marginBottom:8 }
 
-// ─────────────────────────────────────────────────────────────
-// CRITICAL: This component MUST be defined at module scope, not inside
-// ProductFormInner. Defining it inside the parent causes React to treat
-// <Card> as a NEW component type on every parent re-render — which
-// re-mounts all children (including <input>), and the input loses focus
-// after every single keystroke.
-// ─────────────────────────────────────────────────────────────
+// Module-scope Card (prevents input remount bug)
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div style={{ background:'#fff',border:B,borderRadius:12,overflow:'hidden',marginBottom:16 }}>
@@ -42,6 +38,14 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
       <div style={{ padding:'20px' }}>{children}</div>
     </div>
   )
+}
+
+// Character counter colors match Google's snippet length guidance.
+function counterColor(len: number, max: number): string {
+  if (len === 0)        return '#BBB'
+  if (len > max)        return '#EF4444'   // перевищено — червоний
+  if (len > max * 0.9)  return '#F59E0B'   // близько до межі — жовтий
+  return '#10B981'                          // ок — зелений
 }
 
 export default function ProductFormInner({ id }: { id: string }) {
@@ -66,7 +70,9 @@ export default function ProductFormInner({ id }: { id: string }) {
           max_speed:String(p.max_speed),weight_kg:String(p.weight_kg),max_load_kg:String(p.max_load_kg),
           battery_wh:String(p.battery_wh),description:p.description,tag:p.tag||'',
           in_stock:p.in_stock,is_new:p.is_new,is_featured:p.is_featured,
-          features:p.features.length?p.features:[''],images:p.images||[]
+          features:p.features.length?p.features:[''],images:p.images||[],
+          meta_title:      p.meta_title || '',
+          meta_description: p.meta_description || ''
         })
       }).finally(() => setLoading(false))
     }
@@ -110,7 +116,10 @@ export default function ProductFormInner({ id }: { id: string }) {
         battery_wh:parseInt(form.battery_wh),description:form.description,
         tag:form.tag||null,in_stock:form.in_stock,is_new:form.is_new,
         is_featured:form.is_featured,features:form.features.filter(Boolean),
-        images:form.images
+        images:form.images,
+        // Send null if empty — keeps DB clean and auto-fallback triggers
+        meta_title:       form.meta_title.trim()       || null,
+        meta_description: form.meta_description.trim() || null,
       }
       if (isNew) await createProduct(data); else await updateProduct(id, data)
       router.replace('/admin/products')
@@ -159,6 +168,73 @@ export default function ProductFormInner({ id }: { id: string }) {
                 <div><div style={lbl}>Назва *</div><input value={form.name} onChange={e => set('name', e.target.value)} required placeholder="Ausom DT2 Pro" style={inp} onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')} /></div>
                 <div><div style={lbl}>Slug (URL)</div><input value={form.slug} onChange={e => set('slug', e.target.value)} placeholder="dt2-pro" style={inp} onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')} /></div>
                 <div><div style={lbl}>Опис</div><textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4} style={{...inp,resize:'vertical' as const}} placeholder="Опис товару..." onFocus={e=>(e.target.style.borderColor='#F5C200')} onBlur={e=>(e.target.style.borderColor='#EEEEEE')} /></div>
+              </div>
+            </Card>
+
+            <Card title="SEO (опційно)">
+              <p style={{ fontSize:12, color:'#888', marginBottom:14, lineHeight:1.6 }}>
+                Якщо залишити порожнім — сайт автоматично згенерує SEO-тексти з назви та характеристик.
+                Заповни вручну для топ-товарів щоб краще ранжуватись у Google.
+              </p>
+              <div style={{ display:'flex',flexDirection:'column',gap:14 }}>
+                <div>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+                    <span style={lbl}>Meta title (заголовок у Google)</span>
+                    <span style={{ fontSize:11, fontWeight:700, color: counterColor(form.meta_title.length, 60) }}>
+                      {form.meta_title.length} / 60
+                    </span>
+                  </div>
+                  <input
+                    value={form.meta_title}
+                    onChange={e => set('meta_title', e.target.value)}
+                    placeholder="Ausom DT2 Pro — преміум позашляховий самокат з гарантією"
+                    style={inp}
+                    onFocus={e => (e.target.style.borderColor = '#F5C200')}
+                    onBlur={e  => (e.target.style.borderColor = '#EEEEEE')}
+                  />
+                  <p style={{ fontSize:10, color:'#AAA', marginTop:4 }}>
+                    Оптимум 50-60 символів. Після 60 Google обріже у результатах пошуку.
+                  </p>
+                </div>
+
+                <div>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+                    <span style={lbl}>Meta description (опис у Google)</span>
+                    <span style={{ fontSize:11, fontWeight:700, color: counterColor(form.meta_description.length, 160) }}>
+                      {form.meta_description.length} / 160
+                    </span>
+                  </div>
+                  <textarea
+                    value={form.meta_description}
+                    onChange={e => set('meta_description', e.target.value)}
+                    rows={3}
+                    placeholder="Преміум позашляховий електросамокат. Подвійний мотор 2×1000W, запас 70 км. Гідравлічні гальма Zoom. 2 роки гарантії, безкоштовна доставка по Україні."
+                    style={{ ...inp, resize:'vertical' as const }}
+                    onFocus={e => (e.target.style.borderColor = '#F5C200')}
+                    onBlur={e  => (e.target.style.borderColor = '#EEEEEE')}
+                  />
+                  <p style={{ fontSize:10, color:'#AAA', marginTop:4 }}>
+                    Оптимум 150-160 символів. Текст що переконує клієнта клацнути.
+                  </p>
+                </div>
+
+                {/* Preview як виглядатиме в Google */}
+                {(form.meta_title || form.meta_description || form.name) && (
+                  <div style={{ background:'#F9F9F9', border:B, borderRadius:8, padding:16, marginTop:6 }}>
+                    <div style={{ fontSize:10, fontWeight:700, color:'#888', letterSpacing:'.06em', textTransform:'uppercase' as const, marginBottom:10 }}>
+                      Превʼю в Google
+                    </div>
+                    <div style={{ fontSize:11, color:'#006621', marginBottom:2 }}>
+                      ausom.in.ua › product › {form.slug || 'slug'}
+                    </div>
+                    <div style={{ fontSize:18, color:'#1a0dab', lineHeight:1.3, marginBottom:4 }}>
+                      {form.meta_title.trim() || `${form.name || 'Назва товару'} — ${form.category === 'offroad' ? 'позашляховий' : 'міський'} електросамокат | Ausom UA`}
+                    </div>
+                    <div style={{ fontSize:13, color:'#4d5156', lineHeight:1.5 }}>
+                      {form.meta_description.trim() || `${form.name || 'Товар'} — ${form.category === 'offroad' ? 'позашляховий' : 'міський'} самокат. ${form.motor === 'dual' ? 'Подвійний мотор' : 'Одиночний мотор'}, запас ${form.range_km || '—'} км, швидкість до ${form.max_speed || '—'} км/год. ${form.price ? `Ціна ₴${Number(form.price).toLocaleString('uk-UA')}.` : ''} Купити в Україні з гарантією.`}
+                    </div>
+                  </div>
+                )}
               </div>
             </Card>
 
