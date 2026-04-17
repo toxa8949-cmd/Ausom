@@ -5,11 +5,7 @@ export interface Product {
   price: number
   old_price: number | null
   category: 'offroad' | 'commuter'
-  /** Brand — Ausom is our own, Kukirin is a partner-resold line. */
   brand: 'ausom' | 'kukirin'
-  /** Voltage — expanded to include 36V (small commuters like Kukirin S1 Max)
-      and 72V (flagships like Kukirin G4 Max). The DB CHECK constraint
-      matches this union via seed-kukirin.sql migration. */
   voltage: '36v' | '48v' | '52v' | '60v' | '72v'
   motor: 'single' | 'dual'
   range_km: number
@@ -25,6 +21,10 @@ export interface Product {
   is_featured: boolean
   tag: string | null
   created_at: string
+  /** Ручний SEO-заголовок. Якщо null/порожньо — використовується автогенерований. */
+  meta_title?: string | null
+  /** Ручний SEO-опис. Якщо null/порожньо — використовується автогенерований. */
+  meta_description?: string | null
 }
 
 export interface BlogPost {
