@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { getProductFAQs } from '@/lib/queries'
-import { ProductFAQ } from '@/lib/types'
+import type { ProductFAQ } from '@/lib/types'
 
 /**
  * Публічний accordion з FAQ на сторінці товару.

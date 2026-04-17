@@ -9,7 +9,7 @@ import {
   deleteProductFAQ,
   reorderProductFAQs,
 } from '@/lib/queries'
-import { ProductFAQ } from '@/lib/types'
+import type { ProductFAQ } from '@/lib/types'
 
 const B = '1.5px solid #EEEEEE'
 

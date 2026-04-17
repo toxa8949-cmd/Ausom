@@ -1,9 +1,9 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import ProductPageInner from './ProductPageInner'
 import ProductFAQ from '@/components/product/ProductFAQ'
 import { fetchProductBySlug } from '@/lib/data'
 import { getProductFAQs } from '@/lib/queries'
-import { Product, ProductFAQ as ProductFAQType } from '@/lib/types'
+import type { Product, ProductFAQ as ProductFAQType } from '@/lib/types'
 
 const CATEGORY_UA: Record<string, string> = {
   offroad: 'позашляховий',
