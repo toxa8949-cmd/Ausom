@@ -638,3 +638,45 @@ body {
     width: 100%;
   }
 }
+
+/* ═══════════════════════════════════════════
+   UNIVERSAL MOBILE SAFETY NET
+   ══════════════════════════════════════════
+   Glob-level protection against horizontal
+   overflow caused by inline style={{display:'grid',
+   gridTemplateColumns:'repeat(3,1fr)'}} etc. without
+   responsive class. Applies only ≤640px.
+   Uses :not() to skip elements that already have
+   responsive grid classes (they handle themselves). */
+
+@media (max-width: 640px) {
+  /* Any div with inline grid that has repeat(3,1fr), repeat(4,1fr), or 1fr 1fr
+     becomes a single column unless it's on the list of known responsive grids
+     (which already have proper rules above). */
+  main div[style*="gridTemplateColumns"]:not([class*="grid-2"]):not([class*="grid-3"]):not([class*="grid-4"]):not([class*="grid-stats"]):not([class*="grid-quick"]):not([class*="grid-about"]):not([class*="grid-checkout"]):not([class*="grid-features"]):not([class*="grid-steps"]):not([class*="grid-product-detail"]):not([class*="catalog-grid"]):not([class*="cart-layout"]):not([class*="blog-grid"]):not([class*="blog-featured"]):not([class*="blog-newsletter"]):not([class*="home-blog-grid"]):not([class*="blog-preview-grid"]):not([class*="home-compare-cta"]):not([class*="home-categories"]):not([class*="home-products-grid"]):not([class*="footer-top-grid"]):not([class*="hero-stats"]):not([class*="hero-product-strip"]):not([class*="hero-product-specs"]):not([class*="hero-product-cta-row"]):not([class*="cart-item-row"]) {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+/* Also prevent any child element (e.g. headlines with maxWidth or
+   manually-sized blocks) from forcing horizontal overflow on mobile */
+@media (max-width: 640px) {
+  body, main, section {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  /* Images & videos should never exceed their container */
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Safety against accidental width: 100vw on nested elements */
+@media (max-width: 640px) {
+  *[style*="width: 100vw"],
+  *[style*="width:100vw"] {
+    max-width: 100vw !important;
+  }
+}
