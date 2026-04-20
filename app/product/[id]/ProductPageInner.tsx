@@ -9,11 +9,11 @@ import { Product } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
 const specsMap: Record<string, { wheels:string; charging:string; brakes:string; suspension:string; waterproof:string; display:string }> = {
-  l1:           { wheels:'10"', charging:'6-7 год', brakes:'Дискові',         suspension:'Передня + задня',     waterproof:'IP54', display:'LCD' },
-  'l2-dual':    { wheels:'10"', charging:'7-8 год', brakes:'Гідравлічні',     suspension:'Подвійна',            waterproof:'IP54', display:'LCD' },
-  'l2-max':     { wheels:'10"', charging:'7-8 год', brakes:'Гідравлічні',     suspension:'Передня + задня',     waterproof:'IP54', display:'LCD' },
-  'l2-max-dual':{ wheels:'11"', charging:'8-9 год', brakes:'Гідравлічні',     suspension:'Подвійна',            waterproof:'IP54', display:'LCD' },
-  'dt2-pro':    { wheels:'11"', charging:'9-10 год', brakes:'Гідравлічні Zoom', suspension:'Подвійна регульована', waterproof:'IP55', display:'LCD кольоровий' },
+  l1:           { wheels:'10"', charging:'6-7 год',  brakes:'Дискові',          suspension:'Передня + задня',        waterproof:'IP54', display:'LCD' },
+  'l2-dual':    { wheels:'10"', charging:'7-8 год',  brakes:'Гідравлічні',      suspension:'Подвійна',                waterproof:'IP54', display:'LCD' },
+  'l2-max':     { wheels:'10"', charging:'7-8 год',  brakes:'Гідравлічні',      suspension:'Передня + задня',        waterproof:'IP54', display:'LCD' },
+  'l2-max-dual':{ wheels:'11"', charging:'8-9 год',  brakes:'Гідравлічні',      suspension:'Подвійна',                waterproof:'IP54', display:'LCD' },
+  'dt2-pro':    { wheels:'11"', charging:'9-10 год', brakes:'Гідравлічні Zoom', suspension:'Подвійна регульована',  waterproof:'IP55', display:'LCD кольоровий' },
 }
 const defaultSpecs = { wheels:'10"', charging:'7-8 год', brakes:'Дискові', suspension:'Передня + задня', waterproof:'IP54', display:'LCD' }
 
@@ -64,23 +64,20 @@ export default function ProductPageInner({ id }: { id: string }) {
     { label:'Мотор',           value: product.motor === 'dual' ? 'Подвійний' : 'Одиночний' },
     { label:'Вага',            value:`${product.weight_kg} кг` },
     { label:'Макс. навантаження', value:`${product.max_load_kg} кг` },
-    { label:'Колеса',         value: extra.wheels },
-    { label:'Час заряджання', value: extra.charging },
-    { label:'Гальма',         value: extra.brakes },
-    { label:'Підвіска',       value: extra.suspension },
+    { label:'Колеса',          value: extra.wheels },
+    { label:'Час заряджання',  value: extra.charging },
+    { label:'Гальма',          value: extra.brakes },
+    { label:'Підвіска',        value: extra.suspension },
     { label:'Захист від вологи', value: extra.waterproof },
-    { label:'Дисплей',        value: extra.display },
+    { label:'Дисплей',         value: extra.display },
   ]
 
   const tabBtn = (active: boolean): React.CSSProperties => ({
-    flex:1, padding:'12px 24px', fontSize:14, fontWeight:600,
-    borderRadius:8, border:'none', cursor:'pointer', transition:'all .15s',
+    flex:1, padding:'12px 24px', fontSize:14, fontWeight:600, borderRadius:8, border:'none', cursor:'pointer', transition:'all .15s',
     background: active ? '#111' : 'transparent',
     color: active ? '#fff' : 'var(--text-3)',
   })
 
-  // Be defensive: a DB row may have an empty images[] and the renderer
-  // would crash on images[0]. Show a colored placeholder instead.
   const hasImages = product.images && product.images.length > 0
   const mainImage = hasImages ? product.images[activeImg] : null
 
@@ -103,41 +100,18 @@ export default function ProductPageInner({ id }: { id: string }) {
           <div className="grid-product-detail" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:56, alignItems:'start' }}>
             {/* Images */}
             <div>
-              <div style={{
-                position:'relative', aspectRatio:'1',
-                borderRadius:'var(--radius-lg)', overflow:'hidden',
-                border:'1.5px solid var(--border)', background:'var(--bg-soft)',
-                marginBottom:12
-              }}>
+              <div style={{ position:'relative', aspectRatio:'1', borderRadius:'var(--radius-lg)', overflow:'hidden', border:'1.5px solid var(--border)', background:'var(--bg-soft)', marginBottom:12 }}>
                 {product.tag && <span style={{ position:'absolute', top:16, left:16, zIndex:2, background:'#F5C200', color:'#111', fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:4 }}>{product.tag}</span>}
                 {discount > 0 && <span style={{ position:'absolute', top:16, right:16, zIndex:2, background:'#EF4444', color:'#fff', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:4 }}>−{Math.round(discount / (product.old_price || 1) * 100)}%</span>}
                 {mainImage
-                  ? <Image
-                      src={mainImage}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width:768px) 100vw, 50vw"
-                      style={{ objectFit:'cover' }}
-                      priority
-                      fetchPriority="high"
-                    />
+                  ? <Image src={mainImage} alt={product.name} fill sizes="(max-width:768px) 100vw, 50vw" style={{ objectFit:'cover' }} priority fetchPriority="high" />
                   : <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-4)', fontSize:48 }}>🛴</div>
                 }
               </div>
               {hasImages && product.images.length > 1 && (
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                   {product.images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveImg(i)}
-                      aria-label={"Фото " + (i+1)}
-                      style={{
-                        position:'relative', width:72, height:72,
-                        borderRadius:8, overflow:'hidden', cursor:'pointer',
-                        border: activeImg===i ? '2px solid #F5C200' : '2px solid var(--border)',
-                        background:'var(--bg-soft)', padding:0
-                      }}
-                    >
+                    <button key={i} onClick={() => setActiveImg(i)} aria-label={'Фото ' + (i+1)} style={{ position:'relative', width:72, height:72, borderRadius:8, overflow:'hidden', cursor:'pointer', border: activeImg===i ? '2px solid #F5C200' : '2px solid var(--border)', background:'var(--bg-soft)', padding:0 }}>
                       <Image src={img} alt="" fill sizes="72px" style={{ objectFit:'cover' }} />
                     </button>
                   ))}
@@ -177,7 +151,7 @@ export default function ProductPageInner({ id }: { id: string }) {
                   : <button disabled className="btn btn-lg" style={{ width:'100%', background:'var(--bg-subtle)', color:'var(--text-4)', border:'1.5px solid var(--border)', cursor:'not-allowed' }}>Немає в наявності</button>
                 }
                 <div className="flex-col-mobile" style={{ display:'flex', gap:20, marginTop:16, fontSize:13, color:'var(--text-3)', flexWrap:'wrap' }}>
-                  <span>✓ Безкоштовна доставка</span><span>✓ Гарантія 2 роки</span><span>✓ 14 днів повернення</span>
+                  <span>✓ Доставка по всій Україні</span><span>✓ Офіційна гарантія</span><span>✓ 14 днів повернення</span>
                 </div>
               </div>
               {product.in_stock && <button onClick={() => { addItem(product); router.push('/checkout') }} className="btn btn-black btn-lg" style={{ width:'100%', textAlign:'center', justifyContent:'center' }}>Купити зараз</button>}
