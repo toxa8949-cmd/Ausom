@@ -85,7 +85,7 @@ export default function ProductPageInner({ id }: { id: string }) {
 
   return (
     <div style={{ minHeight:'100vh', background:'var(--bg)' }}>
-      <div style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
+      <nav aria-label="breadcrumb" style={{ background:'var(--bg-soft)', borderBottom:'1px solid var(--border)', padding:'16px 0' }}>
         <div className="w-container">
           <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:'var(--text-3)', flexWrap:'wrap' }}>
             <Link href="/" style={{ color:'var(--text-3)', textDecoration:'none' }}>Головна</Link>
