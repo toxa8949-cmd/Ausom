@@ -12,7 +12,7 @@ export default function AnnouncementBar() {
     <div className="announce-bar" style={{ height: 36, background: '#F5C200', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
       <div className="animate-marquee" style={{ display: 'flex', gap: 64, whiteSpace: 'nowrap' }}>
         {all.map((m, i) => (
-          <span key={i} style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.1em', color: '#111' }}>
+          <span key={i} style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.1em', color: '#111' }}>
             ▸ {m}
           </span>
         ))}
