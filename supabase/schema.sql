@@ -1,7 +1,15 @@
--- ============================================================
--- AUSOM UKRAINE — Supabase Database Schema
--- ============================================================
+-- ═══════════════════════════════════════════════════════════════
+-- AUSOM UKRAINE — Canonical Schema
+-- ═══════════════════════════════════════════════════════════════
+-- Об'єднує schema.sql + migration-banners.sql + migration-brand.sql
+-- + нові поля (meta_title, meta_description, product_faqs).
+-- Безпечно для повторного виконання (IF NOT EXISTS / ADD COLUMN IF NOT EXISTS).
+--
+-- ПІСЛЯ цієї міграції виконай:
+--   supabase/migration-admin-rls.sql
+-- ═══════════════════════════════════════════════════════════════
 
+-- ─── PRODUCTS ──────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS products (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name        TEXT NOT NULL,
@@ -9,7 +17,8 @@ CREATE TABLE IF NOT EXISTS products (
   price       INTEGER NOT NULL,
   old_price   INTEGER,
   category    TEXT NOT NULL CHECK (category IN ('offroad', 'commuter')),
-  voltage     TEXT NOT NULL CHECK (voltage IN ('48v', '52v', '60v')),
+  brand       TEXT NOT NULL DEFAULT 'ausom' CHECK (brand IN ('ausom', 'kukirin')),
+  voltage     TEXT NOT NULL,
   motor       TEXT NOT NULL CHECK (motor IN ('single', 'dual')),
   range_km    INTEGER NOT NULL,
   max_speed   INTEGER NOT NULL,
@@ -23,9 +32,33 @@ CREATE TABLE IF NOT EXISTS products (
   is_new      BOOLEAN NOT NULL DEFAULT false,
   is_featured BOOLEAN NOT NULL DEFAULT false,
   tag         TEXT,
+  meta_title       TEXT,
+  meta_description TEXT,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Для старих БД — додаємо колонки, які з'явилися пізніше
+ALTER TABLE products ADD COLUMN IF NOT EXISTS brand TEXT NOT NULL DEFAULT 'ausom';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS meta_title TEXT;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS meta_description TEXT;
+
+-- ВАЖЛИВО: розширюємо CHECK на voltage з ('48v','52v','60v')
+-- до повного списку, який приймає TS (`types.ts`).
+-- Інакше адмінка впаде constraint violation при заведенні 36V/72V моделі.
+ALTER TABLE products DROP CONSTRAINT IF EXISTS products_voltage_check;
+ALTER TABLE products ADD CONSTRAINT products_voltage_check
+  CHECK (voltage IN ('36v','48v','52v','60v','72v'));
+
+-- Те ж для brand (якщо CHECK уже був, перевіряємо що він правильний)
+ALTER TABLE products DROP CONSTRAINT IF EXISTS products_brand_check;
+ALTER TABLE products ADD CONSTRAINT products_brand_check
+  CHECK (brand IN ('ausom','kukirin'));
+
+CREATE INDEX IF NOT EXISTS idx_products_brand    ON products(brand);
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
+CREATE INDEX IF NOT EXISTS idx_products_featured ON products(is_featured) WHERE is_featured = true;
+
+-- ─── BLOG POSTS ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS blog_posts (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   title        TEXT NOT NULL,
@@ -38,6 +71,9 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   reading_time INTEGER NOT NULL DEFAULT 5
 );
 
+CREATE INDEX IF NOT EXISTS idx_blog_published ON blog_posts(published_at DESC);
+
+-- ─── ORDERS ────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS orders (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   items      JSONB NOT NULL,
@@ -48,43 +84,54 @@ CREATE TABLE IF NOT EXISTS orders (
   address    TEXT NOT NULL,
   city       TEXT NOT NULL,
   status     TEXT NOT NULL DEFAULT 'pending'
-               CHECK (status IN ('pending','confirmed','shipped','delivered','cancelled')),
+    CHECK (status IN ('pending','confirmed','shipped','delivered','cancelled')),
   notes      TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public can read products"  ON products FOR SELECT USING (true);
-CREATE POLICY "Auth can manage products"  ON products FOR ALL USING (auth.role() = 'authenticated');
+CREATE INDEX IF NOT EXISTS idx_orders_status  ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
 
-ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Public can read posts"     ON blog_posts FOR SELECT USING (true);
-CREATE POLICY "Auth can manage posts"     ON blog_posts FOR ALL USING (auth.role() = 'authenticated');
+-- ─── BANNERS ───────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS banners (
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  title           TEXT NOT NULL,
+  subtitle        TEXT NOT NULL DEFAULT '',
+  link            TEXT NOT NULL DEFAULT '/',
+  image           TEXT NOT NULL,
+  eyebrow         TEXT NOT NULL DEFAULT '',
+  product_slug    TEXT,
+  banner_position TEXT NOT NULL DEFAULT 'center center',
+  cta_label       TEXT NOT NULL DEFAULT 'Купити зараз',
+  position        INTEGER NOT NULL DEFAULT 0,
+  active          BOOLEAN NOT NULL DEFAULT true,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can create order"   ON orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Auth can read orders"      ON orders FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Auth can update orders"    ON orders FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE INDEX IF NOT EXISTS idx_banners_active_position
+  ON banners(active, position) WHERE active = true;
 
--- SEED: 4 реальні моделі в гривнях
-INSERT INTO products (name, slug, price, old_price, category, voltage, motor, range_km, max_speed, weight_kg, max_load_kg, battery_wh, description, features, in_stock, is_new, is_featured, tag) VALUES
+-- ─── PRODUCT FAQs ──────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS product_faqs (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  question   TEXT NOT NULL,
+  answer     TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
-('Ausom L1', 'l1', 27050, 33800, 'commuter', '48v', 'single', 50, 45, 20, 100, 468,
- 'Ausom L1 — ідеальний старт у світ електросамокатів. Легкий, надійний та доступний міський самокат для щоденних поїздок.',
- ARRAY['Мотор 500W', 'Запас ходу 50 км', 'Швидкість до 45 км/год', 'Вага лише 20 кг', 'Складається за 3 секунди', 'Підходить для початківців'],
- true, false, true, NULL),
+CREATE INDEX IF NOT EXISTS idx_faqs_product_sort
+  ON product_faqs(product_id, sort_order);
 
-('Ausom L2 Dual Motor', 'l2-dual', 32200, 40250, 'commuter', '48v', 'dual', 70, 55, 28, 120, 768,
- 'Ausom L2 Dual Motor — потужний міський самокат з подвійним мотором. Чудовий баланс між міськими їздами та підвищеною продуктивністю.',
- ARRAY['Подвійний мотор 2×600W', 'Запас ходу 70 км', 'Швидкість до 55 км/год', 'Пневматичні шини', 'Вилочна підвіска', 'Складна конструкція'],
- true, false, true, NULL),
+-- ─── RLS toggle ────────────────────────────────────────────────
+-- Вмикаємо RLS всюди. Самі політики визначені в migration-admin-rls.sql.
+ALTER TABLE products     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE blog_posts   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE banners      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE product_faqs ENABLE ROW LEVEL SECURITY;
 
-('Ausom L2 Max Dual Motor', 'l2-max-dual', 40800, 51000, 'commuter', '48v', 'dual', 85, 55, 30, 120, 960,
- 'Ausom L2 Max Dual Motor — найпотужніша модель серії L. Збільшений акумулятор та подвійний мотор для максимального запасу ходу.',
- ARRAY['Подвійний мотор 2×800W', 'Запас ходу 85 км', 'Швидкість до 55 км/год', 'Акумулятор 960 Wh', 'Пневматичні шини', 'Вилочна підвіска'],
- true, false, true, 'Хіт'),
-
-('Ausom DT2 Pro', 'dt2-pro', 44250, 55300, 'offroad', '52v', 'dual', 70, 65, 34, 150, 1066,
- 'Ausom DT2 Pro — позашляховий самокат преміум класу для бездоріжжя та екстремальних умов.',
- ARRAY['Мотор 2×1000W', 'Позашляхова підвіска', 'Запас ходу 70 км', 'Швидкість до 65 км/год', 'Гідравлічні гальма Zoom', 'Навантаження до 150 кг'],
- true, false, true, 'Топ');
+-- ═══════════════════════════════════════════════════════════════
+-- Наступний крок: виконай supabase/migration-admin-rls.sql
+-- ═══════════════════════════════════════════════════════════════
