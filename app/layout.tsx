@@ -145,7 +145,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
-            {/* Google Analytics */}
+                  {/* Google Analytics */}
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-NKBF2KBT4G" />
       <script
         dangerouslySetInnerHTML={{
@@ -157,31 +157,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `,
         }}
       />
-      {/* Google Analytics */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-NKBF2KBT4G" />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-NKBF2KBT4G');
-          `,
-        }}
-      />
-        {/* Google Analytics */}
-            <script async src="https://www.googletagmanager.com/gtag/js?id=G-NKBF2KBT4G" />
-            <script
-                      dangerouslySetInnerHTML={{
-                                  __html: `
-                                              window.dataLayer = window.dataLayer || [];
-                                                          function gtag(){dataLayer.push(arguments);}
-                                                                      gtag('js', new Date());
-                                                                                  gtag('config', 'G-NKBF2KBT4G');
-                                                                                            `,
-                      }}
-                    />
-            </head>
+      </head>
       <body className={inter.className}>
         <ThemeProvider>
           <CartProvider>
