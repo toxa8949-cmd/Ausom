@@ -1,4 +1,5 @@
 'use client'
+import React, { useState } from 'react'
 import Link from 'next/link'
 
 const COLS = {
@@ -28,6 +29,7 @@ const COLS = {
 }
 
 export default function Footer() {
+  const [subscribed, setSubscribed] = useState(false)
   return (
     <footer style={{ background:'#F9F9F9', borderTop:'1px solid var(--border)' }}>
       <div className="w-container footer-inner">
@@ -88,7 +90,7 @@ export default function Footer() {
             <p style={{ fontSize:18, fontWeight:800, letterSpacing:'-.015em', color:'#111', marginBottom:4 }}>Розсилка</p>
             <p style={{ fontSize:13, color:'#888' }}>Ексклюзивні знижки та нові моделі — першим.</p>
           </div>
-          <form className="footer-newsletter-form" style={{ display:'flex', gap:8 }} onSubmit={e=>e.preventDefault()}>
+          <form className="footer-newsletter-form" style={{ display:'flex', gap:8 }} onSubmit={e=>{e.preventDefault();setSubscribed(true)}}>
             <input type="email" required placeholder="твій@email.com" aria-label="Email для розсилки" style={{
               width:240, padding:'11px 16px',
               background:'#fff', border:'1.5px solid #E8E8E8', borderRadius:6,
@@ -97,8 +99,9 @@ export default function Footer() {
             }}
             onFocus={e=>(e.target.style.borderColor='#F5C200')}
             onBlur={e=>(e.target.style.borderColor='#E8E8E8')}/>
-            <button type="submit" className="btn btn-yellow btn-sm">Підписатись</button>
+            {!subscribed && <button type="submit" className="btn btn-yellow btn-sm">Підписатись</button>}
           </form>
+          {subscribed && <p style={{ fontSize:13, color:'#22C55E', fontWeight:600, marginTop:8, alignSelf:'center' }}>✅ Ви підписані!</p>}
         </div>
 
         {/* Bottom bar */}
