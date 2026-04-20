@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { CartProvider } from '@/lib/cart'
 import { ThemeProvider } from '@/lib/theme'
@@ -7,6 +7,10 @@ import Footer from '@/components/layout/Footer'
 import AnnouncementBar from '@/components/layout/AnnouncementBar'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ausom.in.ua'
+
+export const viewport: Viewport = {
+  themeColor: '#F5C200',
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,9 +34,6 @@ export const metadata: Metadata = {
 
   // PWA manifest — enables "Add to Home Screen" with proper icon
   manifest: '/manifest.json',
-
-  // Theme color — controls browser chrome/status bar on mobile
-  themeColor: '#F5C200',
 
   // Default Open Graph image for sharing (Telegram, Facebook, WhatsApp)
   openGraph: {
