@@ -16,8 +16,6 @@ export default function CartPage() {
     setTimeout(() => setPromoMsg(null), 3000)
   }
 
-  // Don't render the empty-cart screen until we've loaded from localStorage,
-  // otherwise we'd flash it on every reload.
   if (!ready) {
     return (
       <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -126,7 +124,7 @@ export default function CartPage() {
               </div>
               <div style={{ display:'flex', justifyContent:'space-between', fontSize:14 }}>
                 <span style={{ color:'var(--text-3)' }}>Доставка</span>
-                <span style={{ fontWeight:600, color:'#22C55E' }}>Безкоштовно</span>
+                <span style={{ fontWeight:600, color:'var(--yellow-dark)' }}>По всій Україні</span>
               </div>
             </div>
 
@@ -148,10 +146,10 @@ export default function CartPage() {
             </div>
 
             <Link href="/checkout" className="btn btn-black btn-full" style={{ justifyContent:'center' }}>Оформити замовлення</Link>
-            <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Безпечна оплата · Гарантія 2 роки</p>
+            <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Безпечна оплата · Офіційна гарантія</p>
 
             <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, display:'flex', flexDirection:'column', gap:10 }}>
-              {([[Truck,'Безкоштовна доставка'],[RotateCcw,'14 днів повернення'],[Shield,'Гарантія 2 роки']] as const).map(([Icon, text]) => (
+              {([[Truck,'Доставка по всій Україні'],[RotateCcw,'14 днів повернення'],[Shield,'Офіційна гарантія']] as const).map(([Icon, text]) => (
                 <div key={text} style={{ display:'flex', alignItems:'center', gap:10, fontSize:12, color:'var(--text-3)' }}>
                   <div style={{ width:28, height:28, background:'#F5C200', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                     <Icon size={13} color="#111"/>
