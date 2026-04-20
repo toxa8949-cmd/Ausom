@@ -9,7 +9,7 @@ export function Features() {
     { Icon: Truck,         title: 'Безкоштовна доставка', body: 'Доставляємо по всій Україні. Швидко та надійно.' },
     { Icon: Shield,        title: 'Гарантія 2 роки',       body: 'Офіційна гарантія на всі моделі Ausom.' },
     { Icon: RotateCcw,     title: '14 днів повернення',    body: 'Не підійшов — повертай без питань.' },
-    { Icon: MessageCircle, title: 'Підтримка 24/7',         body: 'Завжди на зв\'язку — чат, email, телефон.' },
+    { Icon: MessageCircle, title: 'Підтримка 24/7',        body: "Завжди на зв'язку — чат, email, телефон." },
   ]
   return (
     <section className="home-section" style={{ padding:'80px 0', background:'var(--bg)', borderTop:'1px solid var(--border)' }}>
@@ -20,20 +20,12 @@ export function Features() {
             Ми <span style={{ color:'var(--yellow-dark)' }}>піклуємось</span>
           </h2>
         </div>
-        {/* .grid-4 already exists in globals.css: 4 → 2 (≤1024) → 2 (≤640) */}
         <div className="grid-4" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16 }}>
           {items.map(({ Icon, title, body }) => (
-            <div key={title} style={{
-              padding:'28px 22px', background:'var(--bg-soft)',
-              border:'1.5px solid var(--border)', borderRadius:12,
-              transition:'border-color .2s, box-shadow .2s',
-            }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--yellow)'; (e.currentTarget as HTMLElement).style.boxShadow='0 4px 20px rgba(245,194,0,.12)' }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.boxShadow='none' }}>
-              <div style={{
-                width:44, height:44, borderRadius:10, marginBottom:16,
-                background:'#F5C200', display:'flex', alignItems:'center', justifyContent:'center',
-              }}>
+            <div key={title} style={{ padding:'28px 22px', background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:12, transition:'border-color .2s, box-shadow .2s', }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--yellow)'; (e.currentTarget as HTMLElement).style.boxShadow='0 4px 20px rgba(245,194,0,.12)' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor='var(--border)'; (e.currentTarget as HTMLElement).style.boxShadow='none' }}>
+              <div style={{ width:44, height:44, borderRadius:10, marginBottom:16, background:'#F5C200', display:'flex', alignItems:'center', justifyContent:'center', }}>
                 <Icon size={20} color="#111" strokeWidth={1.8}/>
               </div>
               <h3 style={{ fontSize:15, fontWeight:700, color:'var(--text)', marginBottom:8, letterSpacing:'-.01em' }}>{title}</h3>
@@ -48,12 +40,12 @@ export function Features() {
 
 export function Press() {
   const items = [
-    { pub:'Forbes',        q:'«Ausom поєднує інженерну якість з вражаючою продуктивністю.»' },
-    { pub:'USA Today',     q:'«Розроблені для реальних сценаріїв — від міста до бездоріжжя.»' },
-    { pub:"Tom's Guide",   q:'«Власна архітектура підвіски — вражає.»' },
-    { pub:'Electrek',      q:'«Ausom зібрав лояльну спільноту дуже швидко.»' },
-    { pub:'Gadgeteer',     q:'«DT2 Pro — найкраща пропозиція за ціною/характеристиками.»' },
-    { pub:'AutoEvolution', q:'«Самокати Ausom дають доступ до вражаючих можливостей.»' },
+    { pub:'Forbes',       q:'«Ausom поєднує інженерну якість з вражаючою продуктивністю.»' },
+    { pub:'USA Today',    q:'«Розроблені для реальних сценаріїв — від міста до бездоріжжя.»' },
+    { pub:"Tom's Guide",  q:'«Власна архітектура підвіски — вражає.»' },
+    { pub:'Electrek',     q:'«Ausom зібрав лояльну спільноту дуже швидко.»' },
+    { pub:'Gadgeteer',    q:'«DT2 Pro — найкраща пропозиція за ціною/характеристиками.»' },
+    { pub:'AutoEvolution',q:'«Самокати Ausom дають доступ до вражаючих можливостей.»' },
   ]
   return (
     <section className="home-section" style={{ padding:'72px 0', background:'var(--bg-soft)', borderTop:'1px solid var(--border)', overflow:'hidden' }}>
@@ -64,14 +56,9 @@ export function Press() {
         </h2>
       </div>
       <div style={{ overflow:'hidden', borderTop:'1px solid var(--border)', borderBottom:'1px solid var(--border)' }}>
-        {/* Marquee already uses flex + fixed card width, which works on mobile.
-            Narrower card on small screens for better feel. */}
         <div className="animate-marquee" style={{ display:'flex' }}>
           {[...items,...items].map((item,i) => (
-            <div key={i} style={{
-              flexShrink:0, width:'min(300px, 80vw)', padding:'26px 24px',
-              borderRight:'1px solid var(--border)', background:'var(--bg)',
-            }}>
+            <div key={i} style={{ flexShrink:0, width:'min(300px, 80vw)', padding:'26px 24px', borderRight:'1px solid var(--border)', background:'var(--bg)', }}>
               <div style={{ fontSize:17, fontWeight:800, letterSpacing:'-.01em', color:'var(--text)', marginBottom:6 }}>{item.pub}</div>
               <div style={{ color:'#F5C200', fontSize:12, letterSpacing:'.1em', marginBottom:10 }}>★★★★★</div>
               <p style={{ fontSize:13, color:'var(--text-3)', lineHeight:1.6, fontStyle:'italic' }}>{item.q}</p>
@@ -87,12 +74,7 @@ export function Newsletter() {
   const [subscribed, setSubscribed] = React.useState(false)
   return (
     <section className="home-section" style={{ padding:'96px 0', background:'#111', position:'relative', overflow:'hidden' }}>
-      <div style={{
-        position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)',
-        width:'min(600px, 100vw)', height:400, borderRadius:'50%',
-        background:'radial-gradient(ellipse, rgba(245,194,0,.08), transparent 70%)',
-        pointerEvents:'none',
-      }}/>
+      <div style={{ position:'absolute', bottom:0, left:'50%', transform:'translateX(-50%)', width:'min(600px, 100vw)', height:400, borderRadius:'50%', background:'radial-gradient(ellipse, rgba(245,194,0,.08), transparent 70%)', pointerEvents:'none', }}/>
       <div className="w-container" style={{ textAlign:'center', maxWidth:560, margin:'0 auto', position:'relative', zIndex:1 }}>
         <h2 style={{ fontSize:'clamp(28px,5vw,60px)', fontWeight:800, letterSpacing:'-.03em', color:'#fff', marginBottom:12, lineHeight:1.05 }}>
           Будь у <span style={{ color:'#F5C200' }}>курсі</span>
@@ -101,23 +83,24 @@ export function Newsletter() {
           Ексклюзивні знижки, огляди нових моделей та поради — першим.
         </p>
         {subscribed ? (
-        <div style={{ background:'rgba(245,194,0,.15)', border:'1.5px solid #F5C200', borderRadius:12, padding:'24px 32px', display:'inline-block' }}>
-          <div style={{ fontSize:32, marginBottom:8 }}>✅</div>
-          <p style={{ fontSize:16, fontWeight:700, color:'#fff', margin:0 }}>Дякуємо! Ви підписані на розсилку.</p>
-        </div>
-      ) : (
-        <form style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }} onSubmit={e=>{e.preventDefault();setSubscribed(true)}}>
-          <input type="email" required placeholder="твій@email.com" aria-label="Email для розсилки" style={{
-            flex:'1 1 240px', minWidth:0, padding:'14px 20px',
-            background:'rgba(255,255,255,.08)', border:'1.5px solid rgba(255,255,255,.15)',
-            borderRadius:8, fontSize:14, color:'#fff',
-            outline:'none', transition:'border-color .15s',
-            fontFamily:'Inter, sans-serif',
-          }}
-          onFocus={e => (e.target.style.borderColor='#F5C200')}
-          onBlur={e => (e.target.style.borderColor='rgba(255,255,255,.15)')}/>
-          <button type="submit" className="btn btn-yellow">Підписатися</button>
-        </form>
+          <div style={{ background:'rgba(245,194,0,.15)', border:'1.5px solid #F5C200', borderRadius:12, padding:'24px 32px', display:'inline-block' }}>
+            <div style={{ fontSize:32, marginBottom:8 }}>✅</div>
+            <p style={{ fontSize:16, fontWeight:700, color:'#fff', margin:0 }}>Дякуємо! Ви підписані на розсилку.</p>
+          </div>
+        ) : (
+          <form style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }} onSubmit={e=>{e.preventDefault();setSubscribed(true)}}>
+            <input type="email" required placeholder="твій@email.com" aria-label="Email для розсилки" style={{
+              flex:'1 1 240px', minWidth:0, padding:'14px 20px',
+              background:'rgba(255,255,255,.08)', border:'1.5px solid rgba(255,255,255,.15)',
+              borderRadius:8, fontSize:14, color:'#fff',
+              outline:'none', transition:'border-color .15s',
+              fontFamily:'Inter, sans-serif',
+            }}
+            onFocus={e => (e.target.style.borderColor='#F5C200')}
+            onBlur={e => (e.target.style.borderColor='rgba(255,255,255,.15)')}/>
+            <button type="submit" className="btn btn-yellow">Підписатися</button>
+          </form>
+        )}
       </div>
     </section>
   )
