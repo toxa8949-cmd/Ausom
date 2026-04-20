@@ -1,10 +1,21 @@
 import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/lib/cart'
 import { ThemeProvider } from '@/lib/theme'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnnouncementBar from '@/components/layout/AnnouncementBar'
+
+// next/font preloads Inter from Google Fonts at build time
+// eliminates render-blocking @import and improves LCP
+const inter = Inter({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['300','400','500','600','700','800','900'],
+  display: 'swap',
+  variable: '--font-inter',
+  preload: true,
+})
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ausom.in.ua'
 
@@ -88,16 +99,11 @@ const websiteJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="uk" suppressHydrationWarning>
+    <html lang="uk" className={inter.variable} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `
- (function(){
-   try {
-     var t = localStorage.getItem('ausom-theme') === 'dark' ? 'dark' : 'light';
-     document.documentElement.setAttribute('data-theme', t);
-   } catch(e){}
- })();
- `}} />
+        <script
+          dangerouslySetInnerHTML={{ __html: '(function(){try{var t=localStorage.getItem("ausom-theme")==="dark"?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();' }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
@@ -107,12 +113,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body>
+      <body className={inter.className}>
         <ThemeProvider>
           <CartProvider>
+            <a href="#main-content" className="skip-to-content">Перейти до вмісту</a>
             <AnnouncementBar />
             <Header />
-            <main>{children}</main>
+            <main id="main-content">{children}</main>
             <Footer />
           </CartProvider>
         </ThemeProvider>
