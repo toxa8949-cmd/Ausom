@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
+import { notFound, useRouter } from 'next/navigation'
 import { ChevronRight, Loader2 } from 'lucide-react'
 import { fetchProductBySlug, fetchAllProducts } from '@/lib/data'
 import { Product } from '@/lib/types'
@@ -25,6 +25,7 @@ export default function ProductPageInner({ id }: { id: string }) {
   const [activeImg, setActiveImg] = useState(0)
   const [tab, setTab] = useState<'features'|'specs'>('features')
   const { addItem } = useCart()
+  const router = useRouter()
 
   useEffect(() => {
     let cancelled = false
@@ -179,7 +180,7 @@ export default function ProductPageInner({ id }: { id: string }) {
                   <span>✓ Безкоштовна доставка</span><span>✓ Гарантія 2 роки</span><span>✓ 14 днів повернення</span>
                 </div>
               </div>
-              {product.in_stock && <Link href="/checkout" className="btn btn-black btn-lg" style={{ width:'100%', textAlign:'center', justifyContent:'center' }}>Купити зараз</Link>}
+              {product.in_stock && <button onClick={() => { addItem(product); router.push('/checkout') }} className="btn btn-black btn-lg" style={{ width:'100%', textAlign:'center', justifyContent:'center' }}>Купити зараз</button>}
             </div>
           </div>
         </div>
