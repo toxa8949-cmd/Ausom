@@ -169,7 +169,7 @@ export default function ProductView({ product }: { product: Product }) {
 
             {/* Trust */}
             <div style={{ display:'flex', gap:16, flexWrap:'wrap', borderTop:'1px solid var(--border)', paddingTop:16 }}>
-              {['🚚 Безкоштовна доставка', '🛡 Гарантія 2 роки', '🔄 14 днів повернення'].map(b => (
+              {['🔄 14 днів повернення'].map(b => (
                 <span key={b} style={{ fontSize:12, color:'var(--text-3)', fontWeight:500 }}>{b}</span>
               ))}
             </div>
