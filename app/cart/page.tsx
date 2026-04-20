@@ -1,9 +1,10 @@
 'use client'
-
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, Truck, RotateCcw, Shield, Loader2 } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 
+export default function CartPage() {
   const { items, count, total, removeItem, updateQty, clearCart, ready } = useCart()
   const [promoCode, setPromoCode] = useState('')
   const [promoMsg, setPromoMsg] = useState<string|null>(null)
@@ -44,21 +45,15 @@ import { useCart } from '@/lib/cart'
           </h1>
         </div>
       </div>
-
       <div className="w-container cart-inner">
         <Link href="/catalog" style={{ display:'inline-flex', alignItems:'center', gap:8, fontSize:13, fontWeight:500, color:'var(--text-3)', textDecoration:'none', marginBottom:20 }}>
           <ArrowLeft size={14}/> Продовжити покупки
         </Link>
-
         <div className="cart-layout">
-
           {/* Items */}
           <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
             {items.map(({ product: p, quantity }) => (
-              <div key={p.id} className="cart-item-row" style={{
-                background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:12, padding:20,
-                transition:'border-color .15s',
-              }}>
+              <div key={p.id} className="cart-item-row" style={{ background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:12, padding:20, transition:'border-color .15s', }}>
                 <div style={{ background:'var(--bg-soft)', borderRadius:8, aspectRatio:'1', display:'flex', alignItems:'center', justifyContent:'center' }}>
                   <svg viewBox="0 0 80 70" fill="none" width="52" height="46">
                     <circle cx="16" cy="56" r="12" stroke="#F5C200" strokeWidth="3"/>
@@ -96,11 +91,9 @@ import { useCart } from '@/lib/cart'
               <Trash2 size={13}/> Очистити кошик
             </button>
           </div>
-
           {/* Summary */}
           <div className="cart-summary" style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:14, padding:24, position:'sticky', top:84, display:'flex', flexDirection:'column', gap:18 }}>
             <h2 style={{ fontSize:20, fontWeight:800, letterSpacing:'-.02em', color:'var(--text)' }}>Ваше замовлення</h2>
-
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
               <div style={{ display:'flex', justifyContent:'space-between', fontSize:14 }}>
                 <span style={{ color:'var(--text-3)' }}>Товарів ({count})</span>
@@ -111,21 +104,17 @@ import { useCart } from '@/lib/cart'
                 <span style={{ fontWeight:600, color:'#22C55E' }}>Безкоштовно</span>
               </div>
             </div>
-
             <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
               <span style={{ fontSize:15, fontWeight:700, color:'var(--text)' }}>Разом</span>
               <span style={{ fontSize:'clamp(22px,4vw,28px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>₴{total.toLocaleString('uk-UA')}</span>
             </div>
-
             <div style={{ display:'flex', gap:8, position:'relative' }}>
               <input value={promoCode} onChange={e=>setPromoCode(e.target.value)} placeholder="Промокод" aria-label="Промокод" style={{ flex:1, minWidth:0, padding:'10px 14px', background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, fontSize:12, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const, color:'var(--text)', outline:'none', fontFamily:'Inter,sans-serif' }}/>
               <button onClick={handlePromo} className="btn btn-white btn-sm">OK</button>
               {promoMsg && <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, right:0, background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:6, padding:'8px 12px', fontSize:12, color:'#DC2626', fontWeight:500 }}>{promoMsg}</div>}
             </div>
-
             <Link href="/checkout" className="btn btn-black btn-full" style={{ justifyContent:'center' }}>Оформити замовлення</Link>
             <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Безпечна оплата · Гарантія 2 роки</p>
-
             <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, display:'flex', flexDirection:'column', gap:10 }}>
               {([[Truck,'Безкоштовна доставка'],[RotateCcw,'14 днів повернення'],[Shield,'Гарантія 2 роки']] as const).map(([Icon, text]) => (
                 <div key={text} style={{ display:'flex', alignItems:'center', gap:10, fontSize:12, color:'var(--text-3)' }}>
