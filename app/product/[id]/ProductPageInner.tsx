@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -10,20 +9,21 @@ import { Product } from '@/lib/types'
 import { useCart } from '@/lib/cart'
 
 const specsMap: Record<string, { wheels:string; charging:string; brakes:string; suspension:string; waterproof:string; display:string }> = {
-  l1:           { wheels:'10"', charging:'6-7 год', brakes:'Дискові', suspension:'Передня + задня', waterproof:'IP54', display:'LCD' },
-  'l2-dual':    { wheels:'10"', charging:'7-8 год', brakes:'Гідравлічні', suspension:'Подвійна', waterproof:'IP54', display:'LCD' },
-  'l2-max-dual':{ wheels:'11"', charging:'8-9 год', brakes:'Гідравлічні', suspension:'Подвійна', waterproof:'IP54', display:'LCD' },
+  l1:           { wheels:'10"', charging:'6-7 год', brakes:'Дискові',         suspension:'Передня + задня',     waterproof:'IP54', display:'LCD' },
+  'l2-dual':    { wheels:'10"', charging:'7-8 год', brakes:'Гідравлічні',     suspension:'Подвійна',            waterproof:'IP54', display:'LCD' },
+  'l2-max':     { wheels:'10"', charging:'7-8 год', brakes:'Гідравлічні',     suspension:'Передня + задня',     waterproof:'IP54', display:'LCD' },
+  'l2-max-dual':{ wheels:'11"', charging:'8-9 год', brakes:'Гідравлічні',     suspension:'Подвійна',            waterproof:'IP54', display:'LCD' },
   'dt2-pro':    { wheels:'11"', charging:'9-10 год', brakes:'Гідравлічні Zoom', suspension:'Подвійна регульована', waterproof:'IP55', display:'LCD кольоровий' },
 }
 const defaultSpecs = { wheels:'10"', charging:'7-8 год', brakes:'Дискові', suspension:'Передня + задня', waterproof:'IP54', display:'LCD' }
 
 export default function ProductPageInner({ id }: { id: string }) {
-  const [product,   setProduct]   = useState<Product | null>(null)
-  const [related,   setRelated]   = useState<Product[]>([])
-  const [loading,   setLoading]   = useState(true)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [related, setRelated] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
   const [notFoundFlag, setNotFoundFlag] = useState(false)
   const [activeImg, setActiveImg] = useState(0)
-  const [tab,       setTab]       = useState<'features'|'specs'>('features')
+  const [tab, setTab] = useState<'features'|'specs'>('features')
   const { addItem } = useCart()
 
   useEffect(() => {
@@ -45,32 +45,30 @@ export default function ProductPageInner({ id }: { id: string }) {
   }, [id])
 
   if (notFoundFlag) notFound()
-
   if (loading || !product) {
     return (
       <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-3)' }}>
         <Loader2 size={22} style={{ animation:'spin 1s linear infinite' }}/>
-        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+        <style>{'@keyframes spin{to{transform:rotate(360deg)}}'}</style>
       </div>
     )
   }
 
-  const extra    = specsMap[product.slug] || defaultSpecs
+  const extra = specsMap[product.slug] || defaultSpecs
   const discount = product.old_price ? product.old_price - product.price : 0
-
   const specs = [
     { label:'Макс. швидкість', value:`${product.max_speed} км/год` },
-    { label:'Запас ходу', value:`${product.range_km} км` },
-    { label:'Батарея', value:`${product.voltage.toUpperCase()}, ${product.battery_wh} Wh` },
-    { label:'Мотор', value: product.motor === 'dual' ? 'Подвійний' : 'Одиночний' },
-    { label:'Вага', value:`${product.weight_kg} кг` },
+    { label:'Запас ходу',      value:`${product.range_km} км` },
+    { label:'Батарея',         value:`${product.voltage.toUpperCase()}, ${product.battery_wh} Wh` },
+    { label:'Мотор',           value: product.motor === 'dual' ? 'Подвійний' : 'Одиночний' },
+    { label:'Вага',            value:`${product.weight_kg} кг` },
     { label:'Макс. навантаження', value:`${product.max_load_kg} кг` },
-    { label:'Колеса', value: extra.wheels },
+    { label:'Колеса',         value: extra.wheels },
     { label:'Час заряджання', value: extra.charging },
-    { label:'Гальма', value: extra.brakes },
-    { label:'Підвіска', value: extra.suspension },
+    { label:'Гальма',         value: extra.brakes },
+    { label:'Підвіска',       value: extra.suspension },
     { label:'Захист від вологи', value: extra.waterproof },
-    { label:'Дисплей', value: extra.display },
+    { label:'Дисплей',        value: extra.display },
   ]
 
   const tabBtn = (active: boolean): React.CSSProperties => ({
@@ -104,18 +102,41 @@ export default function ProductPageInner({ id }: { id: string }) {
           <div className="grid-product-detail" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:56, alignItems:'start' }}>
             {/* Images */}
             <div>
-              <div style={{ position:'relative', aspectRatio:'1', borderRadius:'var(--radius-lg)', overflow:'hidden', border:'1.5px solid var(--border)', background:'var(--bg-soft)', marginBottom:12 }}>
+              <div style={{
+                position:'relative', aspectRatio:'1',
+                borderRadius:'var(--radius-lg)', overflow:'hidden',
+                border:'1.5px solid var(--border)', background:'var(--bg-soft)',
+                marginBottom:12
+              }}>
                 {product.tag && <span style={{ position:'absolute', top:16, left:16, zIndex:2, background:'#F5C200', color:'#111', fontSize:11, fontWeight:700, padding:'4px 12px', borderRadius:4 }}>{product.tag}</span>}
                 {discount > 0 && <span style={{ position:'absolute', top:16, right:16, zIndex:2, background:'#EF4444', color:'#fff', fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:4 }}>−{Math.round(discount / (product.old_price || 1) * 100)}%</span>}
                 {mainImage
-                  ? <Image src={mainImage} alt={product.name} fill sizes="(max-width:768px) 100vw, 50vw" style={{ objectFit:'cover' }} priority />
+                  ? <Image
+                      src={mainImage}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width:768px) 100vw, 50vw"
+                      style={{ objectFit:'cover' }}
+                      priority
+                      fetchPriority="high"
+                    />
                   : <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-4)', fontSize:48 }}>🛴</div>
                 }
               </div>
               {hasImages && product.images.length > 1 && (
                 <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
                   {product.images.map((img, i) => (
-                    <button key={i} onClick={() => setActiveImg(i)} aria-label={`Фото ${i+1}`} style={{ position:'relative', width:72, height:72, borderRadius:8, overflow:'hidden', cursor:'pointer', border: activeImg===i ? '2px solid #F5C200' : '2px solid var(--border)', background:'var(--bg-soft)', padding:0 }}>
+                    <button
+                      key={i}
+                      onClick={() => setActiveImg(i)}
+                      aria-label={"Фото " + (i+1)}
+                      style={{
+                        position:'relative', width:72, height:72,
+                        borderRadius:8, overflow:'hidden', cursor:'pointer',
+                        border: activeImg===i ? '2px solid #F5C200' : '2px solid var(--border)',
+                        background:'var(--bg-soft)', padding:0
+                      }}
+                    >
                       <Image src={img} alt="" fill sizes="72px" style={{ objectFit:'cover' }} />
                     </button>
                   ))}
@@ -150,11 +171,10 @@ export default function ProductPageInner({ id }: { id: string }) {
                   {product.old_price && <span style={{ fontSize:18, color:'var(--text-4)', textDecoration:'line-through' }}>₴{product.old_price.toLocaleString('uk-UA')}</span>}
                   {discount > 0 && <span style={{ background:'rgba(239,68,68,.12)', color:'#EF4444', fontSize:13, fontWeight:700, padding:'3px 10px', borderRadius:6 }}>−₴{discount.toLocaleString('uk-UA')}</span>}
                 </div>
-                {product.in_stock ? (
-                  <button onClick={() => addItem(product)} className="btn btn-yellow btn-lg" style={{ width:'100%' }}>Додати до кошика</button>
-                ) : (
-                  <button disabled className="btn btn-lg" style={{ width:'100%', background:'var(--bg-subtle)', color:'var(--text-4)', border:'1.5px solid var(--border)', cursor:'not-allowed' }}>Немає в наявності</button>
-                )}
+                {product.in_stock
+                  ? <button onClick={() => addItem(product)} className="btn btn-yellow btn-lg" style={{ width:'100%' }}>Додати до кошика</button>
+                  : <button disabled className="btn btn-lg" style={{ width:'100%', background:'var(--bg-subtle)', color:'var(--text-4)', border:'1.5px solid var(--border)', cursor:'not-allowed' }}>Немає в наявності</button>
+                }
                 <div className="flex-col-mobile" style={{ display:'flex', gap:20, marginTop:16, fontSize:13, color:'var(--text-3)', flexWrap:'wrap' }}>
                   <span>✓ Безкоштовна доставка</span><span>✓ Гарантія 2 роки</span><span>✓ 14 днів повернення</span>
                 </div>
@@ -202,7 +222,7 @@ export default function ProductPageInner({ id }: { id: string }) {
             <h2 style={{ fontSize:'clamp(22px,3vw,36px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)', marginBottom:28 }}>Інші моделі</h2>
             <div className="grid-3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
               {related.map(p => (
-                <Link key={p.slug} href={`/product/${p.slug}`} style={{ textDecoration:'none' }}>
+                <Link key={p.slug} href={'/product/' + p.slug} style={{ textDecoration:'none' }}>
                   <div className="card" style={{ overflow:'hidden' }}>
                     <div style={{ position:'relative', aspectRatio:'1' }}>
                       {p.images?.[0]
