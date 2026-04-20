@@ -1,5 +1,4 @@
 'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -15,12 +14,12 @@ const NAV: Array<{ label: string; href: string; sub?: SubItem[] }> = [
   {
     label: 'Самокати', href: '/catalog',
     sub: [
-      { label: 'Всі моделі',    href: '/catalog' },
-      { label: 'Ausom',         href: '/catalog?brand=ausom' },
-      { label: 'Kukirin',       href: '/catalog?brand=kukirin' },
-      { label: 'Позашляхові',   href: '/catalog?category=offroad', divider: true },
-      { label: 'Міські',        href: '/catalog?category=commuter' },
-      { label: 'Порівняти',     href: '/compare', divider: true },
+      { label: 'Всі моделі',   href: '/catalog' },
+      { label: 'Ausom',        href: '/catalog/ausom' },
+      { label: 'Kukirin',      href: '/catalog/kukirin' },
+      { label: 'Позашляхові', href: '/catalog?category=offroad', divider: true },
+      { label: 'Міські',       href: '/catalog?category=commuter' },
+      { label: 'Порівняти',   href: '/compare', divider: true },
     ],
   },
   { label: 'Запчастини', href: '/parts' },
@@ -28,12 +27,29 @@ const NAV: Array<{ label: string; href: string; sub?: SubItem[] }> = [
   { label: 'Про нас',    href: '/about' },
 ]
 
+// Shared style for header icon buttons (theme, cart, burger)
+const iconBtnStyle: React.CSSProperties = {
+  width: 44,
+  height: 44,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'transparent',
+  border: '1.5px solid var(--border)',
+  borderRadius: 6,
+  color: 'var(--text-3)',
+  cursor: 'pointer',
+  transition: 'all .15s',
+  textDecoration: 'none',
+  flexShrink: 0,
+}
+
 export default function Header() {
-  const pathname = usePathname()
+  const pathname  = usePathname()
   const { count } = useCart()
   const { theme, toggle } = useTheme()
-  const [open,  setOpen]  = useState(false)
-  const [drop,  setDrop]  = useState<string|null>(null)
+  const [open, setOpen] = useState(false)
+  const [drop, setDrop] = useState<string|null>(null)
   const [stuck, setStuck] = useState(false)
 
   useEffect(() => {
@@ -49,22 +65,25 @@ export default function Header() {
 
   useEffect(() => { setOpen(false) }, [pathname])
 
-  const active = (href: string) => pathname === href || pathname.startsWith(href + '/')
+  const active = (href: string) =>
+    pathname === href || pathname.startsWith(href + '/')
 
   return (
     <>
       <header style={{
         position: 'sticky', top: 0, zIndex: 50,
         background: 'var(--bg)',
-        borderBottom: `1px solid ${stuck ? 'var(--border)' : 'var(--border)'}`,
+        borderBottom: '1px solid var(--border)',
         boxShadow: stuck ? 'var(--shadow-sm)' : 'none',
         transition: 'box-shadow .2s',
       }}>
         <div className="w-container" style={{ height: 64, display: 'flex', alignItems: 'center', gap: 0 }}>
-
           {/* Logo */}
-          <Link href="/" style={{ display:'flex', alignItems:'center', gap:8, textDecoration:'none', flexShrink:0, marginRight:48 }}
-            onClick={() => setOpen(false)}>
+          <Link
+            href="/"
+            style={{ display:'flex', alignItems:'center', gap:8, textDecoration:'none', flexShrink:0, marginRight:48 }}
+            onClick={() => setOpen(false)}
+          >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
               <polygon points="13,2 3,14 12,14 11,22 21,10 12,10" fill="#F5C200" stroke="#F5C200" strokeWidth=".5"/>
             </svg>
@@ -77,19 +96,28 @@ export default function Header() {
           {/* Desktop nav */}
           <nav className="nav-desktop" style={{ alignItems:'center', gap:4, flex:1 }}>
             {NAV.map(item => (
-              <div key={item.label} style={{ position:'relative' }}
+              <div
+                key={item.label}
+                style={{ position:'relative' }}
                 onMouseEnter={() => item.sub && setDrop(item.label)}
-                onMouseLeave={() => setDrop(null)}>
+                onMouseLeave={() => setDrop(null)}
+              >
                 <Link href={item.href} style={{
                   display:'flex', alignItems:'center', gap:4,
-                  padding:'8px 14px', borderRadius:6, textDecoration:'none',
-                  fontSize:14, fontWeight:500, letterSpacing:'-.01em',
+                  padding:'8px 14px', borderRadius:6,
+                  textDecoration:'none', fontSize:14, fontWeight:500, letterSpacing:'-.01em',
                   color: active(item.href) ? 'var(--text)' : 'var(--text-3)',
                   background: active(item.href) ? 'var(--bg-subtle)' : 'transparent',
                   transition:'color .15s, background .15s',
                 }}>
                   {item.label}
-                  {item.sub && <ChevronDown size={12} style={{ opacity:.5, transform: drop===item.label ? 'rotate(180deg)' : 'none', transition:'transform .2s' }} />}
+                  {item.sub && (
+                    <ChevronDown size={12} style={{
+                      opacity:.5,
+                      transform: drop===item.label ? 'rotate(180deg)' : 'none',
+                      transition:'transform .2s'
+                    }} />
+                  )}
                 </Link>
                 {item.sub && drop===item.label && (
                   <div style={{
@@ -100,16 +128,27 @@ export default function Header() {
                     animation:'fadeUp .15s ease both',
                   }}>
                     {item.sub.map(c => (
-                      <Link key={c.href} href={c.href} onClick={() => setDrop(null)} style={{
-                        display:'block', padding:'10px 14px', borderRadius:6,
-                        fontSize:13, fontWeight:500, color:'var(--text-2)',
-                        textDecoration:'none', transition:'background .1s, color .1s',
-                        borderTop: c.divider ? '1px solid var(--border)' : 'none',
-                        marginTop:  c.divider ? 4 : 0,
-                        paddingTop: c.divider ? 14 : 10,
-                      }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background='var(--bg-subtle)'; (e.currentTarget as HTMLElement).style.color='var(--text)' }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background='transparent'; (e.currentTarget as HTMLElement).style.color='var(--text-2)' }}>
+                      <Link
+                        key={c.href}
+                        href={c.href}
+                        onClick={() => setDrop(null)}
+                        style={{
+                          display:'block', padding:'10px 14px', borderRadius:6,
+                          fontSize:13, fontWeight:500, color:'var(--text-2)',
+                          textDecoration:'none', transition:'background .1s, color .1s',
+                          borderTop: c.divider ? '1px solid var(--border)' : 'none',
+                          marginTop: c.divider ? 4 : 0,
+                          paddingTop: c.divider ? 14 : 10,
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLElement).style.background='var(--bg-subtle)';
+                          (e.currentTarget as HTMLElement).style.color='var(--text)'
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLElement).style.background='transparent';
+                          (e.currentTarget as HTMLElement).style.color='var(--text-2)'
+                        }}
+                      >
                         {c.label}
                       </Link>
                     ))}
@@ -124,42 +163,39 @@ export default function Header() {
 
           {/* Right actions */}
           <div style={{ display:'flex', alignItems:'center', gap:4, marginLeft:'auto' }}>
-            <button onClick={toggle} aria-label="Тема" style={{
-              width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
-              background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
-              color:'var(--text-3)', cursor:'pointer', transition:'all .15s',
-            }}>
+            <button
+              onClick={toggle}
+              aria-label="Тема"
+              style={iconBtnStyle}
+            >
               {theme==='light' ? <Moon size={15}/> : <Sun size={15}/>}
             </button>
-
-            <Link href="/cart" aria-label="Кошик" style={{
-              position:'relative', width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center',
-              background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
-              color:'var(--text-3)', textDecoration:'none', transition:'all .15s',
-            }}>
+            <Link
+              href="/cart"
+              aria-label="Кошик"
+              style={{ ...iconBtnStyle, position:'relative' }}
+            >
               <ShoppingBag size={16}/>
               {count > 0 && (
                 <span style={{
                   position:'absolute', top:-4, right:-4,
-                  minWidth:18, height:18, background:'#F5C200', color:'#111',
-                  fontSize:10, fontWeight:800, borderRadius:9,
-                  display:'flex', alignItems:'center', justifyContent:'center', padding:'0 4px',
+                  minWidth:18, height:18,
+                  background:'#F5C200', color:'#111',
+                  fontSize:10, fontWeight:800,
+                  borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center',
+                  padding:'0 4px',
                 }}>
                   {count}
                 </span>
               )}
             </Link>
-
             <button
               className="nav-burger"
               aria-label={open ? 'Закрити меню' : 'Відкрити меню'}
               aria-expanded={open}
               onClick={() => setOpen(!open)}
-              style={{
-                width:36, height:36, alignItems:'center', justifyContent:'center',
-                background:'transparent', border:'1.5px solid var(--border)', borderRadius:6,
-                color:'var(--text-2)', cursor:'pointer',
-              }}>
+              style={iconBtnStyle}
+            >
               {open ? <X size={16}/> : <Menu size={16}/>}
             </button>
           </div>
@@ -172,8 +208,7 @@ export default function Header() {
           aria-hidden="true"
           style={{
             position:'fixed', inset:0, zIndex:45,
-            background:'rgba(0,0,0,.4)',
-            backdropFilter:'blur(4px)',
+            background:'rgba(0,0,0,.4)', backdropFilter:'blur(4px)',
           }}
           onClick={() => setOpen(false)}
         />
@@ -181,52 +216,86 @@ export default function Header() {
 
       {/* Mobile drawer */}
       <div
-        className={`mobile-drawer${open ? ' is-open' : ''}`}
+        className={'mobile-drawer' + (open ? ' is-open' : '')}
         role="dialog"
         aria-modal="true"
         aria-label="Мобільне меню"
         style={{
           position:'fixed', top:0, right:0, bottom:0, width:300, zIndex:46,
           background:'var(--bg)', borderLeft:'1.5px solid var(--border)',
-          padding:'24px 20px', display:'flex', flexDirection:'column', gap:4,
+          padding:'24px 20px',
+          display:'flex', flexDirection:'column', gap:4,
           transform: open ? 'translateX(0)' : 'translateX(100%)',
           transition:'transform .3s ease',
           overflowY:'auto',
-        }}>
+        }}
+      >
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:24 }}>
           <span style={{ fontWeight:700, fontSize:15, color:'var(--text)' }}>Меню</span>
-          <button onClick={() => setOpen(false)} aria-label="Закрити меню" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-3)' }}><X size={18}/></button>
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Закрити меню"
+            style={{
+              width:44, height:44,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              background:'none', border:'none', cursor:'pointer', color:'var(--text-3)',
+              borderRadius:6,
+            }}
+          >
+            <X size={18}/>
+          </button>
         </div>
 
         {/* Main items */}
         {NAV.map(item => (
           <div key={item.href}>
-            <Link href={item.href} onClick={() => setOpen(false)} style={{
-              display:'block', padding:'14px 0',
-              fontSize:16, fontWeight:500, color: active(item.href) ? 'var(--text)' : 'var(--text-2)',
-              textDecoration:'none', borderBottom:'1px solid var(--border)',
-            }}>{item.label}</Link>
-            {/* Inline sub-items on mobile: render brand shortcuts directly
-                under "Самокати" so user can tap straight into a brand */}
+            <Link
+              href={item.href}
+              onClick={() => setOpen(false)}
+              style={{
+                display:'block', padding:'14px 0', fontSize:16, fontWeight:500,
+                color: active(item.href) ? 'var(--text)' : 'var(--text-2)',
+                textDecoration:'none', borderBottom:'1px solid var(--border)',
+              }}
+            >
+              {item.label}
+            </Link>
+            {/* Inline brand shortcuts under "Самокати" — use /catalog/[brand] routes */}
             {item.sub && item.label === 'Самокати' && (
               <div style={{ paddingLeft:12, display:'flex', flexDirection:'column' }}>
-                {item.sub.filter(s => s.href.includes('brand=')).map(s => (
-                  <Link key={s.href} href={s.href} onClick={() => setOpen(false)} style={{
-                    display:'block', padding:'10px 0', fontSize:14,
-                    color:'var(--text-3)', textDecoration:'none',
-                  }}>{s.label}</Link>
-                ))}
+                {item.sub
+                  .filter(s => s.href.startsWith('/catalog/ausom') || s.href.startsWith('/catalog/kukirin'))
+                  .map(s => (
+                    <Link
+                      key={s.href}
+                      href={s.href}
+                      onClick={() => setOpen(false)}
+                      style={{
+                        display:'block', padding:'10px 0',
+                        fontSize:14, color:'var(--text-3)', textDecoration:'none',
+                      }}
+                    >
+                      {s.label}
+                    </Link>
+                  ))
+                }
               </div>
             )}
           </div>
         ))}
-
-        <Link href="/sale" onClick={() => setOpen(false)} style={{ display:'block', padding:'14px 0', fontSize:16, fontWeight:600, color:'var(--yellow-dark)', textDecoration:'none', borderBottom:'1px solid var(--border)' }}>
+        <Link
+          href="/sale"
+          onClick={() => setOpen(false)}
+          style={{
+            display:'block', padding:'14px 0', fontSize:16, fontWeight:600,
+            color:'var(--yellow-dark)', textDecoration:'none', borderBottom:'1px solid var(--border)'
+          }}
+        >
           🔥 Розпродаж
         </Link>
         <div style={{ marginTop:24 }}>
           <Link href="/cart" className="btn btn-black btn-full" onClick={() => setOpen(false)}>
-            <ShoppingBag size={15}/> Кошик {count > 0 && `(${count})`}
+            <ShoppingBag size={15}/> Кошик {count > 0 && '(' + count + ')'}
           </Link>
         </div>
       </div>
