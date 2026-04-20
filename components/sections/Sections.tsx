@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { Truck, Shield, RotateCcw, MessageCircle } from 'lucide-react'
 
 export function StatsBar() { return null }
@@ -83,6 +84,7 @@ export function Press() {
 }
 
 export function Newsletter() {
+  const [subscribed, setSubscribed] = React.useState(false)
   return (
     <section className="home-section" style={{ padding:'96px 0', background:'#111', position:'relative', overflow:'hidden' }}>
       <div style={{
@@ -98,7 +100,13 @@ export function Newsletter() {
         <p style={{ fontSize:15, color:'rgba(255,255,255,.5)', marginBottom:32, lineHeight:1.7 }}>
           Ексклюзивні знижки, огляди нових моделей та поради — першим.
         </p>
-        <form style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }} onSubmit={e=>e.preventDefault()}>
+        {subscribed ? (
+        <div style={{ background:'rgba(245,194,0,.15)', border:'1.5px solid #F5C200', borderRadius:12, padding:'24px 32px', display:'inline-block' }}>
+          <div style={{ fontSize:32, marginBottom:8 }}>✅</div>
+          <p style={{ fontSize:16, fontWeight:700, color:'#fff', margin:0 }}>Дякуємо! Ви підписані на розсилку.</p>
+        </div>
+      ) : (
+        <form style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }} onSubmit={e=>{e.preventDefault();setSubscribed(true)}}>
           <input type="email" required placeholder="твій@email.com" aria-label="Email для розсилки" style={{
             flex:'1 1 240px', minWidth:0, padding:'14px 20px',
             background:'rgba(255,255,255,.08)', border:'1.5px solid rgba(255,255,255,.15)',
