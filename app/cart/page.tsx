@@ -4,8 +4,14 @@ import Link from 'next/link'
 import { Trash2, Plus, Minus, ArrowLeft, ShoppingBag, Truck, RotateCcw, Shield, Loader2 } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 
-export default function CartPage() {
   const { items, count, total, removeItem, updateQty, clearCart, ready } = useCart()
+  const [promoCode, setPromoCode] = useState('')
+  const [promoMsg, setPromoMsg] = useState<string|null>(null)
+  const handlePromo = () => {
+    if (!promoCode.trim()) return
+    setPromoMsg('Промокод не знайдено')
+    setTimeout(() => setPromoMsg(null), 3000)
+  }
 
   // Don't render the empty-cart screen until we've loaded from localStorage,
   // otherwise we'd flash it on every reload.
@@ -111,9 +117,10 @@ export default function CartPage() {
               <span style={{ fontSize:'clamp(22px,4vw,28px)', fontWeight:800, letterSpacing:'-.025em', color:'var(--text)' }}>₴{total.toLocaleString('uk-UA')}</span>
             </div>
 
-            <div style={{ display:'flex', gap:8 }}>
-              <input placeholder="Промокод" aria-label="Промокод" style={{ flex:1, minWidth:0, padding:'10px 14px', background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, fontSize:12, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const, color:'var(--text)', outline:'none', fontFamily:'Inter,sans-serif' }}/>
-              <button className="btn btn-white btn-sm">OK</button>
+            <div style={{ display:'flex', gap:8, position:'relative' }}>
+              <input value={promoCode} onChange={e=>setPromoCode(e.target.value)} placeholder="Промокод" aria-label="Промокод" style={{ flex:1, minWidth:0, padding:'10px 14px', background:'var(--bg)', border:'1.5px solid var(--border)', borderRadius:6, fontSize:12, fontWeight:600, letterSpacing:'.06em', textTransform:'uppercase' as const, color:'var(--text)', outline:'none', fontFamily:'Inter,sans-serif' }}/>
+              <button onClick={handlePromo} className="btn btn-white btn-sm">OK</button>
+              {promoMsg && <div style={{ position:'absolute', top:'calc(100% + 6px)', left:0, right:0, background:'#FEF2F2', border:'1px solid #FECACA', borderRadius:6, padding:'8px 12px', fontSize:12, color:'#DC2626', fontWeight:500 }}>{promoMsg}</div>}
             </div>
 
             <Link href="/checkout" className="btn btn-black btn-full" style={{ justifyContent:'center' }}>Оформити замовлення</Link>
