@@ -39,11 +39,9 @@ export default function SalePage() {
             Знижки до <span style={{ color:'var(--yellow-dark)' }}>₴11 050</span>
           </h1>
           <p style={{ fontSize:'clamp(14px,1.6vw,16px)', color:'var(--text-2)', lineHeight:1.7, maxWidth:520, margin:'0 auto 20px' }}>
-            Всі моделі Ausom зі знижкою. Безкоштовна доставка та офіційна гарантія 2 роки.
+            Всі моделі Ausom зі знижкою.
           </p>
           <div style={{ display:'flex', justifyContent:'center', gap:20, fontSize:13, color:'var(--text-3)', flexWrap:'wrap' }}>
-            <span>✓ Безкоштовна доставка</span>
-            <span>✓ Гарантія 2 роки</span>
             <span>✓ 14 днів повернення</span>
           </div>
         </div>
