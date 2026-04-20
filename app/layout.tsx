@@ -25,8 +25,18 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'Ausom Ukraine — Електросамокати для дорослих',
-  description: "Офіційний дистриб'ютор Ausom в Україні. Гарантія 2 роки, безкоштовна доставка.",
+  title: {
+    default: 'Купити електросамокат Ausom в Україні — офіційний дилер | Ausom UA',
+    template: '%s | Ausom UA',
+  },
+  description:
+    "Купити електросамокат Ausom або Kukirin в Україні. Офіційний дистриб'ютор. Гарантія 2 роки, безкоштовна доставка по Україні. Моделі: Ausom L1, L2, L2 Max, DT2 Pro, L2 Dual, L2 Max Dual.",
+  keywords: [
+    'купити ausom', 'ausom', 'ausom україна', 'самокат ausom', 'ausom київ',
+    'електросамокат ausom', 'купити електросамокат україна', 'ausom l2 max',
+    'ausom dt2 pro', 'kukirin', 'купити kukirin', 'електросамокат київ',
+    'електросамокат для дорослих', 'офіційний дилер ausom',
+  ],
   alternates: { canonical: SITE_URL },
   icons: {
     icon: [
@@ -45,8 +55,9 @@ export const metadata: Metadata = {
     locale: 'uk_UA',
     url: SITE_URL,
     siteName: 'Ausom Ukraine',
-    title: 'Ausom Ukraine — Електросамокати для дорослих',
-    description: "Офіційний дистриб'ютор Ausom в Україні. Гарантія 2 роки, безкоштовна доставка.",
+    title: 'Купити електросамокат Ausom в Україні — офіційний дилер',
+    description:
+      "Офіційний дистриб'ютор Ausom та Kukirin в Україні. Гарантія 2 роки, безкоштовна доставка.",
     images: [
       {
         url: '/og-image.jpg',
@@ -58,23 +69,42 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ausom Ukraine — Електросамокати для дорослих',
-    description: "Офіційний дистриб'ютор Ausom в Україні.",
+    title: 'Купити електросамокат Ausom в Україні — офіційний дилер',
+    description:
+      "Офіційний дистриб'ютор Ausom та Kukirin в Україні. Гарантія 2 роки, доставка по Україні.",
     images: ['/og-image.jpg'],
   },
 }
 
 const organizationJsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': 'Store',
   name: 'Ausom Ukraine',
   url: SITE_URL,
   logo: SITE_URL + '/icon-512.png',
-  description: "Офіційний дистриб'ютор електросамокатів Ausom та Kukirin в Україні.",
+  image: SITE_URL + '/og-image.jpg',
+  description:
+    "Офіційний дистриб'ютор електросамокатів Ausom та Kukirin в Україні. Гарантія 2 роки, безкоштовна доставка.",
+  priceRange: '$$',
+  address: {
+    '@type': 'PostalAddress',
+    addressCountry: 'UA',
+    addressRegion: 'Київ',
+    addressLocality: 'Київ',
+  },
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'customer service',
     availableLanguage: 'Ukrainian',
+  },
+  areaServed: {
+    '@type': 'Country',
+    name: 'Ukraine',
+  },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Електросамокати Ausom та Kukirin',
+    url: SITE_URL + '/catalog',
   },
   sameAs: [
     'https://www.instagram.com/ausom.ua',
@@ -102,7 +132,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="uk" className={inter.variable} suppressHydrationWarning>
       <head>
         <script
-          dangerouslySetInnerHTML={{ __html: '(function(){try{var t=localStorage.getItem("ausom-theme")==="dark"?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();' }}
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){try{var t=localStorage.getItem("ausom-theme")==="dark"?"dark":"light";document.documentElement.setAttribute("data-theme",t);}catch(e){}})();',
+          }}
         />
         <script
           type="application/ld+json"
