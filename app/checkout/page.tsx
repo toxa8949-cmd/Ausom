@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -9,38 +8,36 @@ import { useCart } from '@/lib/cart'
 import { createOrder } from '@/lib/queries'
 
 type DeliveryId = 'nova-poshta' | 'ukrposhta' | 'courier'
-type PaymentId  = 'card' | 'privat24' | 'mono' | 'cash'
+type PaymentId = 'card' | 'privat24' | 'mono' | 'cash'
 
 const DELIVERY_LABEL: Record<DeliveryId, string> = {
   'nova-poshta': 'Нова Пошта',
-  'ukrposhta':   'Укрпошта',
-  'courier':     'Кур\'єр',
+  'ukrposhta': 'Укрпошта',
+  'courier': 'Кур'єр',
 }
 const PAYMENT_LABEL: Record<PaymentId, string> = {
-  'card':     'Visa / Mastercard',
+  'card': 'Visa / Mastercard',
   'privat24': 'Приват24',
-  'mono':     'Monobank',
-  'cash':     'Накладений платіж',
+  'mono': 'Monobank',
+  'cash': 'Накладений платіж',
 }
 
-// Basic UA phone validation: +380… or 0…, 10–13 digits total.
 const PHONE_RE = /^(\+?380|0)\d{9}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, total, clearCart, ready } = useCart()
-  const [step,      setStep]      = useState<1|2|3>(1)
+  const [step, setStep] = useState<1|2|3>(1)
   const [submitting, setSubmitting] = useState(false)
-  const [errors,    setErrors]    = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [form, setForm] = useState({
-    firstName: '', lastName: '',
-    phone: '', email: '',
+    firstName: '', lastName: '', phone: '', email: '',
     city: '', address: '',
     delivery: 'nova-poshta' as DeliveryId,
-    payment:  'card' as PaymentId,
-    comment:  '',
+    payment: 'card' as PaymentId,
+    comment: '',
   })
 
   const set = (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => {
@@ -55,81 +52,69 @@ export default function CheckoutPage() {
     fontFamily:'Inter,sans-serif', outline:'none',
   })
   const labelStyle: React.CSSProperties = { display:'block', fontSize:12, fontWeight:600, color:'var(--text-3)', marginBottom:6 }
-  const errStyle:   React.CSSProperties = { fontSize:11, color:'#EF4444', marginTop:4, display:'flex', alignItems:'center', gap:4 }
+  const errStyle: React.CSSProperties = { fontSize:11, color:'#EF4444', marginTop:4, display:'flex', alignItems:'center', gap:4 }
 
-  // ────────────────────────────────────────── validators
   const validateStep1 = (): boolean => {
     const e: Record<string, string> = {}
-    if (!form.firstName.trim()) e.firstName = 'Вкажіть ім\'я'
-    if (!form.lastName.trim())  e.lastName  = 'Вкажіть прізвище'
-    if (!form.phone.trim())     e.phone     = 'Вкажіть телефон'
+    if (!form.firstName.trim()) e.firstName = 'Вкажіть ім'я'
+    if (!form.lastName.trim()) e.lastName = 'Вкажіть прізвище'
+    if (!form.phone.trim()) e.phone = 'Вкажіть телефон'
     else if (!PHONE_RE.test(form.phone.replace(/[\s\-()]/g, ''))) e.phone = 'Некоректний номер'
-    if (!form.email.trim())     e.email     = 'Вкажіть email'
-    else if (!EMAIL_RE.test(form.email))    e.email = 'Некоректний email'
+    if (!form.email.trim()) e.email = 'Вкажіть email'
+    else if (!EMAIL_RE.test(form.email)) e.email = 'Некоректний email'
     setErrors(e)
     return Object.keys(e).length === 0
   }
+
   const validateStep2 = (): boolean => {
     const e: Record<string, string> = {}
-    if (!form.city.trim())    e.city    = 'Вкажіть місто'
+    if (!form.city.trim()) e.city = 'Вкажіть місто'
     if (!form.address.trim()) e.address = 'Вкажіть адресу або відділення'
     setErrors(e)
     return Object.keys(e).length === 0
   }
 
-  // ────────────────────────────────────────── submit
   const handleSubmit = async () => {
     if (submitting) return
     setSubmitError(null)
     setSubmitting(true)
-
     try {
-      // notes carries delivery method, payment method, and user comment —
-      // the orders table currently has no dedicated columns for these.
       const notes = [
         `Доставка: ${DELIVERY_LABEL[form.delivery]}`,
         `Оплата: ${PAYMENT_LABEL[form.payment]}`,
         form.comment.trim() && `Коментар: ${form.comment.trim()}`,
       ].filter(Boolean).join('\n')
-
       const order = await createOrder({
-        items,
-        total,
-        name:    `${form.firstName.trim()} ${form.lastName.trim()}`,
-        email:   form.email.trim(),
-        phone:   form.phone.trim(),
+        items, total,
+        name: `${form.firstName.trim()} ${form.lastName.trim()}`,
+        email: form.email.trim(),
+        phone: form.phone.trim(),
         address: form.address.trim(),
-        city:    form.city.trim(),
+        city: form.city.trim(),
         notes,
-        status:  'pending',
+        status: 'pending',
       })
-
-      // Persist a minimal copy on the client so /checkout/success can display
-      // details even after clearing the cart, and so /track can look it up.
       try {
         localStorage.setItem('ausom_last_order', JSON.stringify({
-          id: order.id,
-          total,
+          id: order.id, total,
           name: `${form.firstName.trim()} ${form.lastName.trim()}`,
           email: form.email.trim(),
           createdAt: order.created_at,
         }))
-      } catch { /* ignore storage errors */ }
-
+      } catch { /* ignore */ }
       clearCart()
       router.push(`/checkout/success?id=${encodeURIComponent(order.id)}`)
     } catch (err: any) {
       console.error('[checkout] createOrder failed:', err)
       setSubmitError(
         err?.message?.includes('fetch')
-          ? 'Не вдалося зв\'язатися з сервером. Перевір інтернет і спробуй ще раз.'
-          : 'Не вдалося оформити замовлення. Спробуй ще раз або зв\'яжись з нами.'
+          ? 'Не вдалося зв'язатися з сервером. Перевір інтернет і спробуй ще раз.'
+          : 'Не вдалося оформити замовлення. Спробуй ще раз або зв'яжись з нами.'
       )
       setSubmitting(false)
     }
   }
 
-  // ────────────────────────────────────────── navigation
   const goNext = () => {
     if (step === 1 && !validateStep1()) return
     if (step === 2 && !validateStep2()) return
@@ -137,9 +122,6 @@ export default function CheckoutPage() {
   }
   const goBack = () => setStep((step - 1) as 1|2|3)
 
-  // ────────────────────────────────────────── early returns
-  // Wait for cart hydration before deciding "empty". Otherwise hitting
-  // /checkout via F5 mid-flow would flash the empty-cart screen.
   if (!ready) {
     return (
       <div style={{ minHeight:'60vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -161,14 +143,14 @@ export default function CheckoutPage() {
     )
   }
 
-  // ────────────────────────────────────────── UI helpers
   const radioStyle = (active: boolean): React.CSSProperties => ({
     display:'flex', alignItems:'center', gap:14, padding:'16px 18px', borderRadius:10, cursor:'pointer', transition:'all .15s',
     border: active ? '1.5px solid #F5C200' : '1.5px solid var(--border)',
     background: active ? 'rgba(245,194,0,.06)' : 'var(--bg)',
   })
   const dot = (active: boolean): React.CSSProperties => ({
-    width:18, height:18, borderRadius:'50%', border: active ? '5px solid #F5C200' : '2px solid var(--border-md)',
+    width:18, height:18, borderRadius:'50%',
+    border: active ? '5px solid #F5C200' : '2px solid var(--border-md)',
     flexShrink:0, marginLeft:'auto',
   })
 
@@ -238,9 +220,9 @@ export default function CheckoutPage() {
                   <h2 style={{ fontSize:18, fontWeight:700, color:'var(--text)', marginBottom:20 }}>Доставка</h2>
                   <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
                     {([
-                      {id:'nova-poshta' as const, label:'Нова Пошта',    desc:'Безкоштовно, 1-3 дні', icon:'📦'},
-                      {id:'ukrposhta'   as const, label:'Укрпошта',      desc:'Безкоштовно, 3-7 днів', icon:'✉️'},
-                      {id:'courier'     as const, label:'Кур\'єр (Київ)', desc:'Безкоштовно, 1 день',   icon:'🚚'},
+                      {id:'nova-poshta' as const, label:'Нова Пошта', desc:'По всій Україні, 1-3 дні', icon:'📦'},
+                      {id:'ukrposhta' as const, label:'Укрпошта', desc:'По всій Україні, 3-7 днів', icon:'✉️'},
+                      {id:'courier' as const, label:'Кур'єр (Київ)', desc:'По Києву, 1 день', icon:'🚚'},
                     ]).map(d => (
                       <label key={d.id} style={radioStyle(form.delivery===d.id)}>
                         <input type="radio" name="delivery" value={d.id} checked={form.delivery===d.id} onChange={set} style={{ display:'none' }}/>
@@ -272,10 +254,10 @@ export default function CheckoutPage() {
                   <h2 style={{ fontSize:18, fontWeight:700, color:'var(--text)', marginBottom:20 }}>Оплата</h2>
                   <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
                     {([
-                      {id:'card'     as const, label:'Visa / Mastercard', desc:'Онлайн оплата',          icon:'💳'},
-                      {id:'privat24' as const, label:'Приват24',          desc:'Оплата через Приват24',  icon:'🏦'},
-                      {id:'mono'     as const, label:'Monobank',          desc:'Оплата через Monobank',  icon:'📱'},
-                      {id:'cash'     as const, label:'Накладений платіж', desc:'Оплата при отриманні',   icon:'💵'},
+                      {id:'card' as const, label:'Visa / Mastercard', desc:'Онлайн оплата', icon:'💳'},
+                      {id:'privat24' as const, label:'Приват24', desc:'Оплата через Приват24', icon:'🏦'},
+                      {id:'mono' as const, label:'Monobank', desc:'Оплата через Monobank', icon:'📱'},
+                      {id:'cash' as const, label:'Накладений платіж', desc:'Оплата при отриманні', icon:'💵'},
                     ]).map(p => (
                       <label key={p.id} style={radioStyle(form.payment===p.id)}>
                         <input type="radio" name="payment" value={p.id} checked={form.payment===p.id} onChange={set} style={{ display:'none' }}/>
@@ -289,29 +271,16 @@ export default function CheckoutPage() {
                     <label style={labelStyle}>Коментар</label>
                     <textarea name="comment" value={form.comment} onChange={set} rows={3} style={{ ...inputStyle(), resize:'none' as const }} placeholder="Додаткові побажання..."/>
                   </div>
-
                   {submitError && (
-                    <div role="alert" style={{
-                      display:'flex', alignItems:'flex-start', gap:10,
-                      padding:'12px 14px', marginBottom:16,
-                      background:'rgba(239,68,68,.08)', border:'1.5px solid rgba(239,68,68,.3)',
-                      borderRadius:8, fontSize:13, color:'#B91C1C',
-                    }}>
+                    <div role="alert" style={{ display:'flex', alignItems:'flex-start', gap:10, padding:'12px 14px', marginBottom:16, background:'rgba(239,68,68,.08)', border:'1.5px solid rgba(239,68,68,.3)', borderRadius:8, fontSize:13, color:'#B91C1C' }}>
                       <AlertCircle size={16} style={{ flexShrink:0, marginTop:1 }}/>
                       <span>{submitError}</span>
                     </div>
                   )}
-
                   <div className="flex-col-mobile" style={{ display:'flex', gap:12 }}>
                     <button onClick={goBack} disabled={submitting} className="btn btn-white btn-full-mobile">← Назад</button>
-                    <button
-                      onClick={handleSubmit}
-                      disabled={submitting}
-                      className="btn btn-yellow btn-lg btn-full-mobile"
-                      style={{ flex:1, opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
-                      {submitting
-                        ? (<><Loader2 size={16} className="spin"/> Оформлюємо…</>)
-                        : 'Підтвердити замовлення'}
+                    <button onClick={handleSubmit} disabled={submitting} className="btn btn-yellow btn-lg btn-full-mobile" style={{ flex:1, opacity: submitting ? 0.7 : 1, cursor: submitting ? 'wait' : 'pointer' }}>
+                      {submitting ? (<><Loader2 size={16} className="spin"/> Оформлюємо…</>) : 'Підтвердити замовлення'}
                     </button>
                   </div>
                   <style>{`.spin{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -339,7 +308,7 @@ export default function CheckoutPage() {
               </div>
               <div style={{ borderTop:'1px solid var(--border)', paddingTop:14 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, color:'var(--text-3)', marginBottom:8 }}>
-                  <span>Доставка</span><span style={{ color:'var(--yellow-dark)', fontWeight:600 }}>Безкоштовно</span>
+                  <span>Доставка</span><span style={{ color:'var(--yellow-dark)', fontWeight:600 }}>По всій Україні</span>
                 </div>
                 <div style={{ display:'flex', justifyContent:'space-between', fontSize:20, fontWeight:800, color:'var(--text)' }}>
                   <span>Разом</span><span>₴{total.toLocaleString('uk-UA')}</span>
