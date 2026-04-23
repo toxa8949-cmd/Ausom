@@ -1,12 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Чорний квадрат з заокругленими кутами — як App Store іконка -->
-  <rect width="64" height="64" rx="14" fill="#0E0E10"/>
-  <!-- Жовта блискавка — та сама форма що в хедері -->
-  <polygon
-    points="37,10 14,34 32,34 29,54 53,28 32,28"
-    fill="#F5C200"
-    stroke="#F5C200"
-    stroke-width="1"
-    stroke-linejoin="round"
-  />
+    <!-- Жовта блискавка на прозорому фоні -->
+    <polygon
+          points="37,10 14,34 32,34 29,54 53,28 32,28"
+          fill="#F5C200"
+          stroke="#F5C200"
+          stroke-width="1"
+          stroke-linejoin="round"
+        />
 </svg>
