@@ -1,6 +1,27 @@
-import Link from 'next/link'
+import type { Metadata } from 'next'
+  import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 
+export const metadata: Metadata = {
+    title: 'Запчастини та аксесуари для електросамокатів | Ausom UA',
+    description: 'Оригінальні запчастини Ausom: акумулятори, колеса, гальма, електроніка та аксесуари. Швидка доставка по Україні.',
+    alternates: {
+          canonical: 'https://ausom.in.ua/parts',
+    },
+    openGraph: {
+          title: 'Запчастини та аксесуари для електросамокатів | Ausom UA',
+          description: 'Оригінальні запчастини Ausom: акумулятори, колеса, гальма, електроніка та аксесуари.',
+          url: 'https://ausom.in.ua/parts',
+          siteName: 'Ausom UA',
+          locale: 'uk_UA',
+          type: 'website',
+    },
+    twitter: {
+          card: 'summary_large_image',
+          title: 'Запчастини та аксесуари для електросамокатів | Ausom UA',
+          description: 'Оригінальні запчастини Ausom: акумулятори, колеса, гальма, електроніка.',
+    },
+}
 const cats = [
   { icon:'🔋', name:'Акумулятори', desc:'Оригінальні батареї для всіх моделей', items:['Батарея L1 (468 Wh)','Батарея L2 Dual (768 Wh)','Батарея L2 Max (960 Wh)','Батарея DT2 Pro (1066 Wh)'] },
   { icon:'🛞', name:'Колеса та шини', desc:'Покришки, камери та диски', items:['Покришка 10"','Покришка 11"','Камера 10"','Камера 11"'] },
