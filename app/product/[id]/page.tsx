@@ -32,10 +32,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!product) return { title: 'Товар не знайдено', robots: { index: false, follow: true } }
   const title = hasManual(product.meta_title) ? product.meta_title! : autoTitle(product)
   const description = hasManual(product.meta_description) ? product.meta_description! : autoDescription(product)
-  const productImages = (product.images || []).filter(Boolean)
-  const ogImages = productImages.length
-    ? productImages.slice(0, 4).map(url => ({ url, alt: product.name }))
-    : undefined
+  // NB: We intentionally do NOT set openGraph.images / twitter.images here.
+  // The co-located file app/product/[id]/opengraph-image.tsx generates a
+  // proper 1200x630 PNG that Next.js automatically wires to og:image,
+  // og:image:width, og:image:height and twitter:image. Setting images here
+  // would override the generated file with raw product photos that have
+  // arbitrary dimensions (which is the bug we just fixed).
   return {
     title,
     description,
@@ -48,13 +50,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       locale: 'uk_UA',
       siteName: 'Ausom UA',
       url: SITE_URL + '/product/' + product.slug,
-      images: ogImages
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: productImages.length ? productImages.slice(0, 4) : undefined
     },
     robots: { index: product.in_stock, follow: true },
   }
