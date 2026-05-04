@@ -9,12 +9,6 @@ import { fetchProductBySlug } from '@/lib/data'
 // og:image:width=1200 / og:image:height=630 and the actual product
 // photo dimensions, which is what was preventing Google and social
 // platforms from rendering a thumbnail.
-//
-// We intentionally avoid embedding the remote product photo via <img>
-// inside ImageResponse: next/og has to fetch and decode the URL inside
-// a serverless function, which often hits 4–5s timeouts on Vercel and
-// returns a 500. A clean text-based card with the brand badge, model
-// name, key specs and price renders reliably and looks consistent.
 
 export const runtime = 'nodejs'
 export const alt = 'Ausom UA'
@@ -28,8 +22,11 @@ function fmtPrice(n: number): string {
   try { return n.toLocaleString('uk-UA') + ' ₴' } catch { return n + ' ₴' }
 }
 
-export default async function Image({ params }: { params: { id: string } }) {
-  const product = await fetchProductBySlug(params.id).catch(() => null)
+// In Next.js 16 dynamic params are async. The route segment for this file
+// is /product/[id]/opengraph-image, so params is { id: string } as a Promise.
+export default async function Image({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const product = await fetchProductBySlug(id).catch(() => null)
   const brand = product ? (BRAND_UA[product.brand] ?? 'Ausom') : 'Ausom'
   const category = product ? (CATEGORY_UA[product.category] ?? '') : ''
   const title = product?.name ?? 'Ausom Ukraine'
@@ -56,10 +53,8 @@ export default async function Image({ params }: { params: { id: string } }) {
           position: 'relative',
         }}
       >
-        {/* Top yellow accent line */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 8, background: '#F5C200' }} />
 
-        {/* Brand badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 28 }}>
           <div style={{ background: '#F5C200', color: '#0a0f1c', padding: '10px 20px', borderRadius: 8, fontSize: 22, fontWeight: 800, letterSpacing: 2 }}>
             {brand.toUpperCase()}
@@ -71,12 +66,10 @@ export default async function Image({ params }: { params: { id: string } }) {
           )}
         </div>
 
-        {/* Product name */}
         <div style={{ fontSize: 96, fontWeight: 900, lineHeight: 1.0, letterSpacing: -2, marginBottom: 36, maxWidth: 1050 }}>
           {title}
         </div>
 
-        {/* Spec chips */}
         {chips.length > 0 && (
           <div style={{ display: 'flex', gap: 14, marginBottom: 36, flexWrap: 'wrap' }}>
             {chips.map((c, i) => (
@@ -87,7 +80,6 @@ export default async function Image({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* Price */}
         {price && (
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 16, marginBottom: 'auto' }}>
             <div style={{ fontSize: 24, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 3 }}>Ціна</div>
@@ -95,7 +87,6 @@ export default async function Image({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* Footer */}
         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 22 }}>
           <div style={{ fontSize: 30, fontWeight: 800 }}>ausom.in.ua</div>
           <div style={{ fontSize: 22, color: 'rgba(255,255,255,0.55)' }}>{tagline}</div>
