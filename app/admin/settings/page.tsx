@@ -18,7 +18,7 @@ async function saveSetting(key: string, value: any) {
   await supabase.from('settings').upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
 }
 
-const STORE_DEFAULT = { name:'Ausom Ukraine', email:'support@ausom.ua', phone:'+38 (067) 000-00-00', address:'м. Київ, вул. Хрещатик 1', currency:'UAH' }
+const STORE_DEFAULT = { name:'Ausom Ukraine', email:'support@ausom.ua', phone:'+38 (095) 898-10-07', address:'магазин-партнер «Велокрай», вул. Ревуцького 40В, Київ', currency:'UAH' }
 const DELIVERY_DEFAULT = { freeShipping:true, freeFrom:'0', novaPoshta:true, ukrPoshta:true, courier:true }
 const NOTIF_DEFAULT = { newOrder:true, orderStatus:true, lowStock:false, newsletter:true }
 
