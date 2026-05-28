@@ -42,7 +42,7 @@ export default function TrackPage() {
               <p style={{ fontSize:14, color:'var(--text-3)', marginBottom:24 }}>Перевірте номер або зв&apos;яжіться з підтримкою.</p>
               <div style={{ display:'flex', justifyContent:'center', gap:10 }}>
                 <Link href="/contact" className="btn btn-yellow btn-sm">Написати підтримці</Link>
-                <a href="tel:+380670000000" className="btn btn-white btn-sm">📞 Зателефонувати</a>
+                <a href="tel:+380958981007" className="btn btn-white btn-sm">📞 Зателефонувати</a>
               </div>
             </div>
           )}
