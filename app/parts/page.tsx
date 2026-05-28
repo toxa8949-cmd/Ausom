@@ -82,7 +82,7 @@ export default function PartsPage() {
           <p style={{ fontSize:15, color:'var(--text-2)', marginBottom:24, maxWidth:480, margin:'0 auto 24px' }}>Зв&apos;яжіться з нами — допоможемо підібрати потрібну деталь.</p>
           <div style={{ display:'flex', justifyContent:'center', gap:12 }}>
             <Link href="/contact" className="btn btn-yellow">Написати нам</Link>
-            <a href="tel:+380670000000" className="btn btn-white">📞 +38 (067) 000-00-00</a>
+            <a href="tel:+380958981007" className="btn btn-white">📞 +38 (095) 898-10-07</a>
           </div>
         </div>
       </div>
