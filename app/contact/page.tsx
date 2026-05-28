@@ -36,8 +36,8 @@ export default function ContactPage() {
             <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
               {[
                 { Icon:Mail,  label:'Email',          value:'support@ausom.ua' },
-                { Icon:Phone, label:'Телефон',         value:'+38 (067) 000-00-00' },
-                { Icon:MapPin,label:'Адреса',          value:'м. Київ, вул. Хрещатик 1' },
+                { Icon:Phone, label:'Телефон',         value:'+38 (095) 898-10-07' },
+                { Icon:MapPin,label:'Адреса',          value:'магазин-партнер «Велокрай», вул. Ревуцького 40В, Київ' },
                 { Icon:Clock, label:'Години роботи',   value:'Пн–Пт: 9:00–18:00' },
               ].map(({Icon,label,value}) => (
                 <div key={label} style={{ display:'flex', alignItems:'flex-start', gap:14 }}>
@@ -67,7 +67,7 @@ export default function ContactPage() {
                 {[
                   { id:'name',  label:"Ім'я",    type:'text',  p:'Іван Іванов' },
                   { id:'email', label:'Email',   type:'email', p:'ivan@email.com' },
-                  { id:'phone', label:'Телефон', type:'tel',   p:'+38 (067) 000-00-00' },
+                  { id:'phone', label:'Телефон', type:'tel',   p:'+38 (095) 898-10-07' },
                 ].map(f => (
                   <div key={f.id}>
                     <label style={{ display:'block', fontSize:11, fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase' as const, color:'var(--text-3)', marginBottom:8 }}>{f.label}</label>
