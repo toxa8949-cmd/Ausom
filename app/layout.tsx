@@ -89,11 +89,13 @@ const organizationJsonLd = {
   address: {
     '@type': 'PostalAddress',
     addressCountry: 'UA',
+    streetAddress: 'вул. Ревуцького, 40В (магазин-партнер «Велокрай»)',
     addressRegion: 'Київ',
     addressLocality: 'Київ',
   },
   contactPoint: {
     '@type': 'ContactPoint',
+    telephone: '+380958981007',
     contactType: 'customer service',
     availableLanguage: 'Ukrainian',
   },
