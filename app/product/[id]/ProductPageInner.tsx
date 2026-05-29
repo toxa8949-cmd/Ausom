@@ -151,7 +151,7 @@ export default function ProductPageInner({ id }: { id: string }) {
                   : <button disabled className="btn btn-lg" style={{ width:'100%', background:'var(--bg-subtle)', color:'var(--text-4)', border:'1.5px solid var(--border)', cursor:'not-allowed' }}>Немає в наявності</button>
                 }
                 <div className="flex-col-mobile" style={{ display:'flex', gap:20, marginTop:16, fontSize:13, color:'var(--text-3)', flexWrap:'wrap' }}>
-                  <span>✓ Доставка по всій Україні</span><span>✓ Офіційна гарантія</span><span>✓ 14 днів повернення</span>
+                  <span>✓ Доставка Новою Поштою</span><span>✓ Офіційна гарантія</span><span>✓ Повернення згідно ЗУ</span>
                 </div>
               </div>
               {product.in_stock && <button onClick={() => { addItem(product); router.push('/checkout') }} className="btn btn-black btn-lg" style={{ width:'100%', textAlign:'center', justifyContent:'center' }}>Купити зараз</button>}
