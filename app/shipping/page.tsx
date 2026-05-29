@@ -23,9 +23,8 @@ export default function ShippingPage() {
           <h2 style={{ fontSize:20, fontWeight:700, color:'var(--text)', marginBottom:16, display:'flex', alignItems:'center', gap:10 }}>📦 Доставка</h2>
           <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:40 }}>
             {[
-              { name:'Нова Пошта', time:'1-3 робочих дні', price:'Безкоштовно', desc:'Доставка у відділення або поштомат по всій Україні.' },
-              { name:'Укрпошта', time:'3-7 робочих днів', price:'Безкоштовно', desc:'Доставка у поштове відділення Укрпошти.' },
-              { name:'Кур\'єр по Києву', time:'1 робочий день', price:'Безкоштовно', desc:'Доставка кур\'єром за адресою в межах Києва.' },
+              { name:'Нова Пошта', time:'1-3 робочих дні', price:'За тарифами НП', desc:'Доставка у відділення або поштомат по всій Україні за тарифами Нової Пошти.' },
+              { name:'Самовивіз', time:'У день замовлення', price:'Безкоштовно', desc:'Магазин-партнер «Велокрай», вул. Ревуцького 40В, Київ.' },
             ].map(d => (
               <div key={d.name} style={{ background:'var(--bg-soft)', border:'1.5px solid var(--border)', borderRadius:10, padding:'18px 22px' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:6 }}>
