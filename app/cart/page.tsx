@@ -149,7 +149,7 @@ export default function CartPage() {
             <p style={{ fontSize:11, color:'var(--text-4)', textAlign:'center' }}>🔒 Безпечна оплата · Офіційна гарантія</p>
 
             <div style={{ borderTop:'1px solid var(--border)', paddingTop:16, display:'flex', flexDirection:'column', gap:10 }}>
-              {([[Truck,'Доставка по всій Україні'],[RotateCcw,'14 днів повернення'],[Shield,'Офіційна гарантія']] as const).map(([Icon, text]) => (
+              {([[Truck,'Нова Пошта по тарифам'],[RotateCcw,'Повернення згідно ЗУ'],[Shield,'Офіційна гарантія']] as const).map(([Icon, text]) => (
                 <div key={text} style={{ display:'flex', alignItems:'center', gap:10, fontSize:12, color:'var(--text-3)' }}>
                   <div style={{ width:28, height:28, background:'#F5C200', borderRadius:6, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                     <Icon size={13} color="#111"/>
