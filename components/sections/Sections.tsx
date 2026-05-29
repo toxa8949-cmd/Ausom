@@ -6,9 +6,9 @@ export function StatsBar() { return null }
 
 export function Features() {
   const items = [
-    { Icon: Truck,          title: 'Доставка по всій Україні', body: 'Доставляємо по всій Україні. Швидко та надійно.' },
+    { Icon: Truck,          title: 'Нова Пошта та самовивіз',  body: 'Доставка Новою Поштою за тарифами або самовивіз з Києва.' },
     { Icon: Shield,         title: 'Офіційна гарантія',        body: 'Офіційна гарантія на всі моделі Ausom.' },
-    { Icon: RotateCcw,      title: '14 днів повернення',       body: 'Не підійшов — повертай без питань.' },
+    { Icon: RotateCcw,      title: 'Повернення згідно ЗУ',     body: 'Згідно Закону про захист прав споживачів.' },
     { Icon: MessageCircle,  title: 'Підтримка 24/7',           body: "Завжди на зв'язку — чат, email, телефон." },
   ]
   return (
