@@ -208,7 +208,7 @@ export default function ProductFormInner({ id }: { id: string }) {
                     value={form.meta_description}
                     onChange={e => set('meta_description', e.target.value)}
                     rows={3}
-                    placeholder="Преміум позашляховий електросамокат. Подвійний мотор 2×1000W, запас 70 км. Гідравлічні гальма Zoom. 2 роки гарантії, безкоштовна доставка по Україні."
+                    placeholder="Преміум позашляховий електросамокат. Подвійний мотор 2×1000W, запас 70 км. Гідравлічні гальма Zoom. 2 роки гарантії, доставка Новою Поштою."
                     style={{ ...inp, resize:'vertical' as const }}
                     onFocus={e => (e.target.style.borderColor = '#F5C200')}
                     onBlur={e  => (e.target.style.borderColor = '#EEEEEE')}
