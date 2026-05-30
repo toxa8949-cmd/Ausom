@@ -5,7 +5,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://ausom.in.ua'
 export const metadata: Metadata = {
   title: 'Купити електросамокат в Україні — каталог Ausom та Kukirin',
   description:
-    'Купити електросамокат Ausom або Kukirin в Україні. Ausom L1, L2, L2 Max, DT2 Pro, L2 Dual, Kukirin G2, G3, G4. Офіційна гарантія, безкоштовна доставка.',
+    'Купити електросамокат Ausom або Kukirin в Україні. Ausom L1, L2, L2 Max, DT2 Pro, L2 Dual, Kukirin G2, G3, G4. Офіційна гарантія, доставка Новою Поштою.',
   keywords: [
     'купити електросамокат', 'електросамокат україна', 'самокат ausom', 'ausom',
     'купити ausom', 'kukirin', 'купити kukirin', 'електросамокат київ',
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Купити електросамокат — каталог Ausom та Kukirin | Ausom UA',
     description:
-      'Купити електросамокат Ausom або Kukirin в Україні. Гарантія 2 роки, безкоштовна доставка по Україні.',
+      'Купити електросамокат Ausom або Kukirin в Україні. Гарантія 2 роки, доставка Новою Поштою по Україні.',
     type: 'website',
     url: SITE_URL + '/catalog',
     siteName: 'Ausom UA',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Купити електросамокат — каталог Ausom та Kukirin | Ausom UA',
     description:
-      'Купити електросамокат Ausom або Kukirin в Україні. Гарантія 2 роки, безкоштовна доставка.',
+      'Купити електросамокат Ausom або Kukirin в Україні. Гарантія 2 роки, доставка Новою Поштою.',
     images: [SITE_URL + '/og-image.jpg'],
   },
 }
