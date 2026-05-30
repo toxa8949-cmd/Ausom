@@ -8,13 +8,12 @@ import { ChevronRight, AlertCircle, Loader2 } from 'lucide-react'
 import { useCart } from '@/lib/cart'
 import { createOrder } from '@/lib/queries'
 
-type DeliveryId = 'nova-poshta' | 'ukrposhta' | 'courier'
+type DeliveryId = 'nova-poshta' | 'pickup'
 type PaymentId  = 'card' | 'privat24' | 'mono' | 'cash'
 
 const DELIVERY_LABEL: Record<DeliveryId, string> = {
   'nova-poshta': 'Нова Пошта',
-  'ukrposhta':   'Укрпошта',
-  'courier':     'Кур\'єр',
+  'pickup':      'Самовивіз',
 }
 const PAYMENT_LABEL: Record<PaymentId, string> = {
   'card':     'Visa / Mastercard',
@@ -238,9 +237,8 @@ export default function CheckoutPage() {
                   <h2 style={{ fontSize:18, fontWeight:700, color:'var(--text)', marginBottom:20 }}>Доставка</h2>
                   <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:20 }}>
                     {([
-                      {id:'nova-poshta' as const, label:'Нова Пошта',    desc:'По всій Україні, 1-3 дні', icon:'📦'},
-                      {id:'ukrposhta'   as const, label:'Укрпошта',      desc:'По всій Україні, 3-7 днів', icon:'✉️'},
-                      {id:'courier'     as const, label:'Кур\'єр (Київ)', desc:'По Києву, 1 день',   icon:'🚚'},
+                      {id:'nova-poshta' as const, label:'Нова Пошта',    desc:'По всій Україні, за тарифами НП', icon:'📦'},
+                      {id:'pickup'      as const, label:'Самовивіз',  desc:'вул. Ревуцького 40В, Київ', icon:'🏪'},
                     ]).map(d => (
                       <label key={d.id} style={radioStyle(form.delivery===d.id)}>
                         <input type="radio" name="delivery" value={d.id} checked={form.delivery===d.id} onChange={set} style={{ display:'none' }}/>
