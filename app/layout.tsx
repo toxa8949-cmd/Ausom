@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     template: '%s | Ausom UA',
   },
   description:
-    "Купити електросамокат Ausom або Kukirin в Україні. Офіційний дистриб'ютор. Гарантія 2 роки, безкоштовна доставка по Україні. Моделі: Ausom L1, L2, L2 Max, DT2 Pro, L2 Dual, L2 Max Dual.",
+    "Купити електросамокат Ausom або Kukirin в Україні. Офіційний дистриб'ютор. Гарантія 2 роки, доставка Новою Поштою по Україні. Моделі: Ausom L1, L2, L2 Max, DT2 Pro, L2 Dual, L2 Max Dual.",
   keywords: [
     'купити ausom', 'ausom', 'ausom україна', 'самокат ausom', 'ausom київ',
     'електросамокат ausom', 'купити електросамокат україна', 'ausom l2 max',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     siteName: 'Ausom Ukraine',
     title: 'Купити електросамокат Ausom в Україні — офіційний дилер',
     description:
-      "Офіційний дистриб'ютор Ausom та Kukirin в Україні. Гарантія 2 роки, безкоштовна доставка.",
+      "Офіційний дистриб'ютор Ausom та Kukirin в Україні. Гарантія 2 роки, доставка Новою Поштою.",
     images: [
       {
         url: '/og-image.jpg',
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Купити електросамокат Ausom в Україні — офіційний дилер',
     description:
-      "Офіційний дистриб'ютор Ausom та Kukirin в Україні. Гарантія 2 роки, доставка по Україні.",
+      "Офіційний дистриб'ютор Ausom та Kukirin в Україні. Гарантія 2 роки, доставка Новою .",
     images: ['/og-image.jpg'],
   },
 }
@@ -84,7 +84,7 @@ const organizationJsonLd = {
   logo: SITE_URL + '/icon-512.png',
   image: SITE_URL + '/og-image.jpg',
   description:
-    "Офіційний дистриб'ютор електросамокатів Ausom та Kukirin в Україні. Гарантія 2 роки, безкоштовна доставка.",
+    "Офіційний дистриб'ютор електросамокатів Ausom та Kukirin в Україні. Гарантія 2 роки, доставка Новою Поштою.",
   priceRange: '$$',
   address: {
     '@type': 'PostalAddress',
